@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مصباح · معلّم على شاشتك</title>
+<meta name="description" content="مصباح: معلّم بيعيش على شاشة Windows. اسأله بصوتك، يشرحلك بالمصري ويشاورلك على المكان، ولو قلتله «اعملهالي» يعملها بدالك.">
+<link rel="icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #202020; --raised: #2c2a27; --line: #3a3530;
+    --paper: #f6efe3; --muted: #a89c8a; --saffron: #f2a93b; --saffron-hi: #ffc663;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ink); color: var(--paper); font-family: "Tajawal", "Segoe UI", sans-serif; line-height: 1.7; }
+  main { max-width: 720px; margin: 0 auto; padding: 48px 20px 48px; }
+  .lamp { width: 150px; height: auto; display: block; margin-bottom: 18px; animation: float 4s ease-in-out infinite; }
+  @keyframes float { 50% { transform: translateY(-6px); } }
+  @media (prefers-reduced-motion: reduce) { .lamp { animation: none; } }
+  h1 { font-size: clamp(30px, 6vw, 44px); line-height: 1.25; margin: 0 0 14px; }
+  .lead { font-size: 19px; opacity: .9; margin: 0 0 34px; }
+  .download { display: inline-block; background: var(--saffron); color: #1a1714; font-weight: 700; font-size: 17px; padding: 14px 30px;
+              border-radius: 999px; text-decoration: none; }
+  .download:hover, .download:focus-visible { background: var(--saffron-hi); outline: none; }
+  .small { color: var(--muted); font-size: 14px; margin-top: 12px; }
+  h2 { font-size: 15px; color: var(--saffron); margin: 64px 0 18px; font-weight: 600; }
+  .ways { display: grid; gap: 14px; }
+  .way { display: flex; gap: 18px; align-items: baseline; }
+  .key { flex: 0 0 auto; background: var(--raised); color: var(--saffron); font-weight: 600; border-radius: 8px; padding: 4px 12px; font-size: 15px; white-space: nowrap; }
+  .key.ltr { direction: ltr; }
+  ol { padding-inline-start: 22px; margin: 0; }
+  ol li { margin-bottom: 10px; }
+  .note { background: var(--raised); border-radius: 12px; padding: 16px 18px; margin-top: 18px; }
+  @media (max-width: 480px) { .way { flex-direction: column; gap: 4px; } }
+</style>
+</head>
+<body>
+<main>
+  <img class="lamp" src="lamp.png" alt="المصباح والجني بتاعه" width="220" height="305">
+  <h1>مصباح: معلّم بيعيش على شاشتك</h1>
+  <p class="lead">اسأله بصوتك عن أي حاجة في أي برنامج أو موقع. بيشرحلك بالمصري، ويشاورلك على المكان، ولو قلتله «اعملهالي» يعملها بدالك.</p>
+  <a class="download" href="https://github.com/HassanH2A/tutor-releases/releases/latest/download/TutorApp-win-Setup.exe">نزّل لـ Windows</a>
+  <p class="small">مجاني: 25 سؤال و 5 مهام في الشهر. Windows 10 و 11.</p>
+
+  <h2>إزاي بتستخدمه</h2>
+  <div class="ways">
+    <div class="way"><span class="key ltr">Right Ctrl</span><span>دوس وخليك دايس واسأل بصوتك، وسيبه لما تخلص.</span></div>
+    <div class="way"><span class="key ltr">Right Ctrl + mouse</span><span>وإنت دايس، ارسم بالماوس حوالين أي حاجة واسأل «ده إيه؟».</span></div>
+    <div class="way"><span class="key">«اعملهالي»</span><span>يعمل فولدر، يكتب ملف، يرتّب صورك، يدوّر على النت. ولو حاجة ممكن تبوّظ بيسألك الأول.</span></div>
+    <div class="way"><span class="key ltr">Right Ctrl ×2</span><span>مش عايز تتكلم؟ دوس مرتين واكتب.</span></div>
+  </div>
+
+  <h2>التسطيب</h2>
+  <ol>
+    <li>نزّل الملف وافتحه.</li>
+    <li>لو Windows قال «Windows protected your PC»: دوس <b>More info</b> وبعدين <b>Run anyway</b>. ده بيظهر لأي برنامج جديد لسه ما اتوقّعش رقمياً.</li>
+    <li>سجّل بإيميلك، والمصباح هيعلّمك كل حاجة خطوة خطوة.</li>
+  </ol>
+  <p class="note">بيحدّث نفسه لوحده. بيشوف الشاشة بس لما تسأله، والتسجيل بيحصل بس وإنت دايس على الزرار.</p>
+</main>
+</body>
+</html>
