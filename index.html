@@ -7,21 +7,22 @@
 <meta name="description" content="مصباح: معلّم بيعيش على شاشة Windows. اسأله بصوتك، يشرحلك بالمصري ويشاورلك على المكان، ولو قلتله «اعملهالي» يعملها بدالك.">
 <link rel="icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --ink: #202020; --raised: #2c2a27; --line: #3a3530;
-    --paper: #f6efe3; --muted: #a89c8a; --saffron: #f2a93b; --saffron-hi: #ffc663;
+    --ink: #14161c; --raised: #1c1f27; --line: #262a35;
+    --paper: #eceef3; --muted: #9ba1ad; --saffron: #8e7cff; --saffron-hi: #b7abff;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--ink); color: var(--paper); font-family: "Tajawal", "Segoe UI", sans-serif; line-height: 1.7; }
+  body { margin: 0; background: radial-gradient(700px 420px at 85% 0%, rgba(142,124,255,.22), transparent 70%), var(--ink); color: var(--paper); font-family: "Readex Pro", "Segoe UI", sans-serif; line-height: 1.7; }
   main { max-width: 720px; margin: 0 auto; padding: 48px 20px 48px; }
-  .lamp { width: 150px; height: auto; display: block; margin-bottom: 18px; animation: float 4s ease-in-out infinite; }
-  @keyframes float { 50% { transform: translateY(-6px); } }
-  @media (prefers-reduced-motion: reduce) { .lamp { animation: none; } }
-  h1 { font-size: clamp(30px, 6vw, 44px); line-height: 1.25; margin: 0 0 14px; }
+  .orb { width: 72px; height: 72px; border-radius: 50%; margin: 12px 0 34px; background: radial-gradient(circle at 38% 32%, #f1eeff 0, #a797ff 45%, #6f5cf2 100%);
+         box-shadow: 0 0 24px #8e7cff, 0 0 70px rgba(142,124,255,.6), 0 0 140px rgba(142,124,255,.3); animation: breathe 3.2s ease-in-out infinite; }
+  @keyframes breathe { 50% { box-shadow: 0 0 30px #8e7cff, 0 0 90px rgba(142,124,255,.7), 0 0 170px rgba(142,124,255,.35); } }
+  @media (prefers-reduced-motion: reduce) { .orb { animation: none; } }
+  h1 { font-size: clamp(30px, 6vw, 44px); line-height: 1.25; margin: 0 0 14px; font-weight: 600; text-shadow: 0 0 30px rgba(142,124,255,.55); }
   .lead { font-size: 19px; opacity: .9; margin: 0 0 34px; }
-  .download { display: inline-block; background: var(--saffron); color: #1a1714; font-weight: 700; font-size: 17px; padding: 14px 30px;
+  .download { display: inline-block; background: var(--saffron); color: #14161c; box-shadow: 0 0 26px rgba(142,124,255,.6); font-weight: 700; font-size: 17px; padding: 14px 30px;
               border-radius: 999px; text-decoration: none; }
   .download:hover, .download:focus-visible { background: var(--saffron-hi); outline: none; }
   .small { color: var(--muted); font-size: 14px; margin-top: 12px; }
@@ -38,7 +39,7 @@
 </head>
 <body>
 <main>
-  <img class="lamp" src="lamp.png" alt="المصباح والجني بتاعه" width="220" height="305">
+  <div class="orb" aria-hidden="true"></div>
   <h1>مصباح: معلّم بيعيش على شاشتك</h1>
   <p class="lead">اسأله بصوتك عن أي حاجة في أي برنامج أو موقع. بيشرحلك بالمصري، ويشاورلك على المكان، ولو قلتله «اعملهالي» يعملها بدالك.</p>
   <a class="download" href="https://github.com/HassanH2A/tutor-releases/releases/latest/download/TutorApp-win-Setup.exe">نزّل لـ Windows</a>
