@@ -2,64 +2,218 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>مارد · معلّم على شاشتك</title>
 <meta name="description" content="مارد: معلّم بيعيش على شاشة Windows. اسأله بصوتك، يشرحلك بالمصري ويشاورلك على المكان، ولو قلتله «اعملهالي» يعملها بدالك.">
+<meta name="theme-color" content="#111214">
+<meta property="og:title" content="مارد · معلّم على شاشتك">
+<meta property="og:description" content="مارد: معلّم بيعيش على شاشة Windows. اسأله بصوتك، يشرحلك بالمصري ويشاورلك على المكان، ولو قلتله «اعملهالي» يعملها بدالك.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://yamared.com/media/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --ink: #14161c; --raised: #1c1f27; --line: #262a35;
-    --paper: #eceef3; --muted: #9ba1ad; --saffron: #8e7cff; --saffron-hi: #b7abff;
+    --bg: #111214; --raised: #1c1d21; --line: #26272b;
+    --ink: #eeeef0; --muted: #a0a1a6;
+    --gold: #f2b544; --gold-light: #ffd58a;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: radial-gradient(700px 420px at 85% 0%, rgba(142,124,255,.22), transparent 70%), var(--ink); color: var(--paper); font-family: "Readex Pro", "Segoe UI", sans-serif; line-height: 1.7; }
-  main { max-width: 720px; margin: 0 auto; padding: 48px 20px 48px; }
-  .orb { width: 72px; height: 72px; border-radius: 50%; margin: 12px 0 34px; background: radial-gradient(circle at 38% 32%, #f1eeff 0, #a797ff 45%, #6f5cf2 100%);
-         box-shadow: 0 0 24px #8e7cff, 0 0 70px rgba(142,124,255,.6), 0 0 140px rgba(142,124,255,.3); animation: breathe 3.2s ease-in-out infinite; }
-  @keyframes breathe { 50% { box-shadow: 0 0 30px #8e7cff, 0 0 90px rgba(142,124,255,.7), 0 0 170px rgba(142,124,255,.35); } }
-  @media (prefers-reduced-motion: reduce) { .orb { animation: none; } }
-  h1 { font-size: clamp(30px, 6vw, 44px); line-height: 1.25; margin: 0 0 14px; font-weight: 600; text-shadow: 0 0 30px rgba(142,124,255,.55); }
-  .lead { font-size: 19px; opacity: .9; margin: 0 0 34px; }
-  .download { display: inline-block; background: var(--saffron); color: #14161c; box-shadow: 0 0 26px rgba(142,124,255,.6); font-weight: 700; font-size: 17px; padding: 14px 30px;
-              border-radius: 999px; text-decoration: none; }
-  .download:hover, .download:focus-visible { background: var(--saffron-hi); outline: none; }
-  .small { color: var(--muted); font-size: 14px; margin-top: 12px; }
-  h2 { font-size: 15px; color: var(--saffron); margin: 64px 0 18px; font-weight: 600; }
-  .ways { display: grid; gap: 14px; }
-  .way { display: flex; gap: 18px; align-items: baseline; }
-  .key { flex: 0 0 auto; background: var(--raised); color: var(--saffron); font-weight: 600; border-radius: 8px; padding: 4px 12px; font-size: 15px; white-space: nowrap; }
-  .key.ltr { direction: ltr; }
-  ol { padding-inline-start: 22px; margin: 0; }
-  ol li { margin-bottom: 10px; }
-  .note { background: var(--raised); border-radius: 12px; padding: 16px 18px; margin-top: 18px; }
-  @media (max-width: 480px) { .way { flex-direction: column; gap: 4px; } }
+  html { background: var(--bg); color-scheme: dark; scrollbar-color: var(--line) var(--bg); scroll-padding-top: 5.5rem; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Readex Pro", "Segoe UI", system-ui, sans-serif; line-height: 1.7;
+         caret-color: var(--gold); -webkit-tap-highlight-color: rgb(242 181 68 / 0.2); overflow-x: hidden; }
+  ::selection { background: var(--gold); color: var(--bg); }
+  a { touch-action: manipulation; }
+  :focus-visible { outline: 2px solid var(--gold-light); outline-offset: 4px; }
+
+  .skip { position: fixed; z-index: 50; top: calc(0.75rem + env(safe-area-inset-top)); inset-inline-start: 1rem; padding: 0.75rem 1.1rem;
+          border-radius: 999px; background: var(--gold); color: var(--bg); font-weight: 600; text-decoration: none;
+          transform: translateY(-220%); transition: transform 0.25s var(--ease); }
+  .skip:focus-visible { transform: none; }
+
+  .topbar { position: fixed; inset: 0 0 auto 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+            padding: calc(0.75rem + env(safe-area-inset-top)) max(1.25rem, env(safe-area-inset-right)) 0.75rem max(1.25rem, env(safe-area-inset-left));
+            background: linear-gradient(to bottom, rgb(17 18 20 / 0.9), rgb(17 18 20 / 0)); pointer-events: none; }
+  .topbar > * { pointer-events: auto; }
+  .brand { display: flex; align-items: center; gap: 0.6rem; font-size: 1.125rem; font-weight: 600; }
+  .brand img { border-radius: 8px; }
+  .topbar__get { display: inline-flex; align-items: center; min-height: 44px; padding: 0 1.15rem; border-radius: 999px; color: var(--gold);
+                 font-weight: 600; text-decoration: none; box-shadow: inset 0 0 0 1px rgb(242 181 68 / 0.45);
+                 transition: background-color 0.2s var(--ease), color 0.2s var(--ease); }
+  .topbar__get:hover { background: var(--gold); color: var(--bg); }
+
+  /* The film: the page's scroll plays it (script below). The tall section is the scroll distance. */
+  .hero { position: relative; height: 420svh; }
+  .hero__stage { position: sticky; top: 0; height: 100svh; overflow: hidden; }
+  .hero__poster, .hero__film { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: var(--film-x, 50%) 50%; }
+  .hero__poster img { width: 100%; height: 100%; object-fit: cover; object-position: inherit; display: block; }
+  .hero__film { opacity: 0; }
+  .hero__film.is-ready { opacity: 1; }
+  .hero__progress { position: absolute; z-index: 3; top: 0; inset-inline: 0; height: 2px; background: rgb(238 238 240 / 0.14); }
+  .hero__progress span { display: block; height: 100%; background: var(--gold); transform: scaleX(var(--p, 0)); transform-origin: right center; }
+  .hero__copy { position: absolute; z-index: 2; top: 50%; inset-inline-start: clamp(1.25rem, 6vw, 6rem); width: min(36rem, 46vw); transform: translateY(-50%); }
+  .hero__copy::before { content: ""; position: absolute; z-index: -1; inset: -3rem -5rem; pointer-events: none;
+                        background: radial-gradient(ellipse at center, rgb(17 18 20 / 0.88) 0%, rgb(17 18 20 / 0.58) 52%, transparent 76%); }
+  h1 { max-width: 11ch; margin: 0; font-size: clamp(2.4rem, 5.2vw, 5rem); font-weight: 600; line-height: 1.2; text-wrap: balance; }
+  .lead { max-width: 38ch; margin: 1.5rem 0 2rem; font-size: clamp(1.05rem, 1.4vw, 1.25rem); line-height: 1.85; text-wrap: pretty; }
+  .cta { display: inline-flex; align-items: center; gap: 0.65rem; min-height: 56px; padding: 0 1.75rem; border-radius: 999px; background: var(--gold);
+         color: var(--bg); font-size: 1.125rem; font-weight: 600; text-decoration: none; box-shadow: 0 12px 34px -10px rgb(242 181 68 / 0.6);
+         transition: background-color 0.25s var(--ease), box-shadow 0.25s var(--ease), transform 0.25s var(--ease); }
+  .cta:hover { background: var(--gold-light); box-shadow: 0 16px 44px -10px rgb(255 213 138 / 0.75); transform: translateY(-2px); }
+  .cta:active { transform: translateY(0) scale(0.98); }
+  .fine { margin: 0.85rem 0 0; color: var(--muted); font-size: 0.95rem; }
+
+  .content { position: relative; z-index: 4; background: var(--bg);
+             padding: clamp(5rem, 10vw, 9rem) max(1.25rem, env(safe-area-inset-right)) calc(clamp(4rem, 8vw, 7rem) + env(safe-area-inset-bottom)) max(1.25rem, env(safe-area-inset-left)); }
+  .content > section { max-width: 46rem; margin-inline: auto; }
+  h2 { margin: 0 0 2rem; font-size: clamp(1.75rem, 3.4vw, 2.6rem); font-weight: 600; line-height: 1.3; text-wrap: balance; scroll-margin-top: 6rem; }
+  .ways { margin: 0; }
+  .way { display: grid; grid-template-columns: minmax(11rem, auto) 1fr; align-items: baseline; gap: 1.5rem; padding: 1.25rem 0; border-top: 1px solid var(--line); }
+  .way:last-child { border-bottom: 1px solid var(--line); }
+  .way dt, .way dd { margin: 0; min-width: 0; }
+  kbd { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 8px; background: var(--raised); color: var(--gold); font: inherit; font-size: 0.95rem;
+        font-weight: 600; white-space: nowrap; direction: ltr; unicode-bidi: isolate; box-shadow: inset 0 -2px 0 var(--line); }
+  .phrase { color: var(--gold); font-weight: 600; }
+  .install { padding-top: clamp(4.5rem, 9vw, 7.5rem); }
+  .install ol { display: grid; gap: 1rem; max-width: 65ch; margin: 0; padding-inline-start: 1.4rem; }
+  .install li::marker { color: var(--gold); font-weight: 600; }
+  .note { max-width: 60ch; margin: 2.5rem 0 0; padding-top: 1.5rem; border-top: 1px solid var(--line); color: var(--muted); }
+  .closing { display: grid; justify-items: center; gap: 1.25rem; padding-top: clamp(6rem, 12vw, 10rem); text-align: center; }
+  .closing img { border-radius: 22px; box-shadow: 0 24px 60px -24px rgb(242 181 68 / 0.55); }
+  .closing a { display: inline-flex; align-items: center; min-height: 44px; color: var(--gold); font-size: clamp(1.75rem, 4vw, 3rem); font-weight: 600;
+               text-decoration: underline; text-decoration-color: rgb(242 181 68 / 0.4); text-decoration-thickness: 0.06em; text-underline-offset: 0.35em;
+               transition: color 0.2s var(--ease), text-decoration-color 0.2s var(--ease); }
+  .closing a:hover { color: var(--gold-light); text-decoration-color: currentColor; }
+  .closing p { margin: 0; color: var(--muted); }
+
+  @media (max-width: 860px) {
+    .hero__copy { top: auto; bottom: 0; inset-inline: 0; width: auto; transform: none;
+                  padding: 6rem max(1.25rem, env(safe-area-inset-right)) calc(2.5rem + env(safe-area-inset-bottom)) max(1.25rem, env(safe-area-inset-left)); }
+    .hero__copy::before { inset: 0; background: linear-gradient(to top, var(--bg) 0%, rgb(17 18 20 / 0.82) 58%, transparent 100%); }
+    h1 { max-width: 14ch; font-size: clamp(2rem, 9vw, 3.5rem); }
+    .lead { margin: 1rem 0 1.5rem; }
+  }
+  @media (max-width: 560px) {
+    .way { grid-template-columns: 1fr; gap: 0.4rem; }
+    .topbar__get { padding: 0 1rem; }
+  }
+  /* Reduced motion: no film at all, just its closing still, and no scroll distance. */
+  @media (prefers-reduced-motion: reduce) {
+    .hero { height: auto; }
+    .hero__stage { position: relative; }
+    .hero__film, .hero__progress { display: none; }
+    *, *::before, *::after { transition: none !important; }
+  }
 </style>
 </head>
 <body>
-<main>
-  <div class="orb" aria-hidden="true"></div>
-  <h1>مارد: معلّم بيعيش على شاشتك</h1>
-  <p class="lead">اسأله بصوتك عن أي حاجة في أي برنامج أو موقع. بيشرحلك بالمصري، ويشاورلك على المكان، ولو قلتله «اعملهالي» يعملها بدالك.</p>
-  <a class="download" href="https://github.com/HassanH2A/tutor-releases/releases/latest/download/TutorApp-win-Setup.exe">نزّل لـ Windows</a>
-  <p class="small">مجاني: 25 سؤال و 5 مهام في الشهر. Windows 10 و 11.</p>
+<a class="skip" href="#ways-title">تخطّى للمحتوى</a>
+<header class="topbar">
+  <div class="brand"><img src="icon.png" width="32" height="32" alt=""><span translate="no">مارد</span></div>
+  <a class="topbar__get" href="https://github.com/HassanH2A/tutor-releases/releases/latest/download/TutorApp-win-Setup.exe">نزّل</a>
+</header>
+<main id="main">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero__stage">
+      <picture class="hero__poster" aria-hidden="true">
+        <source media="(prefers-reduced-motion: reduce)" srcset="media/film-end.jpg">
+        <source media="(max-width: 860px)" srcset="media/film-phone-poster.jpg">
+        <img src="media/film-poster.jpg" width="1912" height="1080" alt="" fetchpriority="high">
+      </picture>
+      <video class="hero__film" muted playsinline preload="none" aria-hidden="true" tabindex="-1"
+             data-desktop="media/film.mp4" data-phone="media/film-phone.mp4"></video>
+      <div class="hero__progress" aria-hidden="true"><span></span></div>
+      <div class="hero__copy">
+        <h1 id="hero-title">مارد: معلّم بيعيش على شاشتك</h1>
+        <p class="lead">اسأله بصوتك عن أي حاجة في أي برنامج أو موقع. بيشرحلك بالمصري، ويشاورلك على المكان، ولو قلتله «اعملهالي» يعملها بدالك.</p>
+        <a class="cta" href="https://github.com/HassanH2A/tutor-releases/releases/latest/download/TutorApp-win-Setup.exe">
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>
+          <span>نزّل لـ <span translate="no">Windows</span></span>
+        </a>
+        <p class="fine">مجاني: 25 سؤال و 5 مهام في الشهر. <span translate="no">Windows&nbsp;10</span> و&nbsp;11.</p>
+      </div>
+    </div>
+  </section>
 
-  <h2>إزاي بتستخدمه</h2>
-  <div class="ways">
-    <div class="way"><span class="key ltr">Right Ctrl</span><span>دوس وخليك دايس واسأل بصوتك، وسيبه لما تخلص.</span></div>
-    <div class="way"><span class="key ltr">Right Ctrl + mouse</span><span>وإنت دايس، ارسم بالماوس حوالين أي حاجة واسأل «ده إيه؟».</span></div>
-    <div class="way"><span class="key">«اعملهالي»</span><span>يعمل فولدر، يكتب ملف، يرتّب صورك، يدوّر على النت. ولو حاجة ممكن تبوّظ بيسألك الأول.</span></div>
-    <div class="way"><span class="key ltr">Right Ctrl ×2</span><span>مش عايز تتكلم؟ دوس مرتين واكتب.</span></div>
+  <div class="content">
+    <section aria-labelledby="ways-title">
+      <h2 id="ways-title">إزاي بتستخدمه</h2>
+      <dl class="ways">
+        <div class="way"><dt><kbd translate="no">Right Ctrl</kbd></dt><dd>دوس وخليك دايس واسأل بصوتك، وسيبه لما تخلص.</dd></div>
+        <div class="way"><dt><kbd translate="no">Right Ctrl + mouse</kbd></dt><dd>وإنت دايس، ارسم بالماوس حوالين أي حاجة واسأل «ده إيه؟».</dd></div>
+        <div class="way"><dt><span class="phrase">«اعملهالي»</span></dt><dd>يعمل فولدر، يكتب ملف، يرتّب صورك، يدوّر على النت. ولو حاجة ممكن تبوّظ بيسألك الأول.</dd></div>
+        <div class="way"><dt><kbd translate="no">Right Ctrl ×2</kbd></dt><dd>مش عايز تتكلم؟ دوس مرتين واكتب.</dd></div>
+      </dl>
+    </section>
+
+    <section class="install" aria-labelledby="install-title">
+      <h2 id="install-title">التسطيب</h2>
+      <ol>
+        <li>نزّل الملف وافتحه.</li>
+        <li>لو <span translate="no">Windows</span> قال «<span dir="ltr" translate="no">Windows protected your PC</span>»: دوس <b translate="no">More info</b> وبعدين <b translate="no">Run anyway</b>. ده بيظهر لأي برنامج جديد لسه ما اتوقّعش رقمياً.</li>
+        <li>سجّل بإيميلك، ومارد هيعلّمك كل حاجة خطوة خطوة.</li>
+      </ol>
+      <p class="note">بيحدّث نفسه لوحده. بيشوف الشاشة بس لما تسأله، والتسجيل بيحصل بس وإنت دايس على الزرار.</p>
+    </section>
+
+    <section class="closing" aria-label="نزّل مارد">
+      <img src="icon.png" width="96" height="96" alt="" loading="lazy">
+      <a href="https://github.com/HassanH2A/tutor-releases/releases/latest/download/TutorApp-win-Setup.exe">نزّل لـ <span translate="no">Windows</span></a>
+      <p><span translate="no">Windows&nbsp;10</span> و&nbsp;11.</p>
+    </section>
   </div>
-
-  <h2>التسطيب</h2>
-  <ol>
-    <li>نزّل الملف وافتحه.</li>
-    <li>لو Windows قال «Windows protected your PC»: دوس <b>More info</b> وبعدين <b>Run anyway</b>. ده بيظهر لأي برنامج جديد لسه ما اتوقّعش رقمياً.</li>
-    <li>سجّل بإيميلك، ومارد هيعلّمك كل حاجة خطوة خطوة.</li>
-  </ol>
-  <p class="note">بيحدّث نفسه لوحده. بيشوف الشاشة بس لما تسأله، والتسجيل بيحصل بس وإنت دايس على الزرار.</p>
 </main>
+<script>
+// Scroll plays the film: the page's scroll position inside .hero picks the video frame.
+(() => {
+  const hero = document.querySelector(".hero");
+  const film = hero.querySelector(".hero__film");
+  const stage = hero.querySelector(".hero__stage");
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return; // no film, no fetch
+
+  const narrow = matchMedia("(max-width: 860px)");
+  // Phones see a centre slice of the 16:9 film: pan from the lamp (47%) to the lit button (68%) as it plays.
+  const panX = (p) => (narrow.matches ? 47 + 21 * p : 50) + "%";
+  let target = 0, busy = false, raf = 0;
+
+  const progress = () => {
+    const span = hero.offsetHeight - innerHeight;
+    return span > 0 ? Math.min(1, Math.max(0, -hero.getBoundingClientRect().top / span)) : 0;
+  };
+  const seek = () => {
+    if (busy || !film.duration || Math.abs(film.currentTime - target) < 0.02) return;
+    busy = true;
+    film.currentTime = target;
+  };
+  const tick = () => {
+    raf = 0;
+    const p = progress();
+    stage.style.setProperty("--p", p);
+    stage.style.setProperty("--film-x", panX(p));
+    if (film.duration) { target = p * (film.duration - 0.05); seek(); }
+  };
+  const schedule = () => { if (!raf) raf = requestAnimationFrame(tick); };
+
+  film.addEventListener("seeked", () => { busy = false; film.classList.add("is-ready"); seek(); });
+  film.addEventListener("loadeddata", () => {
+    // iOS only paints seeks after one play; muted play is allowed.
+    film.play().then(() => film.pause()).catch(() => {}).finally(() => { busy = false; tick(); film.currentTime = target || 0.001; });
+  });
+  addEventListener("scroll", schedule, { passive: true });
+  addEventListener("resize", schedule);
+  tick();
+
+  // The whole clip as a Blob makes seeking instant in both directions.
+  fetch(narrow.matches ? film.dataset.phone : film.dataset.desktop)
+    .then((r) => (r.ok ? r.blob() : Promise.reject(r.status)))
+    .then((blob) => { film.src = URL.createObjectURL(blob); })
+    .catch(() => {}); // the poster stays; the page still works
+})();
+</script>
 </body>
 </html>
