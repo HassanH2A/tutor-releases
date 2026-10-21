@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مارد · شكرًا</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#111214">
+<link rel="icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #111214; --ink: #EEEEF0; --muted: #A0A1A6; --gold: #F2B544; }
+  html { background: var(--bg); color-scheme: dark; }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: var(--bg); color: var(--ink);
+         font-family: "Readex Pro", "Segoe UI", system-ui, sans-serif; line-height: 1.7; padding: 0 16px; text-align: center; }
+  img { width: 72px; height: 72px; border-radius: 18px; }
+  h1 { margin: 20px 0 8px; font-size: 1.6rem; font-weight: 600; }
+  h1 span { color: var(--gold); }
+  p { margin: 0; color: var(--muted); font-size: 1.05rem; }
+</style>
+</head>
+<body>
+<main>
+  <img src="icon.png" alt="">
+  <h1 id="t">تمام! <span>اشتراكك اتفعّل.</span></h1>
+  <p id="s">ارجع لمارد، هيتحدّث خلال ثواني.</p>
+</main>
+<script>
+  // Payment done (Stripe sends people here). English for anyone whose browser isn't in Arabic.
+  if (!/^ar/i.test(navigator.language || '')) {
+    document.documentElement.lang = 'en'; document.documentElement.dir = 'ltr';
+    document.title = 'Mared · Thank you';
+    document.getElementById('t').innerHTML = "You're all set. <span>Your subscription is on.</span>";
+    document.getElementById('s').textContent = 'Go back to Mared. It updates in a few seconds.';
+  }
+</script>
+</body>
+</html>
