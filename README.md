@@ -1,4 +1,4 @@
-# Misbah for Windows
+# Mared for Windows
 
 Download page: https://hassanh2a.github.io/tutor-releases/
 
