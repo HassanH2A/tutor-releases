@@ -304,17 +304,21 @@
   .note { max-width: 40rem; margin: 2.5rem 0 0; color: var(--dim); font-size: 0.875rem; }
 
   /* Plans: free first */
-  .plans { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin-top: 3rem; }
+  .plans { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 3rem; }
   .plan { display: flex; flex-direction: column; gap: 0.5rem; padding: 1.75rem 1.5rem; border-radius: 20px; }
-  .plan.start { background: var(--raised); box-shadow: inset 0 0 0 1px rgb(242 181 68 / 0.45); }
+  .plan.pick { background: var(--raised); box-shadow: inset 0 0 0 1.5px var(--gold), 0 28px 60px -32px rgb(242 181 68 / 0.5); }
   .plan h3 { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; margin: 0; font-size: 1.15rem; font-weight: 600; }
   .tag { padding: 0.1rem 0.6rem; border-radius: 999px; background: rgb(242 181 68 / 0.14); color: var(--gold); font-size: 0.8rem; font-weight: 500; }
   .amount { margin: 0.5rem 0 0; font-size: 2.2rem; font-weight: 600; line-height: 1.1; font-variant-numeric: tabular-nums; }
   .amount small { font-size: 0.42em; font-weight: 400; color: var(--muted); }
-  .start .amount { color: var(--gold); }
   .amount-alt { margin: 0; min-height: 1.5em; color: var(--dim); font-size: 0.9rem; font-variant-numeric: tabular-nums; }
-  .plan p.promise { margin: 0.75rem 0 0; color: var(--muted); }
-  .plan .cta { align-self: start; min-height: 48px; margin-top: 1rem; padding: 0 1.25rem; font-size: 1rem; }
+  .plan p.promise { margin: 0.75rem 0 1.5rem; color: var(--muted); }
+  .plan .buy { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; margin-top: auto; padding: 0 1.25rem; border-radius: 999px;
+               background: #24252a; color: var(--gold); font-weight: 600; text-decoration: none; box-shadow: inset 0 0 0 1px rgb(242 181 68 / 0.35);
+               transition: background-color 0.2s var(--ease), color 0.2s var(--ease); }
+  .plan .buy:hover { background: var(--gold); color: var(--bg); }
+  .plan .buy.cta { background: var(--gold); color: var(--bg); box-shadow: 0 12px 34px -10px rgb(242 181 68 / 0.6); }
+  .plan .buy.cta:hover { background: var(--gold-light); }
 
   /* Closing */
   .closing { display: grid; justify-items: center; gap: 1.25rem; text-align: center; }
@@ -332,7 +336,7 @@
   footer a { color: var(--muted); text-underline-offset: 0.3em; text-decoration-color: var(--line); }
   footer a:hover { color: var(--gold); }
 
-  @media (max-width: 1000px) { .plans { grid-template-columns: repeat(2, minmax(0, 1fr)); } .more { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 1000px) { .more { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 900px) {
     .hero, .bill, .feature, .feature:nth-child(even) { grid-template-columns: minmax(0, 1fr); }
     .feature:nth-child(even) .ftext { order: 0; }
@@ -612,29 +616,23 @@
 
   <section aria-labelledby="plans-t">
     <h2 id="plans-t" data-i="plansT">ابدأ ببلاش. ادفع لما تحبه.</h2>
-    <p class="sub" data-i="plansSub">نزّله وجرّبه من غير ما تدفع حاجة ولا تحط فيزا. كل الباقات فيها كل حاجة، والفرق في الرصيد بس (رصيد واحد يساوي سؤال تقريبًا). ادفع بالكارت أو بإنستاباي أو فودافون كاش أو اتصالات كاش أو أورنج كاش، وتلغي في أي وقت.</p>
+    <p class="sub" data-i="plansSub">كل باقة بتبدأ بتجربة مجانية: 3 أسئلة، ومهمة «اعملهالي»، ودرس كامل، من غير ما تدفع حاجة. كل الباقات فيها كل حاجة، والفرق في الرصيد بس (رصيد واحد يساوي سؤال تقريبًا). ادفع بالكارت أو بإنستاباي أو فودافون كاش أو اتصالات كاش أو أورنج كاش، وتلغي في أي وقت.</p>
     <div class="plans">
-      <div class="plan start">
-        <h3 data-i="p0T">تجربة مجانية</h3>
-        <p class="amount" data-i="p0A">ببلاش</p>
-        <p class="amount-alt" data-i="p0B">من غير فيزا</p>
-        <p class="allow" data-i="a0">3 أسئلة، ومهمة «اعملهالي»، ودرس كامل</p>
-        <p class="promise" data-i="p0">جرّب كل حاجة على شاشتك قبل ما تقرّر.</p>
-        <a class="cta" href="start.html" data-i="cta2">ابدأ ببلاش</a>
-      </div>
       <div class="plan">
         <h3 translate="no"><span class="ar-only">مارد ميني</span><span class="en-only">Mared Mini</span></h3>
         <p class="amount"><span class="ar-only">199 <small>جنيه / شهر</small></span><span class="en-only">$7.99 <small>/ month</small></span></p>
         <p class="amount-alt"><span class="ar-only ltr">$7.99</span><span class="en-only">EGP 199</span></p>
         <p class="allow" data-i="a1">75 رصيد في الشهر</p>
         <p class="promise" data-i="p1">اسأل عن أي حاجة على شاشتك.</p>
+        <a class="buy" href="start.html?plan=mini" data-i="buy">اشترك</a>
       </div>
-      <div class="plan">
+      <div class="plan pick">
         <h3><span translate="no"><span class="ar-only">مارد بلس</span><span class="en-only">Mared Plus</span></span><span class="tag" data-i="tag">ننصحك بيه</span></h3>
         <p class="amount"><span class="ar-only">499 <small>جنيه / شهر</small></span><span class="en-only">$19.99 <small>/ month</small></span></p>
         <p class="amount-alt"><span class="ar-only ltr">$19.99</span><span class="en-only">EGP 499</span></p>
         <p class="allow" data-i="a2">335 رصيد في الشهر</p>
         <p class="promise" data-i="p2">يكفيك الشهر كله: يشرح، يعلّمك، ويعملهالك.</p>
+        <a class="buy cta" href="start.html?plan=plus" data-i="buy">اشترك</a>
       </div>
       <div class="plan">
         <h3 translate="no"><span class="ar-only">مارد ماكس</span><span class="en-only">Mared Max</span></h3>
@@ -642,6 +640,7 @@
         <p class="amount-alt"><span class="ar-only ltr">$99</span><span class="en-only">EGP 4,999</span></p>
         <p class="allow" data-i="a3">4,000 رصيد في الشهر</p>
         <p class="promise" data-i="p3">لأتقل شغل: مهام كتير، صور وفيديو.</p>
+        <a class="buy" href="start.html?plan=max" data-i="buy">اشترك</a>
       </div>
     </div>
   </section>
@@ -750,8 +749,8 @@
     rcT: "Without Mared, every month", from: "lowest plan", total: "Total",
     billNote: "Prices are each service's lowest monthly paid plan as listed in October 2026. Mared gives you their models within your monthly credits, not their subscriptions.",
     plansT: "Start free. Pay when you love it.",
-    plansSub: "Download it and try it without paying anything or adding a card. Every plan has every feature; only the credits differ (one credit is about one question). Pay by card or with InstaPay, Vodafone Cash, Etisalat Cash or Orange Cash, and cancel anytime.",
-    p0T: "Free trial", p0A: "Free", p0B: "No card needed", p0: "Try everything on your own screen before you decide.",
+    plansSub: "Every plan starts with a free trial: 3 questions, one \u201cdo it for me\u201d task and a full lesson, without paying anything. Every plan has every feature; only the credits differ (one credit is about one question). Pay by card or with InstaPay, Vodafone Cash, Etisalat Cash or Orange Cash, and cancel anytime.",
+    buy: "Subscribe",
     tag: "Recommended",
     p1: "Ask about anything on your screen.", p2: "Enough for your whole month: it explains, teaches and does it for you.", p3: "For the heaviest work: lots of tasks, images and video.",
     endT: "Start for free today.",

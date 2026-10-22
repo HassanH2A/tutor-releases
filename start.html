@@ -186,7 +186,7 @@
     <div class="ways">
       <div class="way main">
         <h2><span data-i="cardT">بالكارت</span><span class="tag" data-i="cardTag">الأسهل</span></h2>
-        <p data-i="cardP">مش هتدفع حاجة النهارده. لما التجربة تخلص (أو بعد 14 يوم)، بيبدأ مارد بلس بـ 499 جنيه في الشهر على نفس الكارت. تلغي في أي وقت.</p>
+        <p id="card-p"></p>
         <button class="cta" id="card" type="button" data-i="cardB">حط الكارت وابدأ</button>
         <p class="err" id="card-err" role="alert"></p>
       </div>
@@ -263,6 +263,8 @@
   const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { flowType: "implicit", detectSessionInUrl: true, persistSession: true } });
   const $ = (id) => document.getElementById(id);
   const params = new URLSearchParams(location.search);
+  const PRICES = { mini: ["ميني", "Mini", "199", "$7.99"], plus: ["بلس", "Plus", "499", "$19.99"], max: ["ماكس", "Max", "4,999", "$99"] };
+  const PLAN = PRICES[params.get("plan")] ? params.get("plan") : "plus";
   const root = document.documentElement;
   const T = (ar, en) => (root.lang === "en" ? en : ar);
 
@@ -276,7 +278,6 @@
     next: "Continue",
     planT: "When the trial ends, how would you like to continue?", planP: "Choose now. The trial is free either way.",
     cardT: "By card", cardTag: "Easiest",
-    cardP: "Nothing is charged today. When your trial is used up (or after 14 days), Mared Plus starts at EGP 499 / $19.99 a month on the same card. Cancel anytime.",
     cardB: "Add a card and start", walletT: "InstaPay or a wallet", walletP: "Start the trial now without a card, and pay from your phone when you want to continue.", walletB: "Start the trial",
     dlT: "You're in! Mared is downloading.", dlB: "Download for Windows",
     st1: "Open the file you downloaded.",
@@ -329,12 +330,16 @@
     $("sent-text").textContent = T(`بعتنالك لينك على ${email || $("email").value}. افتحه من الجهاز ده وهتكمّل من هنا.`, `We sent a link to ${email || $("email").value}. Open it on this device to continue.`);
     $("dl-sub").textContent = T("لو التنزيل ما بدأش لوحده، دوس على الزرار.", "If the download didn't start by itself, click the button.");
     $("st3").textContent = T(`افتح مارد وادخل بنفس الإيميل: ${email}`, `Open Mared and sign in with the same email: ${email}`);
+    const [pa, pe, egp, usd] = PRICES[PLAN];
+    $("card-p").textContent = T(`مش هتدفع حاجة النهارده. لما التجربة تخلص (أو بعد 14 يوم)، بيبدأ مارد ${pa} بـ ${egp} جنيه في الشهر على نفس الكارت. تلغي في أي وقت.`,
+      `Nothing is charged today. When your trial is used up (or after 14 days), Mared ${pe} starts at EGP ${egp} / ${usd} a month on the same card. Cancel anytime.`);
     if (details) paintPay();
   }
 
   // Where to go after signing in, kept through the email link.
   const back = () => {
     const q = new URLSearchParams();
+    if (params.get("plan")) q.set("plan", PLAN);
     if (location.hash === "#pay" || params.get("next") === "pay") q.set("next", "pay");
     return HERE + (q.toString() ? "?" + q : "");
   };
@@ -394,7 +399,7 @@
   $("card").addEventListener("click", async (e) => {
     const btn = e.currentTarget, err = $("card-err");
     btn.disabled = true; err.textContent = "";
-    const r = await callBilling({ action: "trial" });
+    const r = await callBilling({ action: "trial", plan: PLAN });
     btn.disabled = false;
     if (r.url) { location.href = r.url; return; }
     if (r.error === "trial_used") { err.textContent = T("خدت التجربة المجانية قبل كده. نزّل مارد واشترك من جوّاه، أو ادفع بمحفظة.", "You've already had your free trial. Download Mared and subscribe inside it, or pay with a wallet."); return; }
@@ -433,6 +438,8 @@
         l.querySelector("input").addEventListener("change", paintPay);
         box.append(l);
       });
+      const chosen = document.querySelector(`input[name="plan"][value="${PLAN}"]`);
+      if (chosen) chosen.checked = true;
       const first = box.querySelector("input");
       if (first) first.checked = true;
       $("no-wallets").hidden = !!first;
