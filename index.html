@@ -284,11 +284,20 @@
   .faq p { max-width: 40rem; margin: 0 0 1.25rem; color: var(--muted); }
   .allow { margin: 0.25rem 0 0; color: var(--ink); font-size: 0.95rem; }
 
-  /* And more */
-  .more { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 clamp(2rem, 4vw, 3rem); margin: 2.5rem 0 0; }
-  .more div { padding-block: 1.25rem; border-top: 1px solid var(--line); }
-  .more dt { color: var(--gold); font-weight: 500; }
-  .more dd { margin: 0.25rem 0 0; color: var(--muted); }
+  /* Everything it does: one collapsible group per area (all open on wide screens, the first on phones) */
+  .catalog { display: grid; gap: 0.75rem; margin-top: 2.5rem; }
+  .grp { border-radius: 18px; background: var(--raised); }
+  .grp summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 60px; padding: 0.9rem 1.4rem; font-size: 1.2rem; font-weight: 600;
+                 cursor: pointer; list-style: none; }
+  .grp summary::-webkit-details-marker { display: none; }
+  .grp summary .n { display: inline-flex; align-items: center; gap: 0.75rem; color: var(--gold); font-size: 0.9rem; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .grp summary .n::after { content: ""; width: 0.6rem; height: 0.6rem; border-inline-end: 2px solid var(--gold); border-bottom: 2px solid var(--gold);
+                           transform: rotate(45deg) translateY(-0.15rem); transition: transform 0.25s var(--ease); }
+  .grp[open] summary .n::after { transform: rotate(-135deg) translateY(-0.05rem); }
+  .grp dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 2rem; margin: 0; padding: 0 1.4rem 1.1rem; }
+  .grp dl div { min-width: 0; padding-block: 0.95rem; border-top: 1px solid var(--line); }
+  .grp dt { color: var(--gold); font-weight: 500; }
+  .grp dd { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.98rem; }
 
   /* The bonus: every model in one subscription */
   .bill { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 6vw, 6rem); align-items: start; }
@@ -342,13 +351,14 @@
   footer a { color: var(--muted); text-underline-offset: 0.3em; text-decoration-color: var(--line); }
   footer a:hover { color: var(--gold); }
 
-  @media (max-width: 1000px) { .more { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 1000px) { .grp dl { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 900px) {
     .hero, .bill, .feature, .feature:nth-child(even) { grid-template-columns: minmax(0, 1fr); }
     .feature:nth-child(even) .ftext { order: 0; }
   }
   @media (max-width: 620px) {
-    .versus, .plans, .more { grid-template-columns: minmax(0, 1fr); }
+    .versus, .plans, .grp dl { grid-template-columns: minmax(0, 1fr); }
+    .grp summary, .grp dl { padding-inline: 1.1rem; }
     .receipt { padding-inline: 1.25rem; }
     .fdemo { margin-inline: calc(8px - var(--gutter-l)) calc(8px - var(--gutter-r)); }
     .stage { padding: 1.7em 0.6em; border-radius: 16px; font-size: clamp(10px, 2.3cqi, 15px); }
@@ -522,7 +532,7 @@
       <div class="feature">
         <div class="ftext">
           <h3 data-i="eT"><q>اعملهالي</q>، ويعملها قدامك.</h3>
-          <p data-i="eP">مستعجل؟ قول اللي عايزه، ومارد يمسك الماوس والكيبورد ويخلّص المهمة وإنت بتتفرّج. بيسألك قبل أي حاجة ممكن تبوّظ، ولو حرّكت الماوس بيقف على طول.</p>
+          <p data-i="eP">مستعجل؟ قول اللي عايزه، ومارد يمسك الماوس والكيبورد ويخلّص المهمة وإنت بتتفرّج. بيسألك قبل أي حاجة ممكن تبوّظ، ولو حرّكت الماوس بيستنّاك لحد ما تسيبه. وEsc بيوقّفه.</p>
           <ul class="chips">
             <li><q data-i="c1">حوّل الجدول ده لرسم بياني</q></li>
             <li><q data-i="c2">اكتبلي إيميل للعميل</q></li>
@@ -584,16 +594,10 @@
     <p class="apps" data-i="apps">جرّبه على <b translate="no">Excel</b> و<b translate="no">Word</b> و<b translate="no">PowerPoint</b> و<b translate="no">Photoshop</b> و<b translate="no">AutoCAD</b> و<b translate="no">Revit</b> و<b translate="no">Canva</b>، أو أي برنامج أو موقع تاني.</p>
   </section>
 
-  <section aria-labelledby="more-t">
-    <h2 id="more-t" data-i="moreT">وحاجات تانية كتير.</h2>
-    <dl class="more">
-      <div><dt data-i="m1T">«اعملي ملاحظات»</dt><dd data-i="m1">كل اللي اتعلمته يتكتب في ملف ترجعله وقت ما تحب.</dd></div>
-      <div><dt data-i="m2T">بيفتكرك</dt><dd data-i="m2">بيعرف مستواك واللي اتعلمته قبل كده، فمش هتعيد من الأول.</dd></div>
-      <div><dt data-i="m3T">خطة لأي برنامج</dt><dd data-i="m3">قوله عايز تتعلم إيه، ويعملك كورس على قدّك.</dd></div>
-      <div><dt data-i="m4T">مش عايز تتكلم؟</dt><dd data-i="m4">دوس <kbd translate="no">Right Ctrl</kbd> مرتين واكتب.</dd></div>
-      <div><dt data-i="m5T">بيشوف بس لما تسأله</dt><dd data-i="m5">الشاشة بتتبعت بس لما تسأل، والمايك شغّال بس وإنت دايس.</dd></div>
-      <div><dt data-i="m6T">بيحدّث نفسه</dt><dd data-i="m6">كل تحديث جديد بيوصلك لوحده، من غير ما تعمل حاجة.</dd></div>
-    </dl>
+  <section aria-labelledby="all-t">
+    <h2 id="all-t" data-i="allT">كل اللي مارد بيعمله.</h2>
+    <p class="sub" id="all-sub"></p>
+    <div class="catalog" id="catalog"></div>
   </section>
 
   <section aria-labelledby="bill-t">
@@ -647,7 +651,7 @@
         <p class="amount"><span class="ar-only">4,999 <small>جنيه / شهر</small></span><span class="en-only">$99 <small>/ month</small></span></p>
         <p class="amount-alt"><span class="ar-only ltr">$99</span><span class="en-only">EGP 4,999</span></p>
         <p class="allow" data-i="a3">4,000 رصيد في الشهر</p>
-        <p class="promise" data-i="p3">لأتقل شغل: مهام كتير، صور وفيديو.</p>
+        <p class="promise" data-i="p3">لأتقل شغل: مهام وكورسات ودروس كتير.</p>
         <a class="buy" href="start.html?plan=max" data-i="buy">اشترك</a>
       </div>
     </div>
@@ -657,9 +661,9 @@
     <h2 id="faq-t" data-i="faqT">أسئلة بتتسأل كتير</h2>
     <div class="faq">
       <details><summary data-i="q1">هو ببلاش فعلًا؟</summary><p data-i="r1">أيوه. التجربة المجانية فيها 3 أسئلة، ومهمة «اعملهالي»، ودرس كامل. ولو عجبك، كمّل بالكارت أو بإنستاباي أو محفظة.</p></details>
-      <details><summary data-i="q2">هو بيشوف شاشتي على طول؟</summary><p data-i="r2">لأ. بيشوف الشاشة بس لما تدوس <kbd translate="no">Right Ctrl</kbd> وتسأل، والمايك شغّال بس وإنت دايس.</p></details>
+      <details><summary data-i="q2">هو بيشوف شاشتي على طول؟</summary><p data-i="r2">لأ. بيشوف شاشتك بس لما تطلب منه حاجة: سؤال، أو درس، أو مهمة. والمايك شغّال وإنت دايس على الزرار، أو لما تشغّل الكلام من غير إيد.</p></details>
       <details><summary data-i="q3">بيشتغل على أنهي برامج؟</summary><p data-i="r3">أي برنامج أو موقع على <span translate="no">Windows</span>: <span translate="no">Office</span> و<span translate="no">Photoshop</span> و<span translate="no">AutoCAD</span> والمتصفح وغيرهم. مش محتاج إضافات.</p></details>
-      <details><summary data-i="q4">هيدوس على حاجات من غير ما أعرف؟</summary><p data-i="r4">لأ. بيعمل حاجات بس لما تقوله «اعملهالي»، وبيقولك بيعمل إيه في كل خطوة، وبيسألك قبل أي حاجة ممكن تبوّظ زي المسح أو الدفع. ولو حرّكت الماوس بيقف على طول.</p></details>
+      <details><summary data-i="q4">هيدوس على حاجات من غير ما أعرف؟</summary><p data-i="r4">لأ. بيعمل حاجات بس لما تقوله «اعملهالي»، وبيسألك قبل أي حاجة ممكن تبوّظ زي المسح أو الدفع، واللي بيمسحه بيروح سلة المحذوفات. ولو حرّكت الماوس بيستنّاك، وEsc بيوقّفه.</p></details>
       <details><summary data-i="q5">بيتكلم بأنهي لغة؟</summary><p data-i="r5">بالمصري، وتقدر تخلّيه يرد بالعربي الفصحى أو بالإنجليزي من الإعدادات.</p></details>
       <details><summary data-i="q6">فيه نسخة للماك؟</summary><p data-i="r6">لسه. مارد شغّال على <span translate="no">Windows&nbsp;10</span> و&nbsp;11 بس دلوقتي.</p></details>
       <details><summary data-i="q7">أقدر ألغي إمتى؟</summary><p data-i="r7">في أي وقت، بضغطة من صفحة الحساب في مارد، وباقتك بتفضل شغّالة لحد آخر الشهر اللي دفعته.</p></details>
@@ -713,9 +717,9 @@
     faqT: "Questions people ask",
     q1: "Is it really free?", r1: "Yes. The free trial gives you 3 questions, one “do it for me” task and a full lesson. If you love it, continue by card or with InstaPay or a wallet.",
     q9: "Can I pay with Vodafone Cash or InstaPay?", r9: "Yes: InstaPay, Vodafone Cash, Etisalat Cash and Orange Cash. You send it from your phone, and we turn on your plan as soon as we confirm the transfer.",
-    q2: "Does it watch my screen all the time?", r2: 'No. It only looks at your screen when you hold <kbd translate="no">Right Ctrl</kbd> and ask, and the mic is on only while you hold the key.',
+    q2: "Does it watch my screen all the time?", r2: "No. It only looks at your screen when you ask it for something: a question, a lesson or a task. The mic is on while you hold the key, or when you turn on hands-free talking.",
     q3: "Which apps does it work with?", r3: 'Any app or website on <span translate="no">Windows</span>: <span translate="no">Office</span>, <span translate="no">Photoshop</span>, <span translate="no">AutoCAD</span>, your browser and more. No plugins needed.',
-    q4: "Will it click things without me knowing?", r4: "No. It only acts when you say “do it for me”, tells you what it's doing at each step, and asks before anything risky like deleting or paying. Move the mouse and it stops right away.",
+    q4: "Will it click things without me knowing?", r4: "No. It only acts when you say “do it for me”, asks before anything risky like deleting or paying, and anything it deletes goes to the Recycle Bin. Move the mouse and it waits; Esc stops it.",
     q5: "What language does it speak?", r5: "Egyptian Arabic by default, and you can switch it to Modern Standard Arabic or English in Settings.",
     q6: "Is there a Mac version?", r6: 'Not yet. Mared runs on <span translate="no">Windows&nbsp;10</span> and&nbsp;11 for now.',
     q7: "When can I cancel?", r7: "Anytime, in one click from the Account page in Mared, and your plan keeps working until the end of the month you paid for.",
@@ -738,7 +742,7 @@
     dP: "Mared gives you a step, waits for you to do it yourself, and checks you got it right before moving on. You actually learn it, instead of watching.",
     aTeach: "Example: a 3-step lesson on making a table in Excel",
     eT: "<q>Do it for me</q>, and watch it happen.",
-    eP: "In a hurry? Say what you need, and Mared takes the mouse and keyboard and finishes the job while you watch. It asks before anything risky, and stops the moment you move the mouse.",
+    eP: "In a hurry? Say what you need, and Mared takes the mouse and keyboard and finishes the job while you watch. It asks before anything risky, waits whenever you move the mouse, and Esc stops it.",
     c1: "Turn this table into a chart", c2: "Write the client an email", c3: "Sum up this PDF", c4: "Find the cheapest laptop",
     aDoit: "Example: Mared sorts 12 photos into 3 folders by itself",
     learnT: "No courses. <em>No YouTube tutorials.</em>",
@@ -749,7 +753,7 @@
     n1: "Teaches only what you need right now", n2: "Inside the app you have open, on your own screen",
     n3: "Points to the button and checks you clicked it", n4: "Ask anytime, and it answers out loud",
     apps: 'Try it on <b translate="no">Excel</b>, <b translate="no">Word</b>, <b translate="no">PowerPoint</b>, <b translate="no">Photoshop</b>, <b translate="no">AutoCAD</b>, <b translate="no">Revit</b>, <b translate="no">Canva</b>, or any other app or website.',
-    moreT: "And plenty more.",
+    allT: "Everything Mared does.",
     m1T: "“Make me notes”", m1: "Everything you learned, written to a file you can come back to.",
     m2T: "It remembers you", m2: "It knows your level and what you've learned, so you never start over.",
     m3T: "A plan for any app", m3: "Tell it what you want to learn, and it builds a course that fits you.",
@@ -766,7 +770,7 @@
     plansSub: "Every plan starts with a free trial: 3 questions, one \u201cdo it for me\u201d task and a full lesson, without paying anything. Every plan has every feature; only the credits differ (one credit is about one question). Pay by card or with InstaPay, Vodafone Cash, Etisalat Cash or Orange Cash, and cancel anytime.",
     buy: "Subscribe",
     tag: "Recommended",
-    p1: "Ask about anything on your screen.", p2: "Enough for your whole month: it explains, teaches and does it for you.", p3: "For the heaviest work: lots of tasks, images and video.",
+    p1: "Ask about anything on your screen.", p2: "Enough for your whole month: it explains, teaches and does it for you.", p3: "For the heaviest work: lots of tasks, courses and lessons.",
     endT: "Start for free today.",
     s1: "Open the file you downloaded.",
     s2: 'If you see “<span translate="no">Windows protected your PC</span>”, click <b translate="no">More info</b>, then <b translate="no">Run anyway</b>.',
@@ -1040,6 +1044,123 @@
   const titles = { ar: document.title, en: "Mared · The first AI that lives in your mouse" };
   const langBtn = document.getElementById("lang");
 
+  // Everything Mared does today (checked against the app's code and build log, 22 Oct 2026). [group ar, group en, [title ar, text ar, title en, text en]...]
+  const FEATURES = [
+    ["اسأل وافهم", "Ask and understand", [
+      ["دوس واسأل", "دوس Right Ctrl وخليك دايس، اسأل عن أي حاجة على شاشتك، ومارد يبص ويرد عليك بصوته.", "Hold and ask", "Hold Right Ctrl, ask about anything on your screen, and Mared looks and answers out loud."],
+      ["اتكلم من غير ما تمسك", "دوس الزرار مرتين ورا بعض وكمّل كلام براحتك من غير ما تفضل دايس.", "Hands-free", "Double-press the talk key and keep talking without holding it."],
+      ["اكتب بدل ما تتكلم", "دوس الزرار وSpace مع بعض واكتب سؤالك.", "Type instead", "Press the talk key with Space and type your question."],
+      ["ارسم حوالين أي حاجة واسأل", "وإنت دايس، ارسم بالماوس حوالين أي حاجة، ومارد يشرحلك اللي رسمت عليه بالظبط.", "Circle it and ask", "While holding the key, draw around anything and Mared explains exactly that."],
+      ["إيه اللي على شاشتي؟", "بيشرحلك المحتوى نفسه: PDF أو سلايد أو رسم بياني أو صفحة، وكمان «لخّصلي».", "What's on my screen?", "It explains what's open (a PDF, slide, chart or page) and can sum it up."],
+      ["اشرحلي البرنامج ده", "بيقولك أهم 3 حاجات في البرنامج اللي فاتحه، وبعدها يسألك تحب تعرف أكتر عن إيه.", "Explain this app", "It names the three most important things in the app in front of you, then offers to go deeper."],
+      ["بيدوّر على النت", "لو الإجابة مش على الشاشة، بيدوّر على النت ويبعتلك إشعار فيه الفيديو أو المصدر.", "Searches the web", "If the answer isn't on screen, it searches online and sends you the video or source."],
+      ["شاشتين؟ مفيش مشكلة", "بيقرا البرنامج اللي تحت الماوس على أي شاشة، أو قول «الشاشة التانية».", "Two monitors", "It reads the app under your pointer on any monitor, or say “the other screen”."],
+      ["كمّل كلامك", "بيفتكر آخر 4 أسئلة لمدة 10 دقايق، فتقول «وده؟» من غير ما تعيد.", "Follow-ups", "It remembers your last 4 questions for 10 minutes, so you can just say “and this?”."],
+      ["«عيد»", "قول «عيد» وهو يقول آخر رد تاني، أو الخطوة اللي إنت فيها.", "“Say it again”", "It repeats the last answer, or the step you're on."],
+      ["إزاي أستخدمك؟", "اسأله إزاي بيشتغل، أو لو باين إنك تايه، وهو يشرحلك ويعرض الجولة.", "“How do I use you?”", "Ask, or look lost, and it explains itself and offers the tour."],
+      ["بتدوّر على حاجة؟", "لو فتحت قوايم كتير ورا بعض، بيعرض يساعدك مرة.", "Tips while you work", "If you open menu after menu as if searching, it offers help once."],
+      ["بيفكّرك بالزرار", "بعد ما يشرحلك زرار، لو وقفت عليه تاني بالماوس بيفكّرك باللي قاله.", "Hover reminders", "Hover a button it explained and it reminds you what it does."]
+    ]],
+    ["بيشاورلك", "It points the way", [
+      ["على الزرار الصح", "سهم دهبي بيروح على المكان بالظبط، والزرار ينوّر.", "The right button", "A gold arrow goes to the exact spot and the button glows."],
+      ["اسم الزرار بالعربي", "جنب اللي بيشاور عليه، بيكتب اسمه ومعناه بالعربي.", "Arabic labels", "Next to what it points at, it labels the name with its Arabic meaning."],
+      ["مربع حوالين الجزء", "لو بيكلمك عن قايمة أو لوحة كاملة، بيرسم حواليها مربع.", "Highlights areas", "For a whole panel or section, it draws a box around it."],
+      ["جولة على كذا حاجة", "بيشرح لحد 5 حاجات، واحدة ورا التانية، وكل واحدة بنمرة.", "Guided tours", "It explains up to five things one at a time, each numbered."],
+      ["الكيبورد والماوس", "بيوريك الاختصار زي Ctrl+Z أو السحب على كارت صغير، ويعلّم ✓ لما تعمله.", "Keyboard and mouse cues", "Shortcuts and mouse moves show on a small card and tick ✓ when you do them."],
+      ["مارد بيرسم", "لو قلتله «ارسم…» أو احتاج يوضّح، بيرسم على الشاشة بنفسه.", "Mared sketches", "Ask it to draw, or when a sketch helps, it draws on your screen."],
+      ["ارسم وبس", "بتشرح لحد أو بتسجّل فيديو؟ دوس وارسم من غير كلام، والرسمة بتختفي لوحدها.", "Just draw", "Explaining or recording? Hold the key and draw; it fades by itself."]
+    ]],
+    ["بيعلّمك", "Teaches you", [
+      ["خطوة خطوة", "بيشاورلك على كل زرار ويستنّاك تدوسه، أو تقول «كمّل» أو «خلصت».", "Step by step", "It points at each control and waits for your click, or for “next” or “done”."],
+      ["بيتأكد إنك عملتها", "في الكتابة أو السحب، بيبص على الشاشة ويقولك لو لسه في حاجة ناقصة.", "Checks your work", "For typing or dragging, it looks and tells you what's still missing."],
+      ["«وريني»", "قول «وريني» وهو يحرّك الماوس بنفسه ويوريك، وفي الخطوات الحساسة بيسيبهالك.", "“Show me”", "It moves the pointer and clicks to demonstrate, and hands back on risky steps."],
+      ["«علّمني»: درس حي", "بيعلّمك جوّه البرنامج وإنت بتشتغل: شايف شاشتك، يستنّاك، ويصحّحلك.", "“Teach me”: live lessons", "It teaches inside the real app as you work: watches, waits and corrects."],
+      ["رسومات وقت الدرس", "بيعرض رسم توضيحي أو صورة متحركة في مكان فاضي، أو على الشاشة التانية.", "Visuals in lessons", "Diagrams, pictures or GIFs in empty screen space, or on your second monitor."],
+      ["«اعملي ملاحظات»", "بيكتبلك كل اللي اتعلمته في صفحة ويفتحهالك، وتلاقيها بعدين في Documents.", "“Make me notes”", "It writes up everything covered, opens it, and keeps it in Documents."],
+      ["دروس جاهزة", "دروس قصيرة جاهزة من أيقونة مارد جنب الساعة.", "Ready-made lessons", "Short built-in lessons from the tray icon."]
+    ]],
+    ["الكورسات", "Courses", [
+      ["«علّمني Excel»", "قوله أي برنامج، وهو يقرا الشرح الرسمي وأحسن الكورسات، ويعملك كورس بفصول ودروس.", "A course for any app", "Name any program; it reads the official docs and the best courses and builds a full course."],
+      ["بيتعمل قدامك", "بتشوف الكورس بيتكتب قدامك، من البحث لحد الفصول.", "Built in front of you", "Watch the searches and chapters appear as the course is written."],
+      ["صفحة الكورسات", "الكورس، «الدرس 3 من 16»، الفصول بعلامة ✓، و«ابدأ» أو «كمّل».", "Courses page", "Your course, “lesson 3 of 16”, chapters with ✓, Start or Continue."],
+      ["كمّل من مكان ما وقفت", "قول «كمّل الكورس» من أي مكان، ولو فتحت البرنامج بيسألك «نكمّل؟».", "Pick up where you left off", "Say “continue the course” anywhere; open the app and it asks whether to carry on."],
+      ["على قدّك", "بيفتكر اتلخبطت في إيه، والدروس اللي بعدها بتتظبط على حسبك.", "Adapts to you", "It remembers what you struggled with and adjusts later lessons."],
+      ["مراجعة وفيديو", "في آخر كل فصل، مراجعة سريعة وفيديو قصير لو لقى واحد كويس.", "Recap and video", "Each chapter ends with a recap, and a short video if a good one exists."],
+      ["امسح كورس", "تمسح الكورس واللي خلّصته فيه من جهازك، وهو بيسألك الأول.", "Delete a course", "Remove a course and its progress from your PC (it asks first)."]
+    ]],
+    ["«اعملهالي»", "Does it for you", [
+      ["«اعملهالي»", "قوله اللي عايزه وهو يمسك الماوس والكيبورد ويعمله قدامك.", "“Do it for me”", "Say what you want and it uses the mouse and keyboard to do it while you watch."],
+      ["شغل على ملفاتك", "يقرا Word وExcel وPowerPoint، يعمل فولدرات وملفات، ينقل وينسخ، ويدوّر على النت.", "Works on your files", "Reads Word, Excel and PowerPoint, makes files and folders, moves, copies and searches the web."],
+      ["3 مهام مع بعض", "كل مهمة فقاعة على جنب الشاشة: تشوف وصلت لفين، توقّفها، أو تفتح النتيجة.", "3 tasks at once", "Each task is a bubble at the edge: see progress, stop it, or open the result."],
+      ["بيسألك الأول", "قبل ما يمسح أو يكتب فوق ملف أو يدوس زرار حساس، بيسألك.", "Asks before anything risky", "Before deleting, overwriting or a risky click, it asks."],
+      ["المسح بيروح السلة", "أي حاجة يمسحها بتروح سلة المحذوفات وتقدر ترجّعها.", "Deletes go to the Recycle Bin", "Anything it deletes can be restored."],
+      ["الخطة الأول", "قبل ما ينقل أو يمسح أكتر من 10 حاجات، بيقولك هيعمل إيه ويستنّى موافقتك.", "Plan first", "Before moving or deleting more than 10 items, it says the plan and waits."],
+      ["الماوس بتاعك", "لو حرّكت الماوس، بيستنّاك لحد ما تسيبه ويكمّل. وEsc يوقّف المهمة.", "Your mouse comes first", "Move the mouse and it waits until you let go; Esc stops the task."],
+      ["عمره ما يكتب باسورد", "مش بيكتب في خانة باسورد، ومش بيقرب من فولدرات الويندوز.", "Never types passwords", "It never types into password boxes or touches Windows system folders."],
+      ["يشرح وهو بيعمل؟", "تختار: «حسب الموقف»، أو «كل خطوة»، أو «من غير كلام».", "Narration choice", "“Depends”, “every step” or “silent”."],
+      ["وقّف مهمة بالاسم", "قول «وقّف الأنيميشن» مثلًا، يوقّف المهمة دي بس.", "Stop one task by name", "Say “stop the animation” and only that task stops."],
+      ["بيسأل لو مش متأكد", "لو مش عارف عايز تتعلم ولا تخلص، بيسألك، ويفتكر طريقتك.", "Asks when unsure", "Learn it or just get it done? It asks, and remembers how you like it."]
+    ]],
+    ["الصوت واللغة", "Voice and language", [
+      ["صوت مارد", "صوت طبيعي. تختار الصوت والطابع والسرعة، وتسمع عيّنة.", "Mared's voice", "A natural voice: pick the voice, character and speed, with a sample."],
+      ["رد مكتوب بس", "تقدر تقفل الصوت والرد يظهر مكتوب.", "Text-only replies", "Turn the voice off and answers appear as text."],
+      ["لغة الردود", "مصري هو الأساس، وكمان بنفس لهجتك، أو خليجي، أو شامي، أو فصحى، أو English.", "Reply language", "Egyptian by default, or matching how you speak, Gulf, Levantine, MSA or English."],
+      ["البرنامج بالعربي أو English", "أول مرة بيختار لوحده على حسب بلدك.", "App in Arabic or English", "Picked automatically from your region the first time."],
+      ["بيكلّمك صح", "بيكلّمك صح، راجل أو ست، في الأزرار وفي ردوده.", "Speaks to you correctly", "It addresses men and women correctly."],
+      ["الزرار اللي يريّحك", "Right Ctrl أو Right Shift أو Left Ctrl أو Caps Lock.", "Your talk key", "Right Ctrl, Right Shift, Left Ctrl or Caps Lock."],
+      ["كلامك بيظهر", "اللي بتقوله بيتكتب جنب الماوس أول بأول، وموجة بتتحرك مع صوتك.", "See your words", "Your words appear by the pointer as you speak, with a sound wave."],
+      ["صوت الزرار", "صوت صغير لما تدوس وتسيب، عشان تعرف إنه سامعك.", "Key chime", "A soft tick on press and release, so you know it's listening."],
+      ["الكلام ماشي مع الصوت", "الرد بيتكتب ماشي مع صوته، ولو هيتأخر بيقولك «ثانية واحدة…».", "Captions in sync", "Captions follow the voice; “one moment…” if it needs a second."],
+      ["بينبّهك للمايك", "لو الصوت مقفول أو المايك واطي، بيقولك تعمل إيه.", "Sound and mic warnings", "If speakers are muted or the mic is too quiet, it tells you what to do."]
+    ]],
+    ["بيفتكرك", "Remembers you", [
+      ["«عنك»", "بيتعلّم اسمك وشغلك وعايز تتعلم إيه، عشان يشرحلك على قدّك. وتعدّل أو تمسح في أي وقت.", "About you", "It learns your name, work and goals to pitch things to you; edit or delete any time."],
+      ["المحادثات", "كل سؤال ومهمة بتتحفظ بالموضوع. تدوّر فيها و«كمّل من هنا».", "Chats", "Every question and task is saved by topic; search it and continue from there."],
+      ["اكتب زي الشات", "جوّه أي محادثة، تكتب أو تكمّل بالصوت.", "Type in a chat", "Continue any chat by typing or by voice."]
+    ]],
+    ["الخصوصية والتحكم", "Privacy and control", [
+      ["مش ببعت حاجة غير لما تطلب", "شاشتك وصوتك بيتبعتوا بس لما تطلب حاجة: سؤال أو درس أو مهمة.", "Only when you ask", "Your screen and voice are sent only when you ask: a question, a lesson or a task."],
+      ["كله على جهازك", "المحادثات واللي بيفتكره عنك متحفظين على جهازك بس.", "Kept on your PC", "Chats and what it remembers are stored only on your computer."],
+      ["الباسوردات بعيد", "اللي بتكتبه في خانة باسورد عمره ما بيتبعت.", "Passwords stay private", "Password boxes are never read or sent."],
+      ["Esc يوقّف كل حاجة", "Esc بيسكّت مارد ويشيل اللي على الشاشة ويوقّف الدرس.", "Esc stops everything", "Esc silences Mared and clears the screen and lessons."],
+      ["السهم الدهبي", "وهو مش شغال مفيش حاجة على الشاشة. ولما يشتغل السهم بيبقى دهبي.", "The gold pointer", "Nothing shows when idle; your pointer turns gold while it works."]
+    ]],
+    ["الحساب والتحديثات", "Account and updates", [
+      ["دخول من غير باسورد", "تكتب إيميلك ويوصلك لينك تدخل بيه على طول.", "No-password sign-in", "Enter your email and sign in from the link."],
+      ["بيحدّث نفسه", "كل تحديث بيوصلك لوحده وبيتركّب في لحظة هادية.", "Updates itself", "New versions arrive and install at a quiet moment."],
+      ["يشتغل مع Windows", "جاهز من أول ما الجهاز يفتح، وتقدر تقفلها.", "Starts with Windows", "Ready when your PC starts (can be switched off)."],
+      ["جولة البداية", "أول مرة، جولة بتتكلم وفيها تجربة حقيقية لكل حاجة، وتعيدها من الإعدادات.", "Guided setup tour", "A spoken, hands-on first-run tour you can replay from Settings."],
+      ["افتح الإعدادات بالصوت", "اطلب شباكه بالصوت ويفتحلك الإعدادات أو المحادثات.", "Opens its window by voice", "Ask for settings or chats and it opens them."]
+    ]]
+  ];
+  const catalog = document.getElementById("catalog");
+  function renderCatalog() {
+    const isEn = root.lang === "en";
+    const open = [...catalog.querySelectorAll("details")].map((d) => d.open);
+    const wide = matchMedia("(min-width: 761px)").matches;
+    let total = 0;
+    catalog.replaceChildren(...FEATURES.map(([ga, ge, items], gi) => {
+      total += items.length;
+      const d = document.createElement("details");
+      d.className = "grp";
+      d.open = open.length ? open[gi] : wide || gi === 0;
+      const s = document.createElement("summary");
+      const name = document.createElement("span"), n = document.createElement("span");
+      name.textContent = isEn ? ge : ga;
+      n.className = "n"; n.textContent = String(items.length);
+      s.append(name, n);
+      const dl = document.createElement("dl");
+      items.forEach(([ta, da, te, de]) => {
+        const row = document.createElement("div"), dt = document.createElement("dt"), dd = document.createElement("dd");
+        dt.textContent = isEn ? te : ta; dd.textContent = isEn ? de : da;
+        row.append(dt, dd); dl.append(row);
+      });
+      d.append(s, dl);
+      return d;
+    }));
+    document.getElementById("all-sub").textContent = T(`${total} حاجة بيعملها مارد النهارده، ولسه بنزوّد.`, `${total} things Mared does today, and counting.`);
+  }
+
   const setLang = (lang) => {
     const isEn = lang === "en";
     root.lang = lang; root.dir = isEn ? "ltr" : "rtl";
@@ -1048,6 +1169,7 @@
     document.querySelectorAll("[data-i-label]").forEach((el) => el.setAttribute("aria-label", isEn ? en[el.dataset.iLabel] : arLabel[el.dataset.iLabel]));
     langBtn.lastChild.textContent = isEn ? "العربية" : "English";
     langBtn.lang = isEn ? "ar" : "en";
+    renderCatalog();
     // Demos restart in the new language.
     stages.forEach((s) => { if (s.live || still) { s.stop(); if (s.vis || still) s.start(); } });
   };
