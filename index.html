@@ -3,11 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>مارد · معلّم على شاشتك</title>
-<meta name="description" content="مارد: معلّم بيعيش على شاشة Windows. اسأله بصوتك، يشرحلك بالمصري ويشاورلك على المكان، ولو قلتله «اعملهالي» يعملها بدالك.">
+<title>مارد · أول ذكاء اصطناعي عايش في الماوس</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="مارد عايش في الماوس بتاعك على Windows. اسأله بصوتك، يشاورلك على الزرار، يعلّمك خطوة خطوة، ولو قلتله «اعملهالي» يعملها بدالك. ابدأ ببلاش.">
 <meta name="theme-color" content="#111214">
-<meta property="og:title" content="مارد · معلّم على شاشتك">
-<meta property="og:description" content="مارد: معلّم بيعيش على شاشة Windows. اسأله بصوتك، يشرحلك بالمصري ويشاورلك على المكان، ولو قلتله «اعملهالي» يعملها بدالك.">
+<meta property="og:title" content="مارد · أول ذكاء اصطناعي عايش في الماوس">
+<meta property="og:description" content="اسأله بصوتك، يشاورلك على الزرار ويعلّمك خطوة خطوة. ابدأ ببلاش.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://yamared.com/media/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
@@ -17,202 +18,1059 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+  /* Layout: the gold pointer is the hero. Each feature is one row: a few words beside a live demo of that feature on a drawn screen. */
   :root {
-    --bg: #111214; --raised: #1c1d21; --line: #26272b;
-    --ink: #eeeef0; --muted: #a0a1a6;
+    --bg: #111214; --raised: #1a1b1f; --line: #27282c;
+    --ink: #eeeef0; --muted: #a0a1a6; --dim: #6e6f75;
     --gold: #f2b544; --gold-light: #ffd58a;
+    --win: #18191c; --win-2: #202125; --win-3: #2c2d32;
+    --font: "Readex Pro", "Segoe UI", system-ui, sans-serif;
     --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --gutter-l: max(1.25rem, env(safe-area-inset-left, 0px));
+    --gutter-r: max(1.25rem, env(safe-area-inset-right, 0px));
+    color-scheme: dark;
   }
   * { box-sizing: border-box; }
-  html { background: var(--bg); color-scheme: dark; scrollbar-color: var(--line) var(--bg); scroll-padding-top: 5.5rem; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Readex Pro", "Segoe UI", system-ui, sans-serif; line-height: 1.7;
-         caret-color: var(--gold); -webkit-tap-highlight-color: rgb(242 181 68 / 0.2); overflow-x: hidden; }
+  html { background: var(--bg); scrollbar-color: var(--line) var(--bg); scroll-padding-top: 5rem; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 1.0625rem; line-height: 1.7;
+         caret-color: var(--gold); -webkit-tap-highlight-color: rgb(242 181 68 / 0.2); overflow-x: hidden;
+         padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
   ::selection { background: var(--gold); color: var(--bg); }
-  a { touch-action: manipulation; }
-  :focus-visible { outline: 2px solid var(--gold-light); outline-offset: 4px; }
+  :focus-visible { outline: 2px solid var(--gold-light); outline-offset: 4px; border-radius: 6px; }
+  img { max-width: 100%; height: auto; display: block; }
+  a { color: inherit; touch-action: manipulation; }
+  .en-only { display: none; }
+  :root[lang="en"] .en-only { display: inline; }
+  :root[lang="en"] .ar-only { display: none; }
+  .ltr { direction: ltr; unicode-bidi: isolate; }
+  .wrap { max-width: 72rem; margin-inline: auto; }
+  q { quotes: "«" "»"; }
+  :root[lang="en"] q { quotes: "\201C" "\201D"; }
 
-  .skip { position: fixed; z-index: 50; top: calc(0.75rem + env(safe-area-inset-top)); inset-inline-start: 1rem; padding: 0.75rem 1.1rem;
+  .skip { position: fixed; z-index: 50; top: calc(0.75rem + env(safe-area-inset-top, 0px)); inset-inline-start: 1rem; padding: 0.75rem 1.1rem;
           border-radius: 999px; background: var(--gold); color: var(--bg); font-weight: 600; text-decoration: none;
           transform: translateY(-220%); transition: transform 0.25s var(--ease); }
   .skip:focus-visible { transform: none; }
 
-  .topbar { position: fixed; inset: 0 0 auto 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-            padding: calc(0.75rem + env(safe-area-inset-top)) max(1.25rem, env(safe-area-inset-right)) 0.75rem max(1.25rem, env(safe-area-inset-left));
-            background: linear-gradient(to bottom, rgb(17 18 20 / 0.9), rgb(17 18 20 / 0)); pointer-events: none; }
-  .topbar > * { pointer-events: auto; }
-  .brand { display: flex; align-items: center; gap: 0.6rem; font-size: 1.125rem; font-weight: 600; }
+  /* Top bar */
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg); }
+  .topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; margin-inline: calc(-1 * var(--gutter-l)) calc(-1 * var(--gutter-r));
+            padding: 0.75rem var(--gutter-r) 0.75rem var(--gutter-l);
+            background: linear-gradient(to bottom, rgb(17 18 20 / 0.94) 60%, rgb(17 18 20 / 0)); }
+  .topbar .wrap { display: flex; align-items: center; gap: 0.75rem; }
+  .brand { display: flex; align-items: center; gap: 0.6rem; font-size: 1.125rem; font-weight: 600; text-decoration: none; }
   .brand img { border-radius: 8px; }
-  .topbar__get { display: inline-flex; align-items: center; min-height: 44px; padding: 0 1.15rem; border-radius: 999px; color: var(--gold);
-                 font-weight: 600; text-decoration: none; box-shadow: inset 0 0 0 1px rgb(242 181 68 / 0.45);
-                 transition: background-color 0.2s var(--ease), color 0.2s var(--ease); }
-  .topbar__get:hover { background: var(--gold); color: var(--bg); }
+  .nav { display: flex; gap: 0.25rem; margin-inline: 1.5rem auto; }
+  .nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 0.75rem; color: var(--muted); font-size: 0.95rem; text-decoration: none; transition: color 0.2s var(--ease); }
+  .nav a:hover { color: var(--ink); }
+  @media (max-width: 760px) { .nav { display: none; } .brand { margin-inline-end: auto; } }
+  .phone-only { display: none; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; margin: 1.25rem 0 0; color: var(--muted); font-size: 0.95rem; }
+  @media (hover: none) and (pointer: coarse) { .phone-only { display: flex; } }
+  .copy { min-height: 44px; padding: 0 1.1rem; border: 0; border-radius: 999px; background: var(--raised); color: var(--gold); font: inherit; font-weight: 600; cursor: pointer;
+          box-shadow: inset 0 0 0 1px rgb(242 181 68 / 0.35); }
+  .lang { display: inline-flex; align-items: center; gap: 0.45rem; min-height: 44px; padding: 0 0.95rem; border: 0; border-radius: 999px; background: var(--raised);
+          color: var(--ink); font: inherit; font-size: 0.95rem; cursor: pointer; transition: background-color 0.2s var(--ease), color 0.2s var(--ease); }
+  .lang svg { color: var(--gold); }
+  .lang:hover { background: #24252a; }
+  .get { display: inline-flex; align-items: center; min-height: 44px; padding: 0 1.15rem; border-radius: 999px; color: var(--gold); font-weight: 600; text-decoration: none;
+         white-space: nowrap; box-shadow: inset 0 0 0 1px rgb(242 181 68 / 0.45); transition: background-color 0.2s var(--ease), color 0.2s var(--ease); }
+  .get:hover { background: var(--gold); color: var(--bg); }
 
-  /* The film: the page's scroll plays it (script below). The tall section is the scroll distance. */
-  .hero { position: relative; height: 420svh; }
-  .hero__stage { position: sticky; top: 0; height: 100svh; overflow: hidden; }
-  .hero__poster, .hero__film { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: var(--film-x, 50%) 50%; }
-  .hero__poster img { width: 100%; height: 100%; object-fit: cover; object-position: inherit; display: block; }
-  .hero__film { opacity: 0; }
-  .hero__film.is-ready { opacity: 1; }
-  .hero__progress { position: absolute; z-index: 3; top: 0; inset-inline: 0; height: 2px; background: rgb(238 238 240 / 0.14); }
-  .hero__progress span { display: block; height: 100%; background: var(--gold); transform: scaleX(var(--p, 0)); transform-origin: right center; }
-  .hero__copy { position: absolute; z-index: 2; top: 50%; inset-inline-start: clamp(1.25rem, 6vw, 6rem); width: min(36rem, 46vw); transform: translateY(-50%); }
-  .hero__copy::before { content: ""; position: absolute; z-index: -1; inset: -3rem -5rem; pointer-events: none;
-                        background: radial-gradient(ellipse at center, rgb(17 18 20 / 0.88) 0%, rgb(17 18 20 / 0.58) 52%, transparent 76%); }
-  h1 { max-width: 11ch; margin: 0; font-size: clamp(2.4rem, 5.2vw, 5rem); font-weight: 600; line-height: 1.2; text-wrap: balance; }
-  .lead { max-width: 38ch; margin: 1.5rem 0 2rem; font-size: clamp(1.05rem, 1.4vw, 1.25rem); line-height: 1.85; text-wrap: pretty; }
+  /* Hero */
+  .hero { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); align-items: center; gap: clamp(2rem, 5vw, 4.5rem);
+          padding-block: clamp(2.5rem, 7vw, 6rem) clamp(4rem, 9vw, 8rem); }
+  h1 { margin: 0; font-size: clamp(2.5rem, 5.6vw, 4.8rem); font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; text-wrap: balance; }
+  :root[lang="en"] h1 { letter-spacing: -0.035em; line-height: 1.02; }
+  h1 em { font-style: normal; color: var(--gold); text-shadow: 0 0 40px rgb(242 181 68 / 0.35); }
+  .lead { max-width: 34rem; margin: 1.5rem 0 2rem; color: var(--muted); font-size: clamp(1.05rem, 1.4vw, 1.25rem); line-height: 1.85; text-wrap: pretty; }
+  .lead q { color: var(--ink); }
   .cta { display: inline-flex; align-items: center; gap: 0.65rem; min-height: 56px; padding: 0 1.75rem; border-radius: 999px; background: var(--gold);
          color: var(--bg); font-size: 1.125rem; font-weight: 600; text-decoration: none; box-shadow: 0 12px 34px -10px rgb(242 181 68 / 0.6);
          transition: background-color 0.25s var(--ease), box-shadow 0.25s var(--ease), transform 0.25s var(--ease); }
   .cta:hover { background: var(--gold-light); box-shadow: 0 16px 44px -10px rgb(255 213 138 / 0.75); transform: translateY(-2px); }
   .cta:active { transform: translateY(0) scale(0.98); }
-  .fine { margin: 0.85rem 0 0; color: var(--muted); font-size: 0.95rem; }
+  .free { display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; margin: 1rem 0 0; padding: 0; list-style: none; color: var(--muted); font-size: 0.95rem; }
+  .free li { display: inline-flex; align-items: center; gap: 0.45rem; }
+  .free svg { color: var(--gold); flex: none; }
+  kbd { display: inline-block; padding: 0.1rem 0.55rem; border-radius: 8px; background: var(--raised); color: var(--gold); font: inherit; font-size: 0.9em; font-weight: 600;
+        white-space: nowrap; direction: ltr; unicode-bidi: isolate; box-shadow: inset 0 -2px 0 var(--line); }
 
-  .content { position: relative; z-index: 4; background: var(--bg);
-             padding: clamp(5rem, 10vw, 9rem) max(1.25rem, env(safe-area-inset-right)) calc(clamp(4rem, 8vw, 7rem) + env(safe-area-inset-bottom)) max(1.25rem, env(safe-area-inset-left)); }
-  .content > section { max-width: 46rem; margin-inline: auto; }
-  h2 { margin: 0 0 2rem; font-size: clamp(1.75rem, 3.4vw, 2.6rem); font-weight: 600; line-height: 1.3; text-wrap: balance; scroll-margin-top: 6rem; }
-  .ways { margin: 0; }
-  .way { display: grid; grid-template-columns: minmax(11rem, auto) 1fr; align-items: baseline; gap: 1.5rem; padding: 1.25rem 0; border-top: 1px solid var(--line); }
-  .way:last-child { border-bottom: 1px solid var(--line); }
-  .way dt, .way dd { margin: 0; min-width: 0; }
-  kbd { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 8px; background: var(--raised); color: var(--gold); font: inherit; font-size: 0.95rem;
-        font-weight: 600; white-space: nowrap; direction: ltr; unicode-bidi: isolate; box-shadow: inset 0 -2px 0 var(--line); }
-  .phrase { color: var(--gold); font-weight: 600; }
-  .install { padding-top: clamp(4.5rem, 9vw, 7.5rem); }
-  .install ol { display: grid; gap: 1rem; max-width: 65ch; margin: 0; padding-inline-start: 1.4rem; }
-  .install li::marker { color: var(--gold); font-weight: 600; }
-  .note { max-width: 60ch; margin: 2.5rem 0 0; padding-top: 1.5rem; border-top: 1px solid var(--line); color: var(--muted); }
-  .closing { display: grid; justify-items: center; gap: 1.25rem; padding-top: clamp(6rem, 12vw, 10rem); text-align: center; }
+  /* A demo stage: a desk surface with a drawn window, the gold pointer (with Mared's pill), arrows and tags. Sizes are in em, scaled to the stage's width. */
+  .fdemo { container-type: inline-size; min-width: 0; }
+  .stage { position: relative; overflow: hidden; padding: 2.4em 1.8em; border-radius: 24px; font-size: clamp(9px, 2.05cqi, 15px); line-height: 1.4;
+           background: radial-gradient(120% 90% at 70% 0%, rgb(242 181 68 / 0.09), transparent 60%), #151619;
+           box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04); }
+  .win { position: relative; overflow: hidden; border-radius: 0.9em; background: var(--win); color: var(--muted);
+         box-shadow: 0 30px 60px -30px #000, 0 0 0 1px var(--line); transition: box-shadow 0.5s var(--ease); }
+  .stage.working .win { box-shadow: 0 0 0 2px var(--gold), 0 0 48px rgb(242 181 68 / 0.3); }
+  .bar { display: flex; align-items: center; gap: 0.4em; padding: 0.6em 0.9em; background: #1f2024; color: var(--dim); font-size: 0.8em; }
+  .bar i { width: 0.75em; height: 0.75em; border-radius: 50%; background: #34353a; }
+  .bar span { margin-inline-start: 0.5em; }
+  .hit { background: rgb(242 181 68 / 0.16) !important; color: var(--gold-light) !important;
+         box-shadow: 0 0 0 1.5px var(--gold), 0 0 22px rgb(242 181 68 / 0.45) !important; }
+  .cur { position: absolute; z-index: 6; top: 0; left: 0; width: 1.7em; height: 1.7em; pointer-events: none; transform: translate(60%, 60%);
+         transition: transform 0.9s var(--ease); }
+  .cur.jump { transition: none; }
+  .cur > svg { display: block; width: 1.7em; height: 1.7em; color: var(--gold); transform: translate(-0.28em, -0.18em); filter: drop-shadow(0 0 0.6em rgb(242 181 68 / 0.75)); }
+  .rip { position: absolute; left: -0.7em; top: -0.7em; width: 1.4em; height: 1.4em; border-radius: 50%; border: 2px solid var(--gold); opacity: 0; }
+  .rip.go { animation: rip 0.55s ease-out; }
+  @keyframes rip { from { transform: scale(0.3); opacity: 0.9; } to { transform: scale(1.9); opacity: 0; } }
+  .pill { position: absolute; top: 1.7em; left: 1em; display: none; align-items: center; gap: 0.55em; width: max-content; max-width: 17em; padding: 0.5em 0.9em;
+          border-radius: 1.2em; background: #050506; color: var(--ink); font-size: max(12px, 0.95em); line-height: 1.45; text-align: start;
+          box-shadow: 0 0 0 1px #2a2b30, 0 12px 30px -10px #000; animation: pop 0.3s var(--ease); }
+  :root[dir="rtl"] .pill { direction: rtl; }
+  .cur.flip .pill { left: auto; right: 0.6em; }
+  .cur.up .pill { top: auto; bottom: 1em; }
+  .pill.listen, .pill.think, .pill.say, .pill.work { display: flex; }
+  .pill::before { content: ""; flex: none; width: 0.6em; height: 0.6em; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0.7em rgb(242 181 68 / 0.9); }
+  .pill.listen::before { display: none; }
+  .pill.think::before, .pill.work::before { animation: pulse 1s ease-in-out infinite; }
+  .pill.think .txt { color: var(--muted); }
+  @keyframes pop { from { opacity: 0; transform: translateY(4px) scale(0.96); } }
+  @keyframes pulse { 50% { opacity: 0.3; } }
+  .wave { display: none; align-items: center; gap: 0.18em; height: 1em; flex: none; }
+  .pill.listen .wave { display: inline-flex; }
+  .wave i { width: 0.18em; height: 100%; border-radius: 1em; background: var(--gold); animation: wv 0.9s ease-in-out infinite; transform-origin: center; }
+  .wave i:nth-child(2) { animation-delay: -0.2s; } .wave i:nth-child(3) { animation-delay: -0.45s; } .wave i:nth-child(4) { animation-delay: -0.1s; } .wave i:nth-child(5) { animation-delay: -0.6s; }
+  @keyframes wv { 0%, 100% { transform: scaleY(0.3); } 50% { transform: scaleY(1); } }
+  .tagl { position: absolute; z-index: 5; padding: 0.15em 0.6em; border-radius: 0.4em; background: var(--gold); color: #111214; font-size: max(11px, 0.8em); font-weight: 600;
+          white-space: nowrap; pointer-events: none; transform: translate(-50%, calc(-100% - 0.55em)); opacity: 0; transition: opacity 0.3s var(--ease); }
+  .tagl.show { opacity: 1; }
+  .ov { position: absolute; z-index: 4; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+  .ov path, .ov rect { fill: none; stroke: var(--gold); stroke-width: 2.5; stroke-linecap: round; filter: drop-shadow(0 0 5px rgb(242 181 68 / 0.6)); }
+  .ov .draw { stroke-dasharray: 1 1; stroke-dashoffset: 1; transition: stroke-dashoffset 0.75s var(--ease); }
+  .ov .draw.go { stroke-dashoffset: 0; }
+  .ov rect.dashed { stroke-dasharray: 0.018 0.012; }
+  .ov .head { fill: var(--gold); stroke: none; opacity: 0; transition: opacity 0.2s 0.6s; }
+  .ov .head.go { opacity: 1; }
+  .key { position: absolute; z-index: 5; bottom: 0.8em; inset-inline-end: 1.1em; padding: 0.3em 0.75em; border-radius: 0.5em; background: #1f2024; color: var(--dim);
+         font-size: max(11px, 0.85em); font-weight: 600; direction: ltr; box-shadow: inset 0 -2px 0 #2c2d32; transition: color 0.3s, box-shadow 0.3s, background-color 0.3s; }
+  .key.on { color: #111214; background: var(--gold); box-shadow: 0 0 24px rgb(242 181 68 / 0.6); }
+
+  /* Spreadsheet (hero, teach) */
+  .tabs { display: flex; gap: 0.2em; padding: 0.45em 0.8em 0; font-size: 0.85em; }
+  .tabs span { padding: 0.35em 0.75em; border-radius: 0.4em 0.4em 0 0; }
+  .tabs .t-home, .win.ins .tabs [data-k="insert"] { background: var(--win-2); color: var(--ink); }
+  .win.ins .tabs .t-home { background: none; color: var(--muted); }
+  .rib { display: flex; align-items: center; gap: 0.35em; min-height: 3.3em; padding: 0.45em 0.8em; background: var(--win-2); }
+  .rib .g { display: flex; gap: 0.35em; }
+  .rib .g.ins, .win.ins .rib .g.home { display: none; }
+  .win.ins .rib .g.ins { display: flex; }
+  .tool { display: grid; place-items: center; min-width: 2.4em; height: 2.3em; padding: 0 0.55em; border-radius: 0.45em; font-size: 0.85em; font-weight: 600; color: var(--muted);
+          transition: background-color 0.4s var(--ease), color 0.4s var(--ease), box-shadow 0.4s var(--ease); }
+  .tool svg { width: 1.3em; height: 1.3em; }
+  .grid { display: grid; grid-template-columns: 2.2em repeat(4, minmax(0, 1fr)); font-size: 0.8em; color: var(--dim); font-variant-numeric: tabular-nums; }
+  .grid > span { padding: 0.5em 0.6em; border-bottom: 1px solid #222327; border-inline-start: 1px solid #222327; white-space: nowrap; overflow: hidden; transition: background-color 0.3s; }
+  .grid > span.h { color: #4c4d53; text-align: center; }
+  .grid > span.t { color: var(--muted); }
+  .grid > span.sel { background: rgb(242 181 68 / 0.12); color: var(--ink); }
+  .grid.styled > span.t { background: rgb(242 181 68 / 0.24); color: var(--gold-light); font-weight: 600; }
+  .grid.styled > span.r2, .grid.styled > span.r4 { background: #1e1f23; }
+  .grid.styled > span.d { color: var(--ink); }
+  .card { position: absolute; z-index: 5; bottom: 1em; inset-inline-start: 1.1em; width: min(17em, 70%); padding: 0.8em 1em; border-radius: 0.8em; background: #050506;
+          box-shadow: 0 0 0 1px #2a2b30, 0 16px 40px -12px #000; font-size: max(12px, 0.95em); }
+  .card small { display: block; color: var(--gold); font-size: 0.8em; font-weight: 600; }
+  .card p { margin: 0.2em 0 0.6em; color: var(--ink); }
+  .dots { display: flex; gap: 0.35em; }
+  .dots i { flex: 1; height: 0.25em; border-radius: 1em; background: #2c2d32; transition: background-color 0.3s; }
+  .dots i.done { background: var(--gold); }
+
+  /* Settings */
+  .set { display: grid; grid-template-columns: 11em minmax(0, 1fr); min-height: 16em; }
+  .side { display: grid; align-content: start; gap: 0.15em; margin: 0; padding: 0.8em 0.5em; list-style: none; border-inline-end: 1px solid var(--line); }
+  .side li { padding: 0.45em 0.7em; border-radius: 0.4em; font-size: 0.9em; white-space: nowrap; overflow: hidden; transition: background-color 0.3s, color 0.3s; }
+  .side li.cur-page { background: var(--win-2); color: var(--ink); }
+  .pane { padding: 1em 1.2em; }
+  .pane > div { display: grid; align-content: start; gap: 0.6em; }
+  .pane b { color: var(--ink); font-size: 1.15em; font-weight: 600; }
+  .pane i { display: block; height: 2.3em; border-radius: 0.45em; background: var(--win-2); }
+  .pane .p2, .set.swap .p1 { display: none; }
+  .set.swap .p2 { display: grid; }
+  .walls { display: flex; gap: 0.5em; }
+  .walls span { flex: 1; height: 4.2em; border-radius: 0.45em; }
+  .walls span:nth-child(1) { background: linear-gradient(135deg, #2b3a55, #c08a4a); }
+  .walls span:nth-child(2) { background: linear-gradient(135deg, #1f3b36, #7fae97); }
+  .walls span:nth-child(3) { background: linear-gradient(135deg, #3c2a3f, #c47b6a); }
+  .rowx { display: block; padding: 0.55em 0.75em; border-radius: 0.45em; background: var(--win-2); font-size: 0.9em; transition: background-color 0.4s, color 0.4s, box-shadow 0.4s; }
+
+  /* Word */
+  .page { display: grid; gap: 0.55em; width: 72%; min-height: 9.5em; margin: 1.2em auto; padding: 1.4em; border-radius: 0.3em; background: var(--win-2); }
+  .page i { display: block; height: 0.5em; border-radius: 1em; background: var(--win-3); }
+  .page i:nth-child(3n) { width: 70%; }
+  .page i:first-child { height: 0.8em; width: 45%; background: #3a3b41; }
+
+  /* Dashboard */
+  .dash { padding: 1.1em 1.3em 1.3em; }
+  .dash-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.9em; }
+  .dash-top b { color: var(--ink); font-weight: 600; }
+  .dash-top span { font-size: 0.8em; }
+  .bars { display: flex; align-items: flex-end; gap: 0.9em; height: 9em; padding: 0 0.4em; border-bottom: 1px solid var(--line); }
+  .bars span { flex: 1; height: var(--h); border-radius: 0.35em 0.35em 0 0; background: #3a3b42; }
+  .bars span:last-child { background: #4a4b53; }
+  .lbls { display: flex; gap: 0.9em; padding: 0.4em 0.4em 0; font-size: 0.75em; }
+  .lbls span { flex: 1; text-align: center; }
+
+  /* Explorer */
+  .exp { display: grid; grid-template-columns: 8.5em minmax(0, 1fr); min-height: 16em; }
+  .exp .side li:nth-child(3) { background: var(--win-2); color: var(--ink); }
+  .files { padding: 0.9em 1em; display: grid; align-content: start; gap: 0.9em; }
+  .folds { display: flex; gap: 0.8em; min-height: 3.6em; }
+  .fold { display: flex; align-items: center; gap: 0.5em; padding: 0.45em 0.7em; border-radius: 0.5em; background: var(--win-2); font-size: 0.85em; color: var(--ink);
+          opacity: 0; transform: scale(0.6); transition: opacity 0.4s var(--ease), transform 0.4s var(--ease); }
+  .fold.in { opacity: 1; transform: none; }
+  .fold svg { width: 1.6em; height: 1.6em; color: var(--gold); flex: none; }
+  .fold .n { color: var(--dim); font-variant-numeric: tabular-nums; }
+  .phs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0.5em; }
+  .phs i { aspect-ratio: 4 / 3; border-radius: 0.35em; transition: transform 0.5s var(--ease), opacity 0.5s var(--ease); }
+  .phs i:nth-child(4n+1) { background: linear-gradient(135deg, #2b3a55, #c08a4a); }
+  .phs i:nth-child(4n+2) { background: linear-gradient(135deg, #1f3b36, #7fae97); }
+  .phs i:nth-child(4n+3) { background: linear-gradient(135deg, #3c2a3f, #c47b6a); }
+  .phs i:nth-child(4n) { background: linear-gradient(135deg, #35384d, #9aa3c4); }
+  .phs i.gone { opacity: 0; transform: scale(0.4); }
+
+  /* Sections */
+  section { padding-block: clamp(4rem, 9vw, 7.5rem); border-top: 1px solid var(--line); }
+  h2 { margin: 0 0 1rem; max-width: 20ch; font-size: clamp(1.8rem, 3.8vw, 3rem); font-weight: 600; line-height: 1.25; text-wrap: balance; }
+  :root[lang="en"] h2 { letter-spacing: -0.02em; }
+  h2 em { font-style: normal; color: var(--gold); }
+  .sub { max-width: 40rem; margin: 0; color: var(--muted); font-size: 1.125rem; text-wrap: pretty; }
+
+  /* Feature rows */
+  .features { display: grid; gap: clamp(4rem, 10vw, 8rem); margin-top: clamp(3rem, 6vw, 5rem); }
+  .feature { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); align-items: center; gap: clamp(2rem, 5vw, 5rem); }
+  .feature:nth-child(even) { grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); }
+  .feature:nth-child(even) .ftext { order: 2; }
+  .ftext h3 { margin: 0 0 0.75rem; font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 600; line-height: 1.25; text-wrap: balance; }
+  :root[lang="en"] .ftext h3 { letter-spacing: -0.02em; }
+  .ftext p { max-width: 30rem; margin: 0; color: var(--muted); font-size: 1.125rem; text-wrap: pretty; }
+  .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.5rem 0 0; padding: 0; list-style: none; }
+  .chips li { padding: 0.35rem 0.85rem; border-radius: 999px; background: var(--raised); color: var(--ink); font-size: 0.9rem; }
+
+  /* Learn: the old way against Mared */
+  .versus { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 6vw, 6rem); margin-top: 3rem; }
+  .versus h3 { margin: 0 0 1rem; font-size: 1rem; font-weight: 500; color: var(--dim); }
+  .versus ul { display: grid; gap: 0.9rem; margin: 0; padding: 0; list-style: none; }
+  .versus li { display: grid; grid-template-columns: 1.4rem minmax(0, 1fr); gap: 0.6rem; align-items: baseline; }
+  .versus svg { transform: translateY(0.2em); }
+  .old li { color: var(--dim); }
+  .old svg { color: #4c4d53; }
+  .new h3 { color: var(--gold); }
+  .new li { color: var(--ink); font-size: 1.125rem; }
+  .new svg { color: var(--gold); }
+  .apps { margin: 3rem 0 0; color: var(--dim); font-size: 0.95rem; }
+  .apps b { color: var(--muted); font-weight: 500; }
+
+  /* Why: the one-paragraph belief, set large */
+  .why p { max-width: 40rem; margin: 0; color: var(--muted); font-size: 1.15rem; text-wrap: pretty; }
+  .why p.big { max-width: 30ch; margin-top: 2rem; color: var(--ink); font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 500; line-height: 1.45; text-wrap: balance; }
+
+  /* FAQ */
+  .faq { max-width: 48rem; margin-top: 2.5rem; }
+  .faq details { border-top: 1px solid var(--line); }
+  .faq details:last-child { border-bottom: 1px solid var(--line); }
+  .faq summary { display: flex; justify-content: space-between; align-items: center; gap: 1rem; min-height: 44px; padding-block: 1.1rem; font-size: 1.15rem; font-weight: 500;
+                 cursor: pointer; list-style: none; transition: color 0.2s var(--ease); }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: ""; flex: none; width: 0.7rem; height: 0.7rem; border-inline-end: 2px solid var(--gold); border-bottom: 2px solid var(--gold);
+                        transform: rotate(45deg) translateY(-0.2rem); transition: transform 0.25s var(--ease); }
+  .faq details[open] summary::after { transform: rotate(-135deg) translateY(-0.1rem); }
+  .faq summary:hover { color: var(--gold-light); }
+  .faq p { max-width: 40rem; margin: 0 0 1.25rem; color: var(--muted); }
+  .allow { margin: 0.25rem 0 0; color: var(--ink); font-size: 0.95rem; }
+
+  /* And more */
+  .more { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 clamp(2rem, 4vw, 3rem); margin: 2.5rem 0 0; }
+  .more div { padding-block: 1.25rem; border-top: 1px solid var(--line); }
+  .more dt { color: var(--gold); font-weight: 500; }
+  .more dd { margin: 0.25rem 0 0; color: var(--muted); }
+
+  /* The bonus: every model in one subscription */
+  .bill { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 6vw, 6rem); align-items: start; }
+  .receipt { margin: 0; padding: 1.75rem 1.75rem calc(1.5rem + 10px); border-radius: 6px 6px 0 0; background: var(--raised); font-variant-numeric: tabular-nums;
+             -webkit-mask: linear-gradient(#000 0 0) top / 100% calc(100% - 10px) no-repeat, radial-gradient(circle at 50% 100%, transparent 6px, #000 6.5px) bottom / 18px 10px repeat-x;
+                     mask: linear-gradient(#000 0 0) top / 100% calc(100% - 10px) no-repeat, radial-gradient(circle at 50% 100%, transparent 6px, #000 6.5px) bottom / 18px 10px repeat-x; }
+  .receipt h3 { margin: 0 0 1rem; color: var(--dim); font-size: 0.85rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+  .receipt dl { margin: 0; }
+  .line { display: flex; justify-content: space-between; gap: 1rem; padding-block: 0.5rem; }
+  .line dt, .line dd { margin: 0; }
+  .line dt small { color: var(--dim); font-size: 0.85rem; }
+  .line dd { white-space: nowrap; }
+  .total { margin-top: 0.75rem; padding-top: 1rem; border-top: 1px dashed #3a3b40; font-weight: 600; }
+  .total dd { text-decoration: line-through; text-decoration-color: var(--gold); text-decoration-thickness: 2px; }
+  .total-local { margin: 0.25rem 0 0; color: var(--dim); font-size: 0.9rem; text-align: end; }
+  .modes { display: grid; gap: 1.25rem; margin: 2rem 0 0; }
+  .modes p { margin: 0; color: var(--muted); }
+  .modes b { display: block; color: var(--ink); font-weight: 500; }
+  .note { max-width: 40rem; margin: 2.5rem 0 0; color: var(--dim); font-size: 0.875rem; }
+
+  /* Plans: free first */
+  .plans { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin-top: 3rem; }
+  .plan { display: flex; flex-direction: column; gap: 0.5rem; padding: 1.75rem 1.5rem; border-radius: 20px; }
+  .plan.start { background: var(--raised); box-shadow: inset 0 0 0 1px rgb(242 181 68 / 0.45); }
+  .plan h3 { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; margin: 0; font-size: 1.15rem; font-weight: 600; }
+  .tag { padding: 0.1rem 0.6rem; border-radius: 999px; background: rgb(242 181 68 / 0.14); color: var(--gold); font-size: 0.8rem; font-weight: 500; }
+  .amount { margin: 0.5rem 0 0; font-size: 2.2rem; font-weight: 600; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .amount small { font-size: 0.42em; font-weight: 400; color: var(--muted); }
+  .start .amount { color: var(--gold); }
+  .amount-alt { margin: 0; min-height: 1.5em; color: var(--dim); font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+  .plan p.promise { margin: 0.75rem 0 0; color: var(--muted); }
+  .plan .cta { align-self: start; min-height: 48px; margin-top: 1rem; padding: 0 1.25rem; font-size: 1rem; }
+
+  /* Closing */
+  .closing { display: grid; justify-items: center; gap: 1.25rem; text-align: center; }
   .closing img { border-radius: 22px; box-shadow: 0 24px 60px -24px rgb(242 181 68 / 0.55); }
-  .closing a { display: inline-flex; align-items: center; min-height: 44px; color: var(--gold); font-size: clamp(1.75rem, 4vw, 3rem); font-weight: 600;
-               text-decoration: underline; text-decoration-color: rgb(242 181 68 / 0.4); text-decoration-thickness: 0.06em; text-underline-offset: 0.35em;
-               transition: color 0.2s var(--ease), text-decoration-color 0.2s var(--ease); }
-  .closing a:hover { color: var(--gold-light); text-decoration-color: currentColor; }
-  .closing p { margin: 0; color: var(--muted); }
+  .closing h2 { margin: 0; max-width: 18ch; }
+  .closing .free { justify-content: center; margin: 0; }
+  .steps { max-width: 34rem; margin: 1rem 0 0; padding: 0; list-style: none; color: var(--muted); font-size: 0.95rem; text-align: start; counter-reset: s; display: grid; gap: 0.6rem; }
+  .steps li { display: grid; grid-template-columns: 1.5rem minmax(0, 1fr); gap: 0.5rem; counter-increment: s; }
+  .steps li::before { content: counter(s); color: var(--gold); font-weight: 600; }
+  .steps b { color: var(--ink); font-weight: 500; }
 
-  @media (max-width: 860px) {
-    .hero__copy { top: auto; bottom: 0; inset-inline: 0; width: auto; transform: none;
-                  padding: 6rem max(1.25rem, env(safe-area-inset-right)) calc(2.5rem + env(safe-area-inset-bottom)) max(1.25rem, env(safe-area-inset-left)); }
-    .hero__copy::before { inset: 0; background: linear-gradient(to top, var(--bg) 0%, rgb(17 18 20 / 0.82) 58%, transparent 100%); }
-    h1 { max-width: 14ch; font-size: clamp(2rem, 9vw, 3.5rem); }
-    .lead { margin: 1rem 0 1.5rem; }
+  footer { padding-block: 2.5rem calc(2.5rem + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); color: var(--dim); font-size: 0.85rem; }
+  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem 2rem; }
+  footer p { margin: 0; max-width: 46rem; }
+  footer a { color: var(--muted); text-underline-offset: 0.3em; text-decoration-color: var(--line); }
+  footer a:hover { color: var(--gold); }
+
+  @media (max-width: 1000px) { .plans { grid-template-columns: repeat(2, minmax(0, 1fr)); } .more { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 900px) {
+    .hero, .bill, .feature, .feature:nth-child(even) { grid-template-columns: minmax(0, 1fr); }
+    .feature:nth-child(even) .ftext { order: 0; }
   }
-  @media (max-width: 560px) {
-    .way { grid-template-columns: 1fr; gap: 0.4rem; }
-    .topbar__get { padding: 0 1rem; }
+  @media (max-width: 620px) {
+    .versus, .plans, .more { grid-template-columns: minmax(0, 1fr); }
+    .receipt { padding-inline: 1.25rem; }
+    .stage { padding: 2em 0.9em; border-radius: 18px; }
+    .get { padding: 0 0.95rem; }
   }
-  /* Reduced motion: no film at all, just its closing still, and no scroll distance. */
   @media (prefers-reduced-motion: reduce) {
-    .hero { height: auto; }
-    .hero__stage { position: relative; }
-    .hero__film, .hero__progress { display: none; }
-    *, *::before, *::after { transition: none !important; }
+    *, *::before, *::after { transition: none !important; animation: none !important; }
   }
 </style>
 </head>
 <body>
-<a class="skip" href="#ways-title">تخطّى للمحتوى</a>
+<a class="skip" href="#show-t" data-i="skip">تخطّى للمحتوى</a>
 <header class="topbar">
-  <div class="brand"><img src="icon.png" width="32" height="32" alt=""><span translate="no">مارد</span></div>
-  <a class="topbar__get" href="https://github.com/HassanH2A/tutor-releases/releases/latest/download/TutorApp-win-Setup.exe">نزّل</a>
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="icon.png" width="32" height="32" alt=""><span translate="no"><span class="ar-only">مارد</span><span class="en-only">Mared</span></span></a>
+    <nav class="nav" aria-label="الصفحة" data-i-label="navLabel"><a href="#show-t" data-i="navF">بيعمل إيه</a><a href="#plans-t" data-i="navP">الأسعار</a><a href="#faq-t" data-i="navQ">أسئلة</a></nav>
+    <button class="lang" id="lang" type="button" lang="en"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z"/></svg><span>English</span></button>
+    <a class="get" href="start.html" data-i="get">ابدأ ببلاش</a>
+  </div>
 </header>
-<main id="main">
-  <section class="hero" aria-labelledby="hero-title">
-    <div class="hero__stage">
-      <picture class="hero__poster" aria-hidden="true">
-        <source media="(prefers-reduced-motion: reduce)" srcset="media/film-end.jpg">
-        <source media="(max-width: 860px)" srcset="media/film-phone-poster.jpg">
-        <img src="media/film-poster.jpg" width="1912" height="1080" alt="" fetchpriority="high">
-      </picture>
-      <video class="hero__film" muted playsinline preload="none" aria-hidden="true" tabindex="-1"
-             data-desktop="media/film.mp4" data-phone="media/film-phone.mp4"></video>
-      <div class="hero__progress" aria-hidden="true"><span></span></div>
-      <div class="hero__copy">
-        <h1 id="hero-title">مارد: معلّم بيعيش على شاشتك</h1>
-        <p class="lead">اسأله بصوتك عن أي حاجة في أي برنامج أو موقع. بيشرحلك بالمصري، ويشاورلك على المكان، ولو قلتله «اعملهالي» يعملها بدالك.</p>
-        <a class="cta" href="https://github.com/HassanH2A/tutor-releases/releases/latest/download/TutorApp-win-Setup.exe">
-          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>
-          <span>نزّل لـ <span translate="no">Windows</span></span>
-        </a>
-        <p class="fine">مجاني: 25 سؤال و 5 مهام في الشهر. <span translate="no">Windows&nbsp;10</span> و&nbsp;11.</p>
+
+<!-- The gold pointer every stage shares; cloned into each .stage by the script. -->
+<template id="cursor">
+  <div class="cur"><span class="rip"></span><svg viewBox="0 0 24 24"><path fill="currentColor" stroke="#111214" stroke-width="1.2" stroke-linejoin="round" d="M4 2.5 19.5 13l-6.6 1.3 3.9 6.9-2.9 1.6-3.9-6.9L5 20.5Z"/></svg>
+    <div class="pill"><span class="wave"><i></i><i></i><i></i><i></i><i></i></span><span class="txt"></span></div></div>
+  <span class="tagl"></span>
+  <svg class="ov"></svg>
+</template>
+
+<main id="top" class="wrap">
+  <div class="hero">
+    <div>
+      <h1 data-i="h1">أول ذكاء اصطناعي <em>عايش في الماوس</em> بتاعك.</h1>
+      <p class="lead" data-i="lead">صاحبك اللي فاهم في الكمبيوتر، قاعد جنب الماوس. دوس <kbd translate="no">Right Ctrl</kbd> واسأل: بيشوف شاشتك، يشاورلك على الزرار الصح، ويعلّمك خطوة خطوة. ولو مستعجل، قوله <q>اعملهالي</q> ويعملها بدالك.</p>
+      <a class="cta" href="start.html">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>
+        <span data-i="cta">ابدأ ببلاش</span>
+      </a>
+      <ul class="free">
+        <li><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span data-i="free1">تجربة مجانية</span></li>
+        <li><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span data-i="free2">إنستاباي وفودافون كاش</span></li>
+        <li><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span translate="no">Windows&nbsp;10 / 11</span></li>
+      </ul>
+      <p class="phone-only"><span data-i="phoneT">على الموبايل؟ مارد بيشتغل على الكمبيوتر.</span><button class="copy" id="copy" type="button" data-i="copyB">انسخ اللينك</button></p>
+    </div>
+
+    <div class="fdemo">
+      <div class="stage" data-demo="hero" tabindex="0" role="img" aria-label="مارد بيرد على سؤال جنب الماوس ويشاور على الزرار" data-i-label="aHero">
+        <div class="win" dir="ltr" aria-hidden="true">
+          <div class="bar"><i></i><i></i><i></i><span>expenses.xlsx</span></div>
+          <div class="rib">
+            <span class="tool" data-t="bold">B</span>
+            <span class="tool"><i>I</i></span>
+            <span class="tool" data-t="sum">Σ</span>
+            <span class="tool" data-t="chart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 20V11M12 20V5M19 20v-6"/></svg></span>
+            <span class="tool" data-t="filter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16l-6 7v6l-4 2v-8Z"/></svg></span>
+          </div>
+          <div class="grid">
+            <span class="h"></span><span class="h">A</span><span class="h">B</span><span class="h">C</span><span class="h">D</span>
+            <span class="h">1</span><span class="t">Item</span><span class="t">Jan</span><span class="t">Feb</span><span class="t">Mar</span>
+            <span class="h">2</span><span>Rent</span><span>4,500</span><span>4,500</span><span>4,500</span>
+            <span class="h">3</span><span>Food</span><span>2,180</span><span>1,940</span><span>2,310</span>
+            <span class="h">4</span><span>Internet</span><span>350</span><span>350</span><span>350</span>
+            <span class="h">5</span><span>Transport</span><span>820</span><span>760</span><span>905</span>
+            <span class="h">6</span><span class="home"></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section aria-labelledby="show-t">
+    <h2 id="show-t" data-i="showT">شوفه وهو شغّال.</h2>
+    <p class="sub" data-i="showSub">مارد مش شات في تاب. هو جنب الماوس بتاعك، شايف اللي إنت شايفه، وجاهز في أي برنامج أو موقع.</p>
+
+    <div class="features">
+      <div class="feature">
+        <div class="ftext">
+          <h3 data-i="aT">اسأل بصوتك، بالمصري.</h3>
+          <p data-i="aP">دوس <kbd translate="no">Right Ctrl</kbd> وقول اللي عايزه. مارد بيسمعك، بيشوف شاشتك، ويرد عليك بصوته جنب الماوس.</p>
+        </div>
+        <div class="fdemo">
+          <div class="stage" data-demo="voice" tabindex="0" role="img" aria-label="مثال: سؤال بالصوت عن تغيير الخلفية، ومارد بيشاور على الإعداد" data-i-label="aVoice">
+            <div class="win" dir="ltr" aria-hidden="true">
+              <div class="bar"><i></i><i></i><i></i><span>Settings</span></div>
+              <div class="set">
+                <ul class="side">
+                  <li class="cur-page">System</li><li>Bluetooth &amp; devices</li><li>Network &amp; internet</li><li data-k="pers">Personalization</li><li>Apps</li><li>Accounts</li>
+                </ul>
+                <div class="pane">
+                  <div class="p1"><b>System</b><i></i><i></i><i></i><i></i></div>
+                  <div class="p2"><b>Personalization</b><div class="walls"><span></span><span></span><span></span></div><span class="rowx" data-k="bg">Background</span><span class="rowx">Colors</span><span class="rowx">Themes</span></div>
+                </div>
+              </div>
+            </div>
+            <span class="key" aria-hidden="true">Right Ctrl</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature">
+        <div class="ftext">
+          <h3 data-i="bT">بيشاورلك على الزرار الصح.</h3>
+          <p data-i="bP">مش هتدوّر في القوائم تاني. مارد بيرسم سهم على المكان بالظبط ويكتب اسمه.</p>
+        </div>
+        <div class="fdemo">
+          <div class="stage" data-demo="point" tabindex="0" role="img" aria-label="مثال: مارد بيرسم سهم على Insert وبعدين Pictures" data-i-label="aPoint">
+            <div class="win" dir="ltr" aria-hidden="true">
+              <div class="bar"><i></i><i></i><i></i><span>Report.docx</span></div>
+              <div class="tabs"><span>File</span><span class="t-home">Home</span><span data-k="insert">Insert</span><span>Design</span><span>Layout</span></div>
+              <div class="rib">
+                <div class="g home"><span class="tool">B</span><span class="tool"><i>I</i></span><span class="tool"><u>U</u></span><span class="tool">Aa</span></div>
+                <div class="g ins"><span class="tool">Table</span><span class="tool" data-k="pic">Pictures</span><span class="tool">Shapes</span><span class="tool">Chart</span></div>
+              </div>
+              <div class="page"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature">
+        <div class="ftext">
+          <h3 data-i="cT">ارسم حوالين أي حاجة واسأل.</h3>
+          <p data-i="cP">رسم بياني مش فاهمه؟ رسالة خطأ؟ وإنت دايس، ارسم حواليها بالماوس واسأل <q>ده إيه؟</q></p>
+        </div>
+        <div class="fdemo">
+          <div class="stage" data-demo="circle" tabindex="0" role="img" aria-label="مثال: رسم حوالين جزء من رسم بياني وسؤال عنه" data-i-label="aCircle">
+            <div class="win" dir="ltr" aria-hidden="true">
+              <div class="bar"><i></i><i></i><i></i><span>Sales dashboard</span></div>
+              <div class="dash">
+                <div class="dash-top"><b>Monthly sales</b><span>Oct – Mar</span></div>
+                <div class="bars"><span style="--h:52%"></span><span style="--h:61%"></span><span style="--h:82%"></span><span style="--h:70%"></span><span data-k="b5" style="--h:88%"></span><span data-k="b6" style="--h:54%"></span></div>
+                <div class="lbls"><span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span><span>Mar</span></div>
+              </div>
+            </div>
+            <span class="key" aria-hidden="true">Right Ctrl</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature">
+        <div class="ftext">
+          <h3 data-i="dT">بيعلّمك خطوة خطوة، وإنت اللي بتعمل.</h3>
+          <p data-i="dP">مارد بيقولك الخطوة، يستنّاك تعملها بإيدك، ويتأكد إنها اتعملت صح قبل ما يكمّل. كده بتتعلّم بجد، مش بتتفرّج.</p>
+        </div>
+        <div class="fdemo">
+          <div class="stage" data-demo="teach" tabindex="0" role="img" aria-label="مثال: درس من 3 خطوات لعمل جدول في Excel" data-i-label="aTeach">
+            <div class="win" dir="ltr" aria-hidden="true">
+              <div class="bar"><i></i><i></i><i></i><span>budget.xlsx</span></div>
+              <div class="tabs"><span>File</span><span class="t-home">Home</span><span data-k="insert">Insert</span><span>Data</span></div>
+              <div class="rib">
+                <div class="g home"><span class="tool">B</span><span class="tool"><i>I</i></span><span class="tool">Σ</span><span class="tool">%</span></div>
+                <div class="g ins"><span class="tool">PivotTable</span><span class="tool" data-k="tbl">Table</span><span class="tool">Chart</span></div>
+              </div>
+              <div class="grid">
+                <span class="h"></span><span class="h">A</span><span class="h">B</span><span class="h">C</span><span class="h">D</span>
+                <span class="h">1</span><span class="t">Item</span><span class="t">Jan</span><span class="t">Feb</span><span></span>
+                <span class="h">2</span><span class="d r2">Rent</span><span class="d r2">4,500</span><span class="d r2">4,500</span><span></span>
+                <span class="h">3</span><span class="d">Food</span><span class="d">2,180</span><span class="d">1,940</span><span></span>
+                <span class="h">4</span><span class="d r4">Internet</span><span class="d r4">350</span><span class="d r4">350</span><span></span>
+                <span class="h">5</span><span class="d">Transport</span><span class="d">820</span><span class="d" data-k="c5">760</span><span></span>
+                <span class="h">6</span><span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+            <div class="card" aria-hidden="true"><small class="cs"></small><p class="ct"></p><div class="dots"><i></i><i></i><i></i></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature">
+        <div class="ftext">
+          <h3 data-i="eT"><q>اعملهالي</q>، ويعملها قدامك.</h3>
+          <p data-i="eP">مستعجل؟ قول اللي عايزه، ومارد يمسك الماوس والكيبورد ويخلّص المهمة وإنت بتتفرّج. بيسألك قبل أي حاجة ممكن تبوّظ، ولو حرّكت الماوس بيقف على طول.</p>
+          <ul class="chips">
+            <li><q data-i="c1">حوّل الجدول ده لرسم بياني</q></li>
+            <li><q data-i="c2">اكتبلي إيميل للعميل</q></li>
+            <li><q data-i="c3">لخّصلي الـ PDF ده</q></li>
+            <li><q data-i="c4">دوّرلي على أرخص لابتوب</q></li>
+          </ul>
+        </div>
+        <div class="fdemo">
+          <div class="stage" data-demo="doit" tabindex="0" role="img" aria-label="مثال: مارد بيرتّب 12 صورة في 3 فولدرات لوحده" data-i-label="aDoit">
+            <div class="win" dir="ltr" aria-hidden="true">
+              <div class="bar"><i></i><i></i><i></i><span>Pictures</span></div>
+              <div class="exp">
+                <ul class="side"><li>Desktop</li><li>Downloads</li><li>Pictures</li><li>Documents</li><li>Music</li></ul>
+                <div class="files">
+                  <div class="folds">
+                    <span class="fold"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h4.6l2 2h8.4A1.5 1.5 0 0 1 21 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5Z"/></svg><span>2026-01</span><span class="n" data-reset="0">0</span></span>
+                    <span class="fold"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h4.6l2 2h8.4A1.5 1.5 0 0 1 21 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5Z"/></svg><span>2026-02</span><span class="n" data-reset="0">0</span></span>
+                    <span class="fold"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h4.6l2 2h8.4A1.5 1.5 0 0 1 21 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5Z"/></svg><span>2026-03</span><span class="n" data-reset="0">0</span></span>
+                  </div>
+                  <div class="phs"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <div class="content">
-    <section aria-labelledby="ways-title">
-      <h2 id="ways-title">إزاي بتستخدمه</h2>
-      <dl class="ways">
-        <div class="way"><dt><kbd translate="no">Right Ctrl</kbd></dt><dd>دوس وخليك دايس واسأل بصوتك، وسيبه لما تخلص.</dd></div>
-        <div class="way"><dt><kbd translate="no">Right Ctrl + mouse</kbd></dt><dd>وإنت دايس، ارسم بالماوس حوالين أي حاجة واسأل «ده إيه؟».</dd></div>
-        <div class="way"><dt><span class="phrase">«اعملهالي»</span></dt><dd>يعمل فولدر، يكتب ملف، يرتّب صورك، يدوّر على النت. ولو حاجة ممكن تبوّظ بيسألك الأول.</dd></div>
-        <div class="way"><dt><kbd translate="no">Right Ctrl ×2</kbd></dt><dd>مش عايز تتكلم؟ دوس مرتين واكتب.</dd></div>
-      </dl>
-    </section>
+  <section class="why" aria-labelledby="why-t">
+    <h2 id="why-t" data-i="whyT">مش لازم تعرف تكتب <span class="ltr" translate="no">prompt</span>.</h2>
+    <p data-i="whyP">معظم أدوات الذكاء الاصطناعي شات بتكتب فيه، غالبًا بالإنجليزي، وبعدين ترجع لشغلك وتحاول تطبّق اللي قاله. إحنا شايفين إن المشكلة في الطريقة نفسها، مش في الذكاء.</p>
+    <p class="big" data-i="whyBig">عشان كده مارد بيجيلك إنت: جنب الماوس، جوّه البرنامج اللي فاتحه، وبيكلّمك بالمصري.</p>
+  </section>
 
-    <section class="install" aria-labelledby="install-title">
-      <h2 id="install-title">التسطيب</h2>
-      <ol>
-        <li>نزّل الملف وافتحه.</li>
-        <li>لو <span translate="no">Windows</span> قال «<span dir="ltr" translate="no">Windows protected your PC</span>»: دوس <b translate="no">More info</b> وبعدين <b translate="no">Run anyway</b>. ده بيظهر لأي برنامج جديد لسه ما اتوقّعش رقمياً.</li>
-        <li>سجّل بإيميلك، ومارد هيعلّمك كل حاجة خطوة خطوة.</li>
-      </ol>
-      <p class="note">بيحدّث نفسه لوحده. بيشوف الشاشة بس لما تسأله، والتسجيل بيحصل بس وإنت دايس على الزرار.</p>
-    </section>
+  <section aria-labelledby="learn-t">
+    <h2 id="learn-t" data-i="learnT">مش محتاج كورس. <em>ولا فيديو على يوتيوب.</em></h2>
+    <p class="sub" data-i="learnSub">قول «علّمني Excel» وخلاص. مارد بيعملك خطة على قدّك، ويعلّمك جوّه البرنامج نفسه وإنت بتشتغل.</p>
+    <div class="versus">
+      <div class="old">
+        <h3 data-i="oldT">الطريقة القديمة</h3>
+        <ul>
+          <li><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg><span data-i="o1">فيديو ساعة، ومعظمه مش اللي إنت محتاجه</span></li>
+          <li><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg><span data-i="o2">وقّف، ارجع، بدّل بين الفيديو والبرنامج</span></li>
+          <li><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg><span data-i="o3">شاشته شكل وشاشتك شكل تاني</span></li>
+          <li><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg><span data-i="o4">تقف في حتة ومحدش يرد عليك</span></li>
+        </ul>
+      </div>
+      <div class="new">
+        <h3 data-i="newT">مع مارد</h3>
+        <ul>
+          <li><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span data-i="n1">بيعلّمك اللي إنت محتاجه دلوقتي بس</span></li>
+          <li><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span data-i="n2">جوّه البرنامج اللي فاتحه، على شاشتك إنت</span></li>
+          <li><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span data-i="n3">بيشاورلك على الزرار ويتأكد إنك دوست عليه</span></li>
+          <li><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span data-i="n4">اسأل في أي وقت، بالمصري، وهيرد عليك بصوته</span></li>
+        </ul>
+      </div>
+    </div>
+    <p class="apps" data-i="apps">جرّبه على <b translate="no">Excel</b> و<b translate="no">Word</b> و<b translate="no">PowerPoint</b> و<b translate="no">Photoshop</b> و<b translate="no">AutoCAD</b> و<b translate="no">Revit</b> و<b translate="no">Canva</b>، أو أي برنامج أو موقع تاني.</p>
+  </section>
 
-    <section class="closing" aria-label="نزّل مارد">
-      <img src="icon.png" width="96" height="96" alt="" loading="lazy">
-      <a href="https://github.com/HassanH2A/tutor-releases/releases/latest/download/TutorApp-win-Setup.exe">نزّل لـ <span translate="no">Windows</span></a>
-      <p><span translate="no">Windows&nbsp;10</span> و&nbsp;11.</p>
-    </section>
-  </div>
+  <section aria-labelledby="more-t">
+    <h2 id="more-t" data-i="moreT">وحاجات تانية كتير.</h2>
+    <dl class="more">
+      <div><dt data-i="m1T">«اعملي ملاحظات»</dt><dd data-i="m1">كل اللي اتعلمته يتكتب في ملف ترجعله وقت ما تحب.</dd></div>
+      <div><dt data-i="m2T">بيفتكرك</dt><dd data-i="m2">بيعرف مستواك واللي اتعلمته قبل كده، فمش هتعيد من الأول.</dd></div>
+      <div><dt data-i="m3T">خطة لأي برنامج</dt><dd data-i="m3">قوله عايز تتعلم إيه، ويعملك كورس على قدّك.</dd></div>
+      <div><dt data-i="m4T">مش عايز تتكلم؟</dt><dd data-i="m4">دوس <kbd translate="no">Right Ctrl</kbd> مرتين واكتب.</dd></div>
+      <div><dt data-i="m5T">بيشوف بس لما تسأله</dt><dd data-i="m5">الشاشة بتتبعت بس لما تسأل، والمايك شغّال بس وإنت دايس.</dd></div>
+      <div><dt data-i="m6T">بيحدّث نفسه</dt><dd data-i="m6">كل تحديث جديد بيوصلك لوحده، من غير ما تعمل حاجة.</dd></div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="bill-t">
+    <div class="bill">
+      <div>
+        <h2 id="bill-t" data-i="billT">وكمان: كل الذكاء الاصطناعي في اشتراك واحد.</h2>
+        <p class="sub" data-i="billSub">مارد بيستخدم موديلات <span translate="no">Claude</span> و<span translate="no">ChatGPT</span> و<span translate="no">Gemini</span> و<span translate="no">Higgsfield</span> و<span translate="no">ElevenLabs</span>. بدل خمس اشتراكات، واحد بس.</p>
+        <div class="modes">
+          <p><b data-i="md1T">سيب مارد يختار</b><span data-i="md1">بيبعت كل طلب للموديل الأقوى فيه: الشرح، الكتابة، الصور، الفيديو، أو الصوت.</span></p>
+          <p><b data-i="md2T">أو اختار بنفسك</b><span data-i="md2">عايز <span translate="no">Claude</span> بالذات؟ اختاره وكلّمه على طول.</span></p>
+        </div>
+      </div>
+      <figure class="receipt" aria-labelledby="rc-t">
+        <h3 id="rc-t" data-i="rcT">من غير مارد، كل شهر</h3>
+        <dl>
+          <div class="line"><dt><span translate="no">ChatGPT Plus</span></dt><dd class="ltr">$19.99</dd></div>
+          <div class="line"><dt><span translate="no">Claude Pro</span></dt><dd class="ltr">$20.00</dd></div>
+          <div class="line"><dt><span translate="no">Google AI Pro</span> <small translate="no">Gemini</small></dt><dd class="ltr">$19.99</dd></div>
+          <div class="line"><dt><span translate="no">Higgsfield</span> <small data-i="from">أقل باقة</small></dt><dd class="ltr">$15.00</dd></div>
+          <div class="line"><dt><span translate="no">ElevenLabs Starter</span></dt><dd class="ltr">$6.00</dd></div>
+          <div class="line total"><dt data-i="total">المجموع</dt><dd class="ltr">$80.98</dd></div>
+        </dl>
+        <p class="total-local ar-only">يعني حوالي 4,390 جنيه في الشهر</p>
+      </figure>
+    </div>
+    <p class="note" data-i="billNote">الأسعار هي أقل باقة مدفوعة شهرية لكل خدمة زي ما هي معلنة في أكتوبر 2026. مارد بيديك موديلاتهم جوّه رصيدك الشهري، مش اشتراكاتهم نفسها.</p>
+  </section>
+
+  <section aria-labelledby="plans-t">
+    <h2 id="plans-t" data-i="plansT">ابدأ ببلاش. ادفع لما تحبه.</h2>
+    <p class="sub" data-i="plansSub">نزّله وجرّبه من غير ما تدفع حاجة ولا تحط فيزا. كل الباقات فيها كل حاجة، والفرق في الرصيد بس (رصيد واحد يساوي سؤال تقريبًا). ادفع بالكارت أو بإنستاباي أو فودافون كاش أو اتصالات كاش أو أورنج كاش، وتلغي في أي وقت.</p>
+    <div class="plans">
+      <div class="plan start">
+        <h3 data-i="p0T">تجربة مجانية</h3>
+        <p class="amount" data-i="p0A">ببلاش</p>
+        <p class="amount-alt" data-i="p0B">من غير فيزا</p>
+        <p class="allow" data-i="a0">3 أسئلة، ومهمة «اعملهالي»، ودرس كامل</p>
+        <p class="promise" data-i="p0">جرّب كل حاجة على شاشتك قبل ما تقرّر.</p>
+        <a class="cta" href="start.html" data-i="cta2">ابدأ ببلاش</a>
+      </div>
+      <div class="plan">
+        <h3 translate="no"><span class="ar-only">مارد ميني</span><span class="en-only">Mared Mini</span></h3>
+        <p class="amount"><span class="ar-only">199 <small>جنيه / شهر</small></span><span class="en-only">$7.99 <small>/ month</small></span></p>
+        <p class="amount-alt"><span class="ar-only ltr">$7.99</span><span class="en-only">EGP 199</span></p>
+        <p class="allow" data-i="a1">75 رصيد في الشهر</p>
+        <p class="promise" data-i="p1">اسأل عن أي حاجة على شاشتك.</p>
+      </div>
+      <div class="plan">
+        <h3><span translate="no"><span class="ar-only">مارد بلس</span><span class="en-only">Mared Plus</span></span><span class="tag" data-i="tag">ننصحك بيه</span></h3>
+        <p class="amount"><span class="ar-only">499 <small>جنيه / شهر</small></span><span class="en-only">$19.99 <small>/ month</small></span></p>
+        <p class="amount-alt"><span class="ar-only ltr">$19.99</span><span class="en-only">EGP 499</span></p>
+        <p class="allow" data-i="a2">335 رصيد في الشهر</p>
+        <p class="promise" data-i="p2">يكفيك الشهر كله: يشرح، يعلّمك، ويعملهالك.</p>
+      </div>
+      <div class="plan">
+        <h3 translate="no"><span class="ar-only">مارد ماكس</span><span class="en-only">Mared Max</span></h3>
+        <p class="amount"><span class="ar-only">4,999 <small>جنيه / شهر</small></span><span class="en-only">$99 <small>/ month</small></span></p>
+        <p class="amount-alt"><span class="ar-only ltr">$99</span><span class="en-only">EGP 4,999</span></p>
+        <p class="allow" data-i="a3">4,000 رصيد في الشهر</p>
+        <p class="promise" data-i="p3">لأتقل شغل: مهام كتير، صور وفيديو.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="faq-t">
+    <h2 id="faq-t" data-i="faqT">أسئلة بتتسأل كتير</h2>
+    <div class="faq">
+      <details><summary data-i="q1">هو ببلاش فعلًا؟</summary><p data-i="r1">أيوه. التجربة المجانية فيها 3 أسئلة، ومهمة «اعملهالي»، ودرس كامل. ولو عجبك، كمّل بالكارت أو بإنستاباي أو محفظة.</p></details>
+      <details><summary data-i="q2">هو بيشوف شاشتي على طول؟</summary><p data-i="r2">لأ. بيشوف الشاشة بس لما تدوس <kbd translate="no">Right Ctrl</kbd> وتسأل، والمايك شغّال بس وإنت دايس.</p></details>
+      <details><summary data-i="q3">بيشتغل على أنهي برامج؟</summary><p data-i="r3">أي برنامج أو موقع على <span translate="no">Windows</span>: <span translate="no">Office</span> و<span translate="no">Photoshop</span> و<span translate="no">AutoCAD</span> والمتصفح وغيرهم. مش محتاج إضافات.</p></details>
+      <details><summary data-i="q4">هيدوس على حاجات من غير ما أعرف؟</summary><p data-i="r4">لأ. بيعمل حاجات بس لما تقوله «اعملهالي»، وبيقولك بيعمل إيه في كل خطوة، وبيسألك قبل أي حاجة ممكن تبوّظ زي المسح أو الدفع. ولو حرّكت الماوس بيقف على طول.</p></details>
+      <details><summary data-i="q5">بيتكلم بأنهي لغة؟</summary><p data-i="r5">بالمصري، وتقدر تخلّيه يرد بالعربي الفصحى أو بالإنجليزي من الإعدادات.</p></details>
+      <details><summary data-i="q6">فيه نسخة للماك؟</summary><p data-i="r6">لسه. مارد شغّال على <span translate="no">Windows&nbsp;10</span> و&nbsp;11 بس دلوقتي.</p></details>
+      <details><summary data-i="q7">أقدر ألغي إمتى؟</summary><p data-i="r7">في أي وقت، بضغطة من صفحة الحساب في مارد، وباقتك بتفضل شغّالة لحد آخر الشهر اللي دفعته.</p></details>
+      <details><summary data-i="q9">أقدر أدفع بفودافون كاش أو إنستاباي؟</summary><p data-i="r9">أيوه: إنستاباي وفودافون كاش واتصالات كاش وأورنج كاش. بتحوّل من الموبايل، وبنفعّل اشتراكك أول ما نتأكد من التحويل.</p></details>
+      <details><summary data-i="q8">محتاج إنترنت؟</summary><p data-i="r8">أيوه، مارد محتاج إنترنت عشان يفكّر ويتكلّم.</p></details>
+    </div>
+  </section>
+
+  <section class="closing" aria-labelledby="end-t">
+    <img src="icon.png" width="96" height="96" alt="" loading="lazy">
+    <h2 id="end-t" data-i="endT">ابدأ ببلاش النهارده.</h2>
+    <a class="cta" href="https://github.com/HassanH2A/tutor-releases/releases/latest/download/TutorApp-win-Setup.exe">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>
+      <span data-i="cta3">نزّل لـ <span translate="no">Windows</span></span>
+    </a>
+    <ul class="free"><li><span data-i="free3">تجربة مجانية · من غير فيزا · بيحدّث نفسه لوحده</span></li></ul>
+    <ol class="steps">
+      <li><span data-i="s1">افتح الملف اللي نزل.</span></li>
+      <li><span data-i="s2">لو ظهر «<span translate="no" class="ltr">Windows protected your PC</span>»: دوس <b translate="no">More info</b> وبعدين <b translate="no">Run anyway</b>.</span></li>
+      <li><span data-i="s3">سجّل بإيميلك، ومارد هيوريك كل حاجة خطوة خطوة.</span></li>
+    </ol>
+  </section>
 </main>
+
+<footer>
+  <div class="wrap">
+    <p data-i="legal">مارد مش تابع لـ <span translate="no">OpenAI</span> ولا <span translate="no">Anthropic</span> ولا <span translate="no">Google</span> ولا <span translate="no">Higgsfield</span> ولا <span translate="no">ElevenLabs</span>، والأسماء دي ملك أصحابها.</p>
+    <p><a href="mailto:contact@yamared.com" translate="no">contact@yamared.com</a> · <span class="ltr">© 2026</span></p>
+  </div>
+</footer>
+
 <script>
-// Scroll plays the film: the page's scroll position inside .hero picks the video frame.
 (() => {
-  const hero = document.querySelector(".hero");
-  const film = hero.querySelector(".hero__film");
-  const stage = hero.querySelector(".hero__stage");
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return; // no film, no fetch
-
-  const narrow = matchMedia("(max-width: 860px)");
-  // Phones see a centre slice of the 16:9 film: pan from the lamp (47%) to the lit button (68%) as it plays.
-  const panX = (p) => (narrow.matches ? 47 + 21 * p : 50) + "%";
-  let target = 0, busy = false, raf = 0;
-
-  const progress = () => {
-    const span = hero.offsetHeight - innerHeight;
-    return span > 0 ? Math.min(1, Math.max(0, -hero.getBoundingClientRect().top / span)) : 0;
+  // English copy; the Arabic is the page itself. Keys match data-i / data-i-label attributes.
+  const en = {
+    get: "Start for free", skip: "Skip to content",
+    navLabel: "Page", navF: "What it does", navP: "Pricing", navQ: "FAQ",
+    phoneT: "On your phone? Mared runs on your computer.", copyB: "Copy the link",
+    h1: "The first AI that <em>lives in your mouse</em>.",
+    lead: 'Your computer-savvy friend, sitting right by your mouse. Hold <kbd translate="no">Right Ctrl</kbd> and ask: it sees your screen, points to the right button and teaches you step by step. In a hurry? Say <q>do it for me</q> and it does it for you.',
+    whyT: 'You shouldn’t need to know how to write a <span class="ltr" translate="no">prompt</span>.',
+    whyP: "Most AI tools are a chat box you type into, then you go back to your work and try to apply what it said. We think the problem is the interface, not the intelligence.",
+    whyBig: "So Mared comes to you: next to your mouse, inside the app you have open, talking to you in your own language.",
+    a0: "3 questions, one “do it for me” task and a full lesson", a1: "75 credits a month", a2: "335 credits a month", a3: "4,000 credits a month",
+    faqT: "Questions people ask",
+    q1: "Is it really free?", r1: "Yes. The free trial gives you 3 questions, one “do it for me” task and a full lesson. If you love it, continue by card or with InstaPay or a wallet.",
+    q9: "Can I pay with Vodafone Cash or InstaPay?", r9: "Yes: InstaPay, Vodafone Cash, Etisalat Cash and Orange Cash. You send it from your phone, and we turn on your plan as soon as we confirm the transfer.",
+    q2: "Does it watch my screen all the time?", r2: 'No. It only looks at your screen when you hold <kbd translate="no">Right Ctrl</kbd> and ask, and the mic is on only while you hold the key.',
+    q3: "Which apps does it work with?", r3: 'Any app or website on <span translate="no">Windows</span>: <span translate="no">Office</span>, <span translate="no">Photoshop</span>, <span translate="no">AutoCAD</span>, your browser and more. No plugins needed.',
+    q4: "Will it click things without me knowing?", r4: "No. It only acts when you say “do it for me”, tells you what it's doing at each step, and asks before anything risky like deleting or paying. Move the mouse and it stops right away.",
+    q5: "What language does it speak?", r5: "Egyptian Arabic by default, and you can switch it to Modern Standard Arabic or English in Settings.",
+    q6: "Is there a Mac version?", r6: 'Not yet. Mared runs on <span translate="no">Windows&nbsp;10</span> and&nbsp;11 for now.',
+    q7: "When can I cancel?", r7: "Anytime, in one click from the Account page in Mared, and your plan keeps working until the end of the month you paid for.",
+    q8: "Do I need internet?", r8: "Yes, Mared needs the internet to think and talk.",
+    cta: "Start for free", cta2: "Start for free", cta3: 'Download for <span translate="no">Windows</span>',
+    free1: "Free trial", free2: "InstaPay and Vodafone Cash", free3: "Free trial · No card needed · Updates itself",
+    aHero: "Mared answers a question by the mouse pointer and points at the button",
+    showT: "Watch it work.",
+    showSub: "Mared isn't a chat in a browser tab. It sits by your mouse, sees what you see, and works in any app or website.",
+    aT: "Ask out loud, in your own words.",
+    aP: 'Hold <kbd translate="no">Right Ctrl</kbd> and say what you need. Mared listens, sees your screen and answers out loud, right by your mouse.',
+    aVoice: "Example: a spoken question about changing the wallpaper, and Mared points at the setting",
+    bT: "It points to the exact button.",
+    bP: "No more hunting through menus. Mared draws an arrow to the exact spot and labels it.",
+    aPoint: "Example: Mared draws an arrow to Insert, then Pictures",
+    cT: "Circle anything and ask.",
+    cP: "A chart you don't get? An error message? While holding the key, circle it with the mouse and ask <q>what's this?</q>",
+    aCircle: "Example: circling part of a chart and asking about it",
+    dT: "It teaches you step by step, and you do it.",
+    dP: "Mared gives you a step, waits for you to do it yourself, and checks you got it right before moving on. You actually learn it, instead of watching.",
+    aTeach: "Example: a 3-step lesson on making a table in Excel",
+    eT: "<q>Do it for me</q>, and watch it happen.",
+    eP: "In a hurry? Say what you need, and Mared takes the mouse and keyboard and finishes the job while you watch. It asks before anything risky, and stops the moment you move the mouse.",
+    c1: "Turn this table into a chart", c2: "Write the client an email", c3: "Sum up this PDF", c4: "Find the cheapest laptop",
+    aDoit: "Example: Mared sorts 12 photos into 3 folders by itself",
+    learnT: "No courses. <em>No YouTube tutorials.</em>",
+    learnSub: "Just say “teach me Excel.” Mared makes a plan that fits you and teaches you inside the app itself, while you work.",
+    oldT: "The old way", newT: "With Mared",
+    o1: "An hour-long video, most of it not what you need", o2: "Pause, rewind, switch between the video and the app",
+    o3: "Their screen looks nothing like yours", o4: "Get stuck, and nobody answers",
+    n1: "Teaches only what you need right now", n2: "Inside the app you have open, on your own screen",
+    n3: "Points to the button and checks you clicked it", n4: "Ask anytime, and it answers out loud",
+    apps: 'Try it on <b translate="no">Excel</b>, <b translate="no">Word</b>, <b translate="no">PowerPoint</b>, <b translate="no">Photoshop</b>, <b translate="no">AutoCAD</b>, <b translate="no">Revit</b>, <b translate="no">Canva</b>, or any other app or website.',
+    moreT: "And plenty more.",
+    m1T: "“Make me notes”", m1: "Everything you learned, written to a file you can come back to.",
+    m2T: "It remembers you", m2: "It knows your level and what you've learned, so you never start over.",
+    m3T: "A plan for any app", m3: "Tell it what you want to learn, and it builds a course that fits you.",
+    m4T: "Don't want to talk?", m4: 'Tap <kbd translate="no">Right Ctrl</kbd> twice and type.',
+    m5T: "Only looks when you ask", m5: "Your screen is sent only when you ask, and the mic is on only while you hold the key.",
+    m6T: "Updates itself", m6: "Every new version arrives on its own. You don't have to do anything.",
+    billT: "Plus: every AI in one subscription.",
+    billSub: 'Mared uses models from <span translate="no">Claude</span>, <span translate="no">ChatGPT</span>, <span translate="no">Gemini</span>, <span translate="no">Higgsfield</span> and <span translate="no">ElevenLabs</span>. One subscription instead of five.',
+    md1T: "Let Mared choose", md1: "It sends each request to the model that's strongest at it: explaining, writing, images, video or voice.",
+    md2T: "Or choose yourself", md2: 'Want <span translate="no">Claude</span> specifically? Pick it and talk to it directly.',
+    rcT: "Without Mared, every month", from: "lowest plan", total: "Total",
+    billNote: "Prices are each service's lowest monthly paid plan as listed in October 2026. Mared gives you their models within your monthly credits, not their subscriptions.",
+    plansT: "Start free. Pay when you love it.",
+    plansSub: "Download it and try it without paying anything or adding a card. Every plan has every feature; only the credits differ (one credit is about one question). Pay by card or with InstaPay, Vodafone Cash, Etisalat Cash or Orange Cash, and cancel anytime.",
+    p0T: "Free trial", p0A: "Free", p0B: "No card needed", p0: "Try everything on your own screen before you decide.",
+    tag: "Recommended",
+    p1: "Ask about anything on your screen.", p2: "Enough for your whole month: it explains, teaches and does it for you.", p3: "For the heaviest work: lots of tasks, images and video.",
+    endT: "Start for free today.",
+    s1: "Open the file you downloaded.",
+    s2: 'If you see “<span translate="no">Windows protected your PC</span>”, click <b translate="no">More info</b>, then <b translate="no">Run anyway</b>.',
+    s3: "Sign in with your email, and Mared shows you the rest step by step.",
+    legal: 'Mared is not affiliated with <span translate="no">OpenAI</span>, <span translate="no">Anthropic</span>, <span translate="no">Google</span>, <span translate="no">Higgsfield</span> or <span translate="no">ElevenLabs</span>. Their names belong to their owners.'
   };
-  const seek = () => {
-    if (busy || !film.duration || Math.abs(film.currentTime - target) < 0.02) return;
-    busy = true;
-    film.currentTime = target;
-  };
-  const tick = () => {
-    raf = 0;
-    const p = progress();
-    stage.style.setProperty("--p", p);
-    stage.style.setProperty("--film-x", panX(p));
-    if (film.duration) { target = p * (film.duration - 0.05); seek(); }
-  };
-  const schedule = () => { if (!raf) raf = requestAnimationFrame(tick); };
 
-  film.addEventListener("seeked", () => { busy = false; film.classList.add("is-ready"); seek(); });
-  film.addEventListener("loadeddata", () => {
-    // iOS only paints seeks after one play; muted play is allowed.
-    film.play().then(() => film.pause()).catch(() => {}).finally(() => { busy = false; tick(); film.currentTime = target || 0.001; });
+  const root = document.documentElement;
+  const T = (ar, en) => (root.lang === "en" ? en : ar);
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const STOP = {};
+  const NS = "http://www.w3.org/2000/svg";
+  const STATE = ["hit", "sel", "in", "gone", "show", "done", "on", "ins", "swap", "styled", "working", "cur-page"];
+
+  // One stage = one demo. Scripts drive it with these helpers; every wait checks the stage is still meant to run.
+  const makeStage = (el) => {
+    el.append(document.getElementById("cursor").content.cloneNode(true));
+    const cur = el.querySelector(".cur"), pill = el.querySelector(".pill"), txt = pill.querySelector(".txt");
+    const tag = el.querySelector(".tagl"), ov = el.querySelector(".ov"), rip = el.querySelector(".rip");
+    const firstPage = el.querySelector(".cur-page");
+    const s = { el, run: 0, live: false, paused: false, cx: 0, cy: 0, vis: false };
+
+    // Box of one or more elements (a selector may match several), relative to the stage.
+    const rel = (sel, ax = 0.5, ay = 0.5) => {
+      const box = el.getBoundingClientRect();
+      let l = Infinity, t = Infinity, r = -Infinity, b = -Infinity;
+      el.querySelectorAll(sel).forEach((e) => { const q = e.getBoundingClientRect(); l = Math.min(l, q.left); t = Math.min(t, q.top); r = Math.max(r, q.right); b = Math.max(b, q.bottom); });
+      l -= box.left; r -= box.left; t -= box.top; b -= box.top;
+      return { l, t, r, b, w: r - l, h: b - t, x: l + (r - l) * ax, y: t + (b - t) * ay };
+    };
+    s.wait = (ms) => {
+      const id = s.run;
+      return new Promise((res, rej) => {
+        const check = () => (id !== s.run ? rej(STOP) : s.paused ? setTimeout(check, 150) : res());
+        setTimeout(check, still ? 0 : ms);
+      });
+    };
+    s.move = (sel, ax, ay) => {
+      const p = typeof sel === "string" ? rel(sel, ax, ay) : sel;
+      s.cx = p.x; s.cy = p.y;
+      cur.style.transform = `translate(${p.x}px, ${p.y}px)`;
+      cur.classList.toggle("flip", p.x > el.clientWidth * 0.5);
+      cur.classList.toggle("up", p.y > el.clientHeight * 0.68);
+    };
+    s.jump = (sel, ax, ay) => { cur.classList.add("jump"); s.move(sel, ax, ay); void cur.offsetWidth; cur.classList.remove("jump"); };
+    s.say = (mode, text = "") => { pill.className = "pill " + mode; txt.textContent = text; };
+    s.type = async (text) => { s.say("listen"); for (let n = 1; n <= text.length; n++) { txt.textContent = text.slice(0, n); await s.wait(30); } };
+    s.on = (sel, c = "hit") => el.querySelectorAll(sel).forEach((e) => e.classList.add(c));
+    s.off = (sel, c = "hit") => el.querySelectorAll(sel).forEach((e) => e.classList.remove(c));
+    s.tag = (sel, text) => { const p = rel(sel, 0.5, 0); tag.textContent = text; tag.style.left = p.x + "px"; tag.style.top = p.t + "px"; tag.classList.add("show"); };
+    s.untag = () => tag.classList.remove("show");
+    s.click = () => { rip.classList.remove("go"); void rip.offsetWidth; rip.classList.add("go"); };
+    s.clear = () => { ov.replaceChildren(); };
+    const draw = (node) => { ov.setAttribute("viewBox", `0 0 ${el.clientWidth} ${el.clientHeight}`); node.setAttribute("pathLength", "1"); node.classList.add("draw"); ov.append(node); void node.getBoundingClientRect(); node.classList.add("go"); };
+    // A curved arrow from the pointer to just short of the target, like the app draws.
+    s.arrow = (sel) => {
+      const a = { x: s.cx + 6, y: s.cy + 6 }, t = rel(sel);
+      const dx = t.x - a.x, dy = t.y - a.y;
+      const c = { x: (a.x + t.x) / 2 - dy * 0.25, y: (a.y + t.y) / 2 + dx * 0.25 };
+      const ux = t.x - c.x, uy = t.y - c.y, ul = Math.hypot(ux, uy) || 1, back = Math.min(t.w, t.h) / 2 + 6;
+      const e = { x: t.x - (ux / ul) * back, y: t.y - (uy / ul) * back };
+      const path = document.createElementNS(NS, "path");
+      path.setAttribute("d", `M${a.x} ${a.y} Q${c.x} ${c.y} ${e.x} ${e.y}`);
+      draw(path);
+      const ang = Math.atan2(e.y - c.y, e.x - c.x), k = 9;
+      const pt = (d, o) => `${e.x + Math.cos(ang + o) * d} ${e.y + Math.sin(ang + o) * d}`;
+      const head = document.createElementNS(NS, "path");
+      head.setAttribute("d", `M${pt(2, 0)} L${pt(k, Math.PI - 0.5)} L${pt(k, Math.PI + 0.5)}Z`);
+      head.setAttribute("class", "head");
+      ov.append(head); void head.getBoundingClientRect(); head.classList.add("go");
+    };
+    // A rounded box around an area, drawn on, then dashed (the app's "highlight").
+    s.box = (sel, pad = 7) => {
+      const t = rel(sel), r = document.createElementNS(NS, "rect");
+      Object.entries({ x: t.l - pad, y: t.t - pad, width: t.w + pad * 2, height: t.h + pad * 2, rx: 10 }).forEach(([k, v]) => r.setAttribute(k, v));
+      draw(r);
+      setTimeout(() => r.classList.add("dashed"), still ? 0 : 800);
+      return t;
+    };
+    s.reset = () => {
+      el.querySelectorAll("." + STATE.join(",.")).forEach((e) => e.classList.remove(...STATE));
+      el.classList.remove(...STATE);
+      el.querySelectorAll("[data-reset]").forEach((e) => { e.textContent = e.dataset.reset; });
+      if (firstPage) firstPage.classList.add("cur-page");
+      s.clear(); s.untag(); s.say("hide");
+    };
+    s.start = () => {
+      if (s.live) return;
+      s.live = true;
+      const id = ++s.run;
+      (async () => {
+        try {
+          do { s.reset(); await scripts[el.dataset.demo](s); } while (!still && id === s.run);
+        } catch (e) { if (e !== STOP) console.error(e); }
+        finally { if (id === s.run) s.live = false; }
+      })();
+    };
+    s.stop = () => { s.run++; s.live = false; };
+    // Hover or focus pauses the demo (it keeps its place); leaving resumes.
+    el.addEventListener("pointerenter", () => { s.paused = true; });
+    el.addEventListener("pointerleave", () => { s.paused = false; });
+    el.addEventListener("focusin", () => { s.paused = true; });
+    el.addEventListener("focusout", () => { s.paused = false; });
+    return s;
+  };
+
+  const HERO = [
+    { t: "bold", tag: "Bold", ar: "إزاي أخلّي الكلام ده تقيل؟", en: "How do I make this text bold?", sayAr: "دوس هنا، أو Ctrl + B.", sayEn: "Click here, or press Ctrl + B." },
+    { t: "chart", tag: "Chart", ar: "اعملهالي: رسم بياني للمصاريف", en: "Do it for me: chart these expenses", sayAr: "تمام، بعمل الرسم البياني دلوقتي…", sayEn: "On it, making the chart now…" },
+    { t: "sum", tag: "AutoSum", ar: "علّمني أجمع العمود ده", en: "Teach me to add up this column", sayAr: "اختار الخلية تحت الأرقام، وبعدين دوس Σ.", sayEn: "Select the cell under the numbers, then click Σ." },
+    { t: "filter", tag: "Filter", ar: "ده إيه الزرار ده؟", en: "What does this button do?", sayAr: "ده الفلتر: بيوريك الصفوف اللي إنت عايزها بس.", sayEn: "That's Filter: it shows only the rows you want." }
+  ];
+
+  const scripts = {
+    async hero(s) {
+      s.jump(".grid .home", 0.6, 0.2);
+      for (const d of HERO) {
+        await s.wait(500);
+        await s.type(T(d.ar, d.en));
+        await s.wait(350);
+        s.say("think", T("بفكّر…", "Thinking…"));
+        await s.wait(600);
+        s.move(`[data-t="${d.t}"]`, 0.5, 0.6);
+        await s.wait(850);
+        s.on(`[data-t="${d.t}"]`); s.tag(`[data-t="${d.t}"]`, d.tag);
+        s.say("say", T(d.sayAr, d.sayEn));
+        await s.wait(3000);
+        s.off(`[data-t="${d.t}"]`); s.untag(); s.say("hide");
+        s.move(".grid .home", 0.6, 0.2);
+      }
+    },
+    async voice(s) {
+      s.jump(".pane", 0.55, 0.65);
+      await s.wait(700);
+      s.on(".key", "on");
+      await s.type(T("عايز أغيّر خلفية الشاشة", "I want to change my wallpaper"));
+      await s.wait(400);
+      s.off(".key", "on");
+      s.say("think", T("بفكّر…", "Thinking…"));
+      await s.wait(700);
+      s.move('[data-k="pers"]', 0.6, 0.6);
+      await s.wait(900);
+      s.on('[data-k="pers"]'); s.tag('[data-k="pers"]', "Personalization");
+      s.say("say", T("من هنا: Personalization.", "Right here: Personalization."));
+      await s.wait(1800);
+      s.click(); s.untag(); s.off('[data-k="pers"]');
+      s.off(".cur-page", "cur-page"); s.on('[data-k="pers"]', "cur-page"); s.on(".set", "swap");
+      await s.wait(500);
+      s.move('[data-k="bg"]', 0.5, 0.6);
+      await s.wait(900);
+      s.on('[data-k="bg"]'); s.tag('[data-k="bg"]', "Background");
+      s.say("say", T("وبعدين Background، واختار الصورة اللي تعجبك.", "Then Background, and pick the picture you like."));
+      await s.wait(3200);
+    },
+    async point(s) {
+      s.jump(".page", 0.45, 0.6);
+      await s.wait(600);
+      await s.type(T("إزاي أحط صورة هنا؟", "How do I put a picture here?"));
+      await s.wait(350);
+      s.say("think", T("بفكّر…", "Thinking…"));
+      await s.wait(600);
+      s.arrow('[data-k="insert"]'); s.on('[data-k="insert"]'); s.tag('[data-k="insert"]', "Insert");
+      s.say("say", T("الأول افتح Insert.", "First, open Insert."));
+      await s.wait(2000);
+      s.clear(); s.untag();
+      s.move('[data-k="insert"]', 0.5, 0.6);
+      await s.wait(900);
+      s.click(); s.off('[data-k="insert"]'); s.on(".win", "ins"); s.say("hide");
+      await s.wait(600);
+      s.arrow('[data-k="pic"]'); s.on('[data-k="pic"]'); s.tag('[data-k="pic"]', "Pictures");
+      s.say("say", T("وبعدين Pictures، واختار الصورة.", "Then Pictures, and choose your image."));
+      await s.wait(3400);
+    },
+    async circle(s) {
+      const t = (() => { const r = s.el.querySelector('[data-k="b5"]').getBoundingClientRect(), b = s.el.getBoundingClientRect(); return { x: r.left - b.left - 10, y: r.top - b.top - 10 }; })();
+      s.jump(".bars", 0.3, 0.3);
+      await s.wait(600);
+      s.move(t);
+      await s.wait(900);
+      s.on(".key", "on");
+      const area = s.box('[data-k="b5"], [data-k="b6"]');
+      s.move({ x: area.r + 7, y: area.b + 7 });
+      await s.wait(900);
+      await s.type(T("ليه الرقم ده وقع كده؟", "Why did this drop?"));
+      await s.wait(350);
+      s.off(".key", "on");
+      s.say("think", T("بفكّر…", "Thinking…"));
+      await s.wait(800);
+      s.say("say", T("مارس نزل حوالي 40% عن فبراير. عايز أعرف السبب من الجدول؟", "March fell about 40% from February. Want me to check the sheet for why?"));
+      await s.wait(3800);
+    },
+    async teach(s) {
+      const card = s.el.querySelector(".card"), cs = card.querySelector(".cs"), ct = card.querySelector(".ct"), dots = card.querySelectorAll(".dots i");
+      const step = (n, text) => { cs.textContent = T(`خطوة ${n} من 3`, `Step ${n} of 3`); ct.textContent = text; };
+      cs.textContent = ""; ct.textContent = T("قول «علّمني» في أي وقت.", "Say “teach me” anytime.");
+      s.jump(".grid", 0.85, 0.85);
+      await s.wait(600);
+      await s.type(T("علّمني أعمل جدول", "Teach me to make a table"));
+      await s.wait(350);
+      s.say("think", T("بفكّر…", "Thinking…"));
+      await s.wait(700);
+      s.say("hide");
+      step(1, T("حدّد البيانات من A1 لحد C5.", "Select the data from A1 to C5."));
+      s.box(".grid .t, .grid .d", 3);
+      await s.wait(1400);
+      s.move(".grid .t", 0.1, 0.5);
+      await s.wait(900);
+      s.clear();
+      s.on(".grid .t, .grid .d", "sel");
+      s.move('[data-k="c5"]', 0.8, 0.5);
+      await s.wait(1000);
+      dots[0].classList.add("done");
+      step(2, T("تمام! دلوقتي افتح Insert.", "Nice! Now open Insert."));
+      s.arrow('[data-k="insert"]'); s.tag('[data-k="insert"]', "Insert");
+      await s.wait(1500);
+      s.move('[data-k="insert"]', 0.5, 0.6);
+      await s.wait(900);
+      s.click(); s.clear(); s.untag(); s.on(".win", "ins");
+      dots[1].classList.add("done");
+      step(3, T("آخر خطوة: دوس Table.", "Last step: click Table."));
+      await s.wait(500);
+      s.arrow('[data-k="tbl"]'); s.tag('[data-k="tbl"]', "Table");
+      await s.wait(1500);
+      s.move('[data-k="tbl"]', 0.5, 0.6);
+      await s.wait(900);
+      s.click(); s.clear(); s.untag(); s.off(".grid .sel", "sel"); s.on(".grid", "styled");
+      dots[2].classList.add("done");
+      cs.textContent = T("خلصت ✓", "Done ✓"); ct.textContent = T("برافو! عملتها بإيدك.", "Well done! You made it yourself.");
+      await s.wait(3600);
+    },
+    async doit(s) {
+      const folds = s.el.querySelectorAll(".fold");
+      s.jump(".phs", 0.5, 0.7);
+      await s.wait(600);
+      await s.type(T("رتّبلي الصور دي في فولدرات بالشهر", "Sort these photos into folders by month"));
+      await s.wait(350);
+      s.say("think", T("بفكّر…", "Thinking…"));
+      await s.wait(700);
+      s.el.classList.add("working");
+      s.say("work", T("بعمل فولدر لكل شهر…", "Making a folder for each month…"));
+      for (let i = 1; i <= 3; i++) {
+        s.move(`.fold:nth-child(${i})`, 0.4, 0.6);
+        await s.wait(750);
+        s.click(); s.on(`.fold:nth-child(${i})`, "in");
+        await s.wait(250);
+      }
+      s.say("work", T("بنقل الصور…", "Moving the photos…"));
+      for (let g = 0; g < 3; g++) {
+        const group = `.phs i:nth-child(n+${g * 4 + 1}):nth-child(-n+${g * 4 + 4})`;
+        s.move(group, 0.2, 0.5);
+        await s.wait(800);
+        s.click();
+        s.move(`.fold:nth-child(${g + 1})`, 0.4, 0.6);
+        await s.wait(850);
+        s.on(group, "gone");
+        folds[g].querySelector(".n").textContent = "4";
+        await s.wait(300);
+      }
+      s.el.classList.remove("working");
+      s.say("say", T("خلصت: 12 صورة في 3 فولدرات.", "Done: 12 photos in 3 folders."));
+      await s.wait(3400);
+    }
+  };
+
+  const stages = [...document.querySelectorAll("[data-demo]")].map(makeStage);
+
+  const ar = {};
+  document.querySelectorAll("[data-i]").forEach((el) => { ar[el.dataset.i] = el.innerHTML; });
+  const arLabel = {};
+  document.querySelectorAll("[data-i-label]").forEach((el) => { arLabel[el.dataset.iLabel] = el.getAttribute("aria-label"); });
+  const titles = { ar: document.title, en: "Mared · The first AI that lives in your mouse" };
+  const langBtn = document.getElementById("lang");
+
+  const setLang = (lang) => {
+    const isEn = lang === "en";
+    root.lang = lang; root.dir = isEn ? "ltr" : "rtl";
+    document.title = titles[lang];
+    document.querySelectorAll("[data-i]").forEach((el) => { el.innerHTML = isEn ? en[el.dataset.i] : ar[el.dataset.i]; });
+    document.querySelectorAll("[data-i-label]").forEach((el) => el.setAttribute("aria-label", isEn ? en[el.dataset.iLabel] : arLabel[el.dataset.iLabel]));
+    langBtn.lastChild.textContent = isEn ? "العربية" : "English";
+    langBtn.lang = isEn ? "ar" : "en";
+    // Demos restart in the new language.
+    stages.forEach((s) => { if (s.live || still) { s.stop(); if (s.vis || still) s.start(); } });
+  };
+
+  // Each demo plays only while it's on screen and the tab is visible.
+  if (still) stages.forEach((s) => s.start());
+  else {
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+      const s = stages.find((x) => x.el === e.target);
+      s.vis = e.isIntersecting;
+      if (s.vis && !document.hidden) s.start(); else s.stop();
+    }), { threshold: 0.3 });
+    stages.forEach((s) => io.observe(s.el));
+    document.addEventListener("visibilitychange", () => stages.forEach((s) => (document.hidden ? s.stop() : s.vis && s.start())));
+  }
+
+  // Phones can't install Mared: copy the address so they can open it on their computer.
+  const copyBtn = document.getElementById("copy");
+  copyBtn.addEventListener("click", () => {
+    const done = (label) => { copyBtn.textContent = label; };
+    if (!navigator.clipboard) return done("yamared.com"); // no clipboard: show the address to type
+    navigator.clipboard.writeText("https://yamared.com").then(() => done(T("اتنسخ ✓", "Copied ✓")), () => done("yamared.com"));
   });
-  addEventListener("scroll", schedule, { passive: true });
-  addEventListener("resize", schedule);
-  tick();
 
-  // The whole clip as a Blob makes seeking instant in both directions.
-  fetch(narrow.matches ? film.dataset.phone : film.dataset.desktop)
-    .then((r) => (r.ok ? r.blob() : Promise.reject(r.status)))
-    .then((blob) => { film.src = URL.createObjectURL(blob); })
-    .catch(() => {}); // the poster stays; the page still works
+  let saved = null;
+  try { saved = localStorage.getItem("mared-lang"); } catch (e) {}
+  langBtn.addEventListener("click", () => {
+    const next = root.lang === "en" ? "ar" : "en";
+    try { localStorage.setItem("mared-lang", next); } catch (e) {}
+    history.replaceState(null, "", "#" + next); // the address is shareable in this language
+    setLang(next);
+  });
+  // Arabic for everyone (many Arabic speakers run English Windows); #en or #ar in the link picks one, then the visitor's own choice.
+  const fromLink = () => ({ "#en": "en", "#ar": "ar" })[location.hash];
+  setLang(fromLink() || saved || "ar");
+  addEventListener("hashchange", () => { if (fromLink()) setLang(fromLink()); });
 })();
 </script>
 </body>

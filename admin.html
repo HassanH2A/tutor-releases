@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mared · Payments</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#111214">
+<link rel="icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* Hassan's approvals: wallet transfers waiting first, each with the facts needed to check it in the wallet app. */
+  :root { --bg: #111214; --raised: #1a1b1f; --line: #27282c; --field: #0b0b0d; --ink: #eeeef0; --muted: #a0a1a6; --dim: #6e6f75;
+          --gold: #f2b544; --gold-light: #ffd58a; --good: #8fdc9a; --bad: #ff8a7a; color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Readex Pro", "Segoe UI", system-ui, sans-serif; line-height: 1.6;
+         padding: env(safe-area-inset-top, 0px) max(1.25rem, env(safe-area-inset-right, 0px)) 3rem max(1.25rem, env(safe-area-inset-left, 0px)); }
+  :focus-visible { outline: 2px solid var(--gold-light); outline-offset: 3px; border-radius: 6px; }
+  main { max-width: 52rem; margin: 0 auto; padding-top: 2rem; }
+  h1 { margin: 0 0 0.25rem; font-size: 1.8rem; font-weight: 600; }
+  .sub { margin: 0 0 2rem; color: var(--muted); }
+  input { width: 100%; min-height: 50px; padding: 0 1rem; border: 1px solid var(--line); border-radius: 12px; background: var(--field); color: var(--ink); font: inherit; }
+  input:focus { outline: none; border-color: var(--gold); }
+  button { min-height: 44px; padding: 0 1.1rem; border: 0; border-radius: 999px; font: inherit; font-weight: 600; cursor: pointer; }
+  .primary { background: var(--gold); color: var(--bg); }
+  .approve { background: var(--good); color: #0c1a0e; }
+  .reject { background: var(--raised); color: var(--bad); }
+  button[disabled] { opacity: 0.5; cursor: progress; }
+  .row { display: flex; gap: 0.6rem; margin-top: 0.75rem; }
+  .msg { color: var(--muted); }
+  .err { color: var(--bad); }
+  h2 { margin: 2.5rem 0 0.75rem; font-size: 1.1rem; font-weight: 500; color: var(--muted); }
+  .list { display: grid; gap: 0.75rem; margin: 0; padding: 0; list-style: none; }
+  .p { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.5rem 1.5rem; align-items: center; padding: 1rem 1.25rem; border-radius: 16px; background: var(--raised);
+       font-variant-numeric: tabular-nums; }
+  .p .amt { font-size: 1.35rem; font-weight: 600; color: var(--gold); }
+  .p .who, .p .when { color: var(--muted); font-size: 0.92rem; overflow-wrap: anywhere; }
+  .p .from { font-size: 1.05rem; }
+  .p .acts { display: flex; gap: 0.5rem; grid-column: 2; grid-row: 1 / span 4; }
+  .p.done { background: none; box-shadow: inset 0 0 0 1px var(--line); }
+  .dup { color: var(--bad); font-weight: 600; }
+  .badge { font-weight: 600; } .badge.approved { color: var(--good); } .badge.rejected { color: var(--bad); }
+  @media (max-width: 560px) { .p { grid-template-columns: minmax(0, 1fr); } .p .acts { grid-column: auto; grid-row: auto; } }
+  [hidden] { display: none !important; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o" crossorigin="anonymous"></script>
+</head>
+<body>
+<main>
+  <h1>Payments</h1>
+  <p class="sub">InstaPay and wallet transfers. Check each one in the wallet app, then approve it: the learner's plan starts right away.</p>
+
+  <form id="signin" hidden novalidate>
+    <label for="email">Your admin email</label>
+    <input id="email" type="email" autocomplete="email" spellcheck="false" required>
+    <div class="row"><button class="primary" type="submit">Email me a sign-in link</button></div>
+    <p class="msg" id="signin-msg" role="status"></p>
+  </form>
+
+  <div id="board" hidden>
+    <p class="msg" id="who"></p>
+    <h2>Waiting <span id="n-wait"></span></h2>
+    <ul class="list" id="waiting"></ul>
+    <h2>Decided</h2>
+    <ul class="list" id="decided"></ul>
+  </div>
+  <p class="err" id="err" role="alert"></p>
+</main>
+<script>
+(() => {
+  const db = supabase.createClient("https://btyuidhqihwxnynivbgz.supabase.co", "sb_publishable_RV4AVtTxZp3CZzkKzKXRnA_q13Rxi4E",
+    { auth: { flowType: "implicit", detectSessionInUrl: true, persistSession: true } });
+  const $ = (id) => document.getElementById(id);
+  const METHOD = { instapay: "InstaPay", vodafone: "Vodafone Cash", etisalat: "Etisalat Cash", orange: "Orange Cash" };
+  const PLAN = { mini: "Mini", plus: "Plus", max: "Max" };
+  const when = (t) => new Date(t).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" });
+
+  $("signin").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const { error } = await db.auth.signInWithOtp({ email: $("email").value.trim(), options: { emailRedirectTo: location.origin + location.pathname, shouldCreateUser: false } });
+    $("signin-msg").textContent = error ? "That didn't send: " + error.message : "Check your email and open the link on this device.";
+  });
+
+  async function load(session) {
+    $("err").textContent = "";
+    if (!session) { $("signin").hidden = false; $("board").hidden = true; return; }
+    $("signin").hidden = true;
+    const { data, error } = await db.rpc("admin_manual_payments");
+    if (error) { $("err").textContent = error.code === "42501" ? `${session.user.email} isn't a payments admin.` : "Couldn't load payments: " + error.message; return; }
+    $("board").hidden = false;
+    $("who").textContent = "Signed in as " + session.user.email;
+    // The same sender number or reference on more than one report: someone may be claiming another person's transfer.
+    const seen = {};
+    data.forEach((p) => [p.sender, p.reference].filter(Boolean).forEach((v) => { const k = v.trim().toLowerCase(); (seen[k] = seen[k] || []).push(p.id); }));
+    data.forEach((p) => { p.dups = [p.sender, p.reference].filter(Boolean).some((v) => seen[v.trim().toLowerCase()].length > 1); });
+    const wait = data.filter((p) => p.pending), done = data.filter((p) => !p.pending);
+    $("n-wait").textContent = `(${wait.length})`;
+    $("waiting").replaceChildren(...(wait.length ? wait.map(card) : [empty("Nothing waiting.")]));
+    $("decided").replaceChildren(...(done.length ? done.map(card) : [empty("None yet.")]));
+  }
+  const empty = (text) => { const li = document.createElement("li"); li.className = "msg"; li.textContent = text; return li; };
+
+  function card(p) {
+    const li = document.createElement("li");
+    li.className = "p" + (p.pending ? "" : " done");
+    const line = (cls, text) => { const d = document.createElement("div"); d.className = cls; d.textContent = text; return d; };
+    li.append(
+      line("amt", `EGP ${p.amount_egp.toLocaleString("en")} · ${METHOD[p.method]}`),
+      line("from", `From ${p.sender}${p.reference ? ` · ref ${p.reference}` : ""}`),
+      line("who", `${PLAN[p.plan]} for ${p.months} month${p.months > 1 ? "s" : ""} · ${p.email}${p.phone ? " · " + p.phone : ""}`),
+      line("when", `Reported ${when(p.created_at)}${p.decided_at ? ` · ${p.status} ${when(p.decided_at)} by ${p.decided_by}` : ""}`)
+    );
+    if (p.dups) li.append(line("dup", "Same sender or reference as another report: check the wallet app carefully."));
+    const acts = document.createElement("div");
+    acts.className = "acts";
+    if (p.pending) {
+      const yes = document.createElement("button"), no = document.createElement("button");
+      yes.className = "approve"; yes.type = "button"; yes.textContent = "Approve";
+      no.className = "reject"; no.type = "button"; no.textContent = "Not received";
+      // Two clicks: the first asks, the second decides (there's no undo).
+      const twice = (btn, label, approve) => btn.addEventListener("click", () => {
+        if (btn.dataset.sure) return decide(p.id, approve, acts);
+        btn.dataset.sure = "1"; btn.textContent = label;
+        setTimeout(() => { delete btn.dataset.sure; btn.textContent = approve ? "Approve" : "Not received"; }, 4000);
+      });
+      twice(yes, "Sure? Approve", true);
+      twice(no, "Sure? Not received", false);
+      acts.append(yes, no);
+    } else {
+      const b = document.createElement("span");
+      b.className = "badge " + p.status; b.textContent = p.status === "approved" ? "Approved" : "Not received";
+      acts.append(b);
+    }
+    li.append(acts);
+    return li;
+  }
+
+  async function decide(id, approve, acts) {
+    acts.querySelectorAll("button").forEach((b) => (b.disabled = true));
+    const { error } = await db.rpc("admin_decide_payment", { p_id: id, p_approve: approve });
+    if (error) { $("err").textContent = "Didn't save: " + error.message; acts.querySelectorAll("button").forEach((b) => (b.disabled = false)); return; }
+    load((await db.auth.getSession()).data.session);
+  }
+
+  db.auth.onAuthStateChange((event, s) => { if (event === "INITIAL_SESSION" || event === "SIGNED_IN" || event === "SIGNED_OUT") load(s); });
+})();
+</script>
+</body>
+</html>

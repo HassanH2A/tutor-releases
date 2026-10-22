@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مارد · ابدأ ببلاش</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#111214">
+<link rel="icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* Sign-up: one step on screen at a time, a narrow column on black, the gold button always the next thing to do. */
+  :root {
+    --bg: #111214; --raised: #1a1b1f; --line: #27282c; --field: #0b0b0d;
+    --ink: #eeeef0; --muted: #a0a1a6; --dim: #6e6f75; --bad: #ff8a7a;
+    --gold: #f2b544; --gold-light: #ffd58a;
+    --font: "Readex Pro", "Segoe UI", system-ui, sans-serif;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 1.0625rem; line-height: 1.7;
+         caret-color: var(--gold); -webkit-tap-highlight-color: rgb(242 181 68 / 0.2);
+         padding: env(safe-area-inset-top, 0px) max(1.25rem, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px) max(1.25rem, env(safe-area-inset-left, 0px)); }
+  ::selection { background: var(--gold); color: var(--bg); }
+  :focus-visible { outline: 2px solid var(--gold-light); outline-offset: 3px; border-radius: 6px; }
+  a { color: var(--gold); text-underline-offset: 0.25em; }
+  .ltr { direction: ltr; unicode-bidi: isolate; }
+
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; max-width: 34rem; margin: 0 auto; padding-block: 1rem; }
+  .brand { display: flex; align-items: center; gap: 0.6rem; font-size: 1.125rem; font-weight: 600; color: var(--ink); text-decoration: none; }
+  .brand img { border-radius: 8px; }
+  .lang { min-height: 44px; padding: 0 0.95rem; border: 0; border-radius: 999px; background: var(--raised); color: var(--ink); font: inherit; font-size: 0.95rem; cursor: pointer; }
+
+  main { max-width: 34rem; margin: 0 auto; padding-block: clamp(1.5rem, 6vw, 4rem) 4rem; }
+  .dots { display: flex; gap: 0.4rem; margin-bottom: 2rem; }
+  .dots i { width: 2rem; height: 4px; border-radius: 4px; background: var(--line); transition: background-color 0.3s; }
+  .dots i.on { background: var(--gold); }
+  h1 { margin: 0 0 0.6rem; font-size: clamp(1.9rem, 6vw, 2.6rem); font-weight: 600; line-height: 1.2; text-wrap: balance; }
+  :root[lang="en"] h1 { letter-spacing: -0.02em; }
+  h1:focus { outline: none; }
+  .sub { margin: 0 0 2rem; color: var(--muted); text-wrap: pretty; }
+  .sub b { color: var(--ink); font-weight: 500; }
+
+  .cta { display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem; width: 100%; min-height: 56px; padding: 0 1.5rem; border: 0; border-radius: 999px;
+         background: var(--gold); color: var(--bg); font: inherit; font-size: 1.1rem; font-weight: 600; text-decoration: none; cursor: pointer;
+         box-shadow: 0 12px 34px -12px rgb(242 181 68 / 0.6); transition: background-color 0.2s var(--ease), transform 0.2s var(--ease); }
+  .cta:hover { background: var(--gold-light); }
+  .cta:active { transform: scale(0.98); }
+  .cta[disabled] { opacity: 0.55; cursor: progress; }
+  .ghost { display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem; width: 100%; min-height: 52px; padding: 0 1.25rem; border: 0; border-radius: 999px;
+           background: var(--raised); color: var(--ink); font: inherit; font-weight: 500; cursor: pointer; transition: background-color 0.2s; }
+  .ghost:hover { background: #24252a; }
+  .or { display: flex; align-items: center; gap: 1rem; margin: 1.5rem 0; color: var(--dim); font-size: 0.9rem; }
+  .or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+  label, .label { display: block; margin: 0 0 0.45rem; font-weight: 500; }
+  .hint { margin: -0.2rem 0 0.6rem; color: var(--dim); font-size: 0.9rem; }
+  input[type=email], input[type=tel], input[type=text] {
+    display: block; width: 100%; min-height: 54px; padding: 0 1.1rem; border: 1px solid var(--line); border-radius: 14px; background: var(--field); color: var(--ink);
+    font: inherit; transition: border-color 0.2s; }
+  input::placeholder { color: var(--dim); }
+  input:focus { outline: none; border-color: var(--gold); }
+  input[aria-invalid=true] { border-color: var(--bad); }
+  .field { margin-bottom: 1.5rem; }
+  .row { display: flex; gap: 0.6rem; }
+  .row > * { min-width: 0; }
+  .err { margin: 0.75rem 0 0; color: var(--bad); font-size: 0.95rem; }
+  .err:empty { display: none; }
+  .note { margin: 1rem 0 0; color: var(--muted); font-size: 0.95rem; text-align: center; }
+
+  /* Choice chips (how they found us, plan, months, method) */
+  .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0; padding: 0; border: 0; }
+  .chips label { display: inline-flex; align-items: center; min-height: 44px; margin: 0; padding: 0 1rem; border-radius: 999px; background: var(--raised); color: var(--ink);
+                 font-weight: 400; cursor: pointer; transition: background-color 0.2s, color 0.2s, box-shadow 0.2s; }
+  .chips input { position: absolute; opacity: 0; pointer-events: none; }
+  .chips label:has(input:checked) { background: rgb(242 181 68 / 0.16); color: var(--gold-light); box-shadow: inset 0 0 0 1.5px var(--gold); }
+  .chips label:has(input:focus-visible) { outline: 2px solid var(--gold-light); outline-offset: 2px; }
+  #heard-other { margin-top: 0.75rem; }
+
+  /* The two ways to continue */
+  .ways { display: grid; gap: 1rem; }
+  .way { padding: 1.4rem 1.4rem 1.5rem; border-radius: 20px; background: var(--raised); }
+  .way.main { box-shadow: inset 0 0 0 1px rgb(242 181 68 / 0.45); }
+  .way h2 { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; margin: 0 0 0.4rem; font-size: 1.2rem; font-weight: 600; }
+  .way p { margin: 0 0 1.1rem; color: var(--muted); }
+  .tag { padding: 0.1rem 0.6rem; border-radius: 999px; background: rgb(242 181 68 / 0.14); color: var(--gold); font-size: 0.8rem; font-weight: 500; }
+  .wallets { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: -0.4rem 0 1.1rem; padding: 0; list-style: none; }
+  .wallets li { padding: 0.15rem 0.7rem; border-radius: 999px; background: var(--field); color: var(--muted); font-size: 0.85rem; }
+  .flash { margin: 0 0 1.5rem; padding: 0.9rem 1.1rem; border-radius: 14px; background: rgb(242 181 68 / 0.1); color: var(--gold-light); }
+  .flash:empty { display: none; }
+
+  /* Download */
+  .steps { display: grid; gap: 0.8rem; margin: 2rem 0 0; padding: 0; list-style: none; counter-reset: s; color: var(--muted); }
+  .steps li { display: grid; grid-template-columns: 1.6rem minmax(0, 1fr); gap: 0.5rem; counter-increment: s; }
+  .steps li::before { content: counter(s); color: var(--gold); font-weight: 600; }
+  .steps b { color: var(--ink); font-weight: 500; }
+
+  /* Wallet payment */
+  .amount { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin: 1.5rem 0; padding: 1.1rem 1.25rem; border-radius: 16px; background: var(--raised);
+            font-variant-numeric: tabular-nums; }
+  .amount b { font-size: 1.8rem; font-weight: 600; color: var(--gold); }
+  .send { margin: 0 0 1.5rem; padding: 1.1rem 1.25rem; border-radius: 16px; background: var(--field); box-shadow: inset 0 0 0 1px var(--line); }
+  .send p { margin: 0 0 0.6rem; color: var(--muted); }
+  .send .to { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+  .send .to strong { font-size: 1.35rem; font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .copy { flex: none; min-height: 40px; padding: 0 1rem; border: 0; border-radius: 999px; background: var(--raised); color: var(--gold); font: inherit; font-weight: 600; cursor: pointer; }
+  .mine { margin: 2rem 0 0; padding: 0; list-style: none; }
+  .mine li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.75rem 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.95rem; }
+  .st-pending { color: var(--gold); } .st-approved { color: #8fdc9a; } .st-rejected { color: var(--bad); }
+
+  [hidden] { display: none !important; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o" crossorigin="anonymous"></script>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="./"><img src="icon.png" width="30" height="30" alt=""><span translate="no" data-i="brand">مارد</span></a>
+  <button class="lang" id="lang" type="button" lang="en">English</button>
+</header>
+
+<main>
+  <div class="dots" id="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+  <!-- 1. Account -->
+  <section id="s-account" hidden>
+    <h1 data-i="accT">ابدأ تجربتك المجانية</h1>
+    <p class="sub" data-i="accP">جرّب <b>3 أسئلة، ومهمة «اعملهالي»، ودرس كامل</b> ببلاش. ابدأ بحسابك:</p>
+    <button class="ghost" id="google" type="button" hidden>
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.5-4.5 2.4-7.2 2.4-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>
+      <span data-i="google">كمّل بحساب جوجل</span>
+    </button>
+    <div class="or" id="or" hidden><span data-i="or">أو بالإيميل</span></div>
+    <form id="email-form" novalidate>
+      <div class="field">
+        <label for="email" data-i="emailL">إيميلك</label>
+        <input id="email" name="email" type="email" dir="ltr" autocomplete="email" inputmode="email" spellcheck="false" placeholder="name@gmail.com" required>
+      </div>
+      <button class="cta" type="submit" data-i="emailB">ابعتلي لينك الدخول</button>
+      <p class="err" id="email-err" role="alert"></p>
+    </form>
+    <div id="email-sent" hidden>
+      <p class="flash" id="sent-text"></p>
+      <button class="ghost" id="email-again" type="button" data-i="again">إيميل تاني؟</button>
+    </div>
+  </section>
+
+  <!-- 2. About you -->
+  <section id="s-about" hidden>
+    <h1 data-i="aboutT">حاجتين صغيرين</h1>
+    <p class="sub" data-i="aboutP">عشان نقدر نساعدك لو احتجت حاجة.</p>
+    <form id="about-form" novalidate>
+      <div class="field">
+        <label for="phone" data-i="phoneL">رقم موبايلك</label>
+        <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" dir="ltr" placeholder="01012345678" required>
+      </div>
+      <fieldset class="field chips" id="heard" aria-labelledby="heard-l">
+        <legend class="label" id="heard-l" data-i="heardL">عرفت مارد منين؟</legend>
+        <label><input type="radio" name="heard" value="friend"><span data-i="hFriend">صاحب أو حد من العيلة</span></label>
+        <label><input type="radio" name="heard" value="facebook"><span translate="no">Facebook</span></label>
+        <label><input type="radio" name="heard" value="instagram"><span translate="no">Instagram</span></label>
+        <label><input type="radio" name="heard" value="tiktok"><span translate="no">TikTok</span></label>
+        <label><input type="radio" name="heard" value="youtube"><span translate="no">YouTube</span></label>
+        <label><input type="radio" name="heard" value="google"><span data-i="hGoogle">بحث على جوجل</span></label>
+        <label><input type="radio" name="heard" value="ad"><span data-i="hAd">إعلان</span></label>
+        <label><input type="radio" name="heard" value="other"><span data-i="hOther">حاجة تانية</span></label>
+      </fieldset>
+      <div class="field" id="heard-other-box" hidden>
+        <label for="heard-other" data-i="hOtherL">منين؟</label>
+        <input id="heard-other" name="heard_detail" type="text" maxlength="200" autocomplete="off">
+      </div>
+      <button class="cta" type="submit" data-i="next">كمّل</button>
+      <p class="err" id="about-err" role="alert"></p>
+    </form>
+  </section>
+
+  <!-- 3. After the trial -->
+  <section id="s-plan" hidden>
+    <h1 data-i="planT">لما التجربة تخلص، تحب تكمّل إزاي؟</h1>
+    <p class="sub" data-i="planP">اختار دلوقتي، والتجربة ببلاش في الحالتين.</p>
+    <p class="flash" id="plan-flash" role="status"></p>
+    <div class="ways">
+      <div class="way main">
+        <h2><span data-i="cardT">بالكارت</span><span class="tag" data-i="cardTag">الأسهل</span></h2>
+        <p data-i="cardP">مش هتدفع حاجة النهارده. لما التجربة تخلص (أو بعد 14 يوم)، بيبدأ مارد بلس بـ 499 جنيه في الشهر على نفس الكارت. تلغي في أي وقت.</p>
+        <button class="cta" id="card" type="button" data-i="cardB">حط الكارت وابدأ</button>
+        <p class="err" id="card-err" role="alert"></p>
+      </div>
+      <div class="way">
+        <h2 data-i="walletT">إنستاباي أو محفظة</h2>
+        <p data-i="walletP">ابدأ التجربة دلوقتي من غير كارت، ولما تحب تكمّل ادفع من الموبايل.</p>
+        <ul class="wallets"><li translate="no">InstaPay</li><li translate="no">Vodafone Cash</li><li translate="no">Etisalat Cash</li><li translate="no">Orange Cash</li></ul>
+        <button class="ghost" id="no-card" type="button" data-i="walletB">ابدأ التجربة</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Download -->
+  <section id="s-download" hidden>
+    <h1 data-i="dlT">جاهز! مارد بينزل دلوقتي.</h1>
+    <p class="sub" id="dl-sub"></p>
+    <a class="cta" id="dl" href="https://github.com/HassanH2A/tutor-releases/releases/latest/download/TutorApp-win-Setup.exe" data-i="dlB">نزّل لـ Windows</a>
+    <ol class="steps">
+      <li><span data-i="st1">افتح الملف اللي نزل.</span></li>
+      <li><span data-i="st2">لو ظهر «<span translate="no" class="ltr">Windows protected your PC</span>»: دوس <b translate="no">More info</b> وبعدين <b translate="no">Run anyway</b>.</span></li>
+      <li><span id="st3"></span></li>
+    </ol>
+    <p class="note"><a href="#pay" data-i="toPay">عايز تدفع بإنستاباي أو محفظة؟</a></p>
+  </section>
+
+  <!-- Wallet payment -->
+  <section id="s-pay" hidden>
+    <h1 data-i="payT">ادفع بإنستاباي أو محفظة</h1>
+    <p class="sub" data-i="payP">حوّل المبلغ، وقولّنا حوّلت منين، وهنفعّل اشتراكك أول ما نتأكد.</p>
+    <form id="pay-form" novalidate>
+      <fieldset class="field chips" aria-labelledby="plan-l">
+        <legend class="label" id="plan-l" data-i="planL">الباقة</legend>
+        <label><input type="radio" name="plan" value="mini"><span translate="no" data-i="mini">ميني</span></label>
+        <label><input type="radio" name="plan" value="plus" checked><span translate="no" data-i="plus">بلس</span></label>
+        <label><input type="radio" name="plan" value="max"><span translate="no" data-i="max">ماكس</span></label>
+      </fieldset>
+      <fieldset class="field chips" aria-labelledby="months-l">
+        <legend class="label" id="months-l" data-i="monthsL">المدة</legend>
+        <label><input type="radio" name="months" value="1" checked><span data-i="m1">شهر</span></label>
+        <label><input type="radio" name="months" value="3"><span data-i="m3">3 شهور</span></label>
+        <label><input type="radio" name="months" value="12"><span data-i="m12">سنة</span></label>
+      </fieldset>
+      <div class="amount"><span data-i="total">المبلغ</span><b id="amount" class="ltr"></b></div>
+      <fieldset class="field chips" id="methods" aria-labelledby="method-l">
+        <legend class="label" id="method-l" data-i="methodL">هتحوّل بإيه؟</legend>
+      </fieldset>
+      <p class="flash" id="no-wallets" hidden data-i="noWallets">الدفع بالمحافظ هيتفتح قريب جدًا. لحد ما يتفتح، تقدر تدفع بالكارت.</p>
+      <div class="send" id="send" hidden>
+        <p id="send-text"></p>
+        <div class="to"><strong id="send-to" class="ltr"></strong><button class="copy" id="send-copy" type="button" data-i="copy">انسخ</button></div>
+      </div>
+      <div class="field">
+        <label for="sender" data-i="senderL">حوّلت من رقم أو حساب إيه؟</label>
+        <p class="hint" data-i="senderH">رقم المحفظة، أو اسم إنستاباي بتاعك.</p>
+        <input id="sender" name="sender" type="text" maxlength="80" autocomplete="off" spellcheck="false" dir="auto" required>
+      </div>
+      <div class="field">
+        <label for="reference" data-i="refL">رقم العملية (لو موجود)</label>
+        <input id="reference" name="reference" type="text" maxlength="80" autocomplete="off" spellcheck="false" dir="ltr">
+      </div>
+      <button class="cta" type="submit" data-i="payB">حوّلت، أكّدوا اشتراكي</button>
+      <p class="err" id="pay-err" role="alert"></p>
+    </form>
+    <p class="flash" id="pay-done" hidden role="status"></p>
+    <ul class="mine" id="mine"></ul>
+  </section>
+</main>
+
+<script>
+(() => {
+  const SUPABASE_URL = "https://btyuidhqihwxnynivbgz.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_RV4AVtTxZp3CZzkKzKXRnA_q13Rxi4E";
+  const HERE = location.origin + location.pathname;
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { flowType: "implicit", detectSessionInUrl: true, persistSession: true } });
+  const $ = (id) => document.getElementById(id);
+  const params = new URLSearchParams(location.search);
+  const root = document.documentElement;
+  const T = (ar, en) => (root.lang === "en" ? en : ar);
+
+  // English copy; the Arabic is the page itself (same pattern as index.html).
+  const en = {
+    brand: "Mared",
+    accT: "Start your free trial", accP: "Try <b>3 questions, one “do it for me” task and a full lesson</b> for free. Start with your account:",
+    google: "Continue with Google", or: "or with email", emailL: "Your email", emailB: "Email me a sign-in link", again: "A different email?",
+    aboutT: "Two quick things", aboutP: "So we can help you if you ever need it.", phoneL: "Your mobile number",
+    heardL: "How did you find Mared?", hFriend: "A friend or family", hGoogle: "Google search", hAd: "An ad", hOther: "Something else", hOtherL: "Where?",
+    next: "Continue",
+    planT: "When the trial ends, how would you like to continue?", planP: "Choose now. The trial is free either way.",
+    cardT: "By card", cardTag: "Easiest",
+    cardP: "Nothing is charged today. When your trial is used up (or after 14 days), Mared Plus starts at EGP 499 / $19.99 a month on the same card. Cancel anytime.",
+    cardB: "Add a card and start", walletT: "InstaPay or a wallet", walletP: "Start the trial now without a card, and pay from your phone when you want to continue.", walletB: "Start the trial",
+    dlT: "You're in! Mared is downloading.", dlB: "Download for Windows",
+    st1: "Open the file you downloaded.",
+    st2: 'If you see “<span translate="no" class="ltr">Windows protected your PC</span>”, click <b translate="no">More info</b>, then <b translate="no">Run anyway</b>.',
+    toPay: "Want to pay with InstaPay or a wallet?",
+    payT: "Pay with InstaPay or a wallet", payP: "Send the amount, tell us where you sent it from, and we'll turn on your plan as soon as we confirm it.",
+    planL: "Plan", mini: "Mini", plus: "Plus", max: "Max", monthsL: "How long", m1: "1 month", m3: "3 months", m12: "1 year", total: "Amount",
+    methodL: "How will you send it?", noWallets: "Wallet payments open very soon. Until then, you can pay by card.", copy: "Copy",
+    senderL: "Which number or account did you send it from?", senderH: "Your wallet number, or your InstaPay name.", refL: "Transaction number (if there is one)",
+    payB: "I've sent it, confirm my plan"
+  };
+  const METHODS = { instapay: ["إنستاباي", "InstaPay"], vodafone: ["فودافون كاش", "Vodafone Cash"], etisalat: ["اتصالات كاش", "Etisalat Cash"], orange: ["أورنج كاش", "Orange Cash"] };
+  const STATUS = { pending: ["بنراجعه", "Checking"], approved: ["اتفعّل", "Active"], rejected: ["ما وصلش", "Not received"] };
+
+  const ar = {};
+  document.querySelectorAll("[data-i]").forEach((el) => { ar[el.dataset.i] = el.innerHTML; });
+  const setLang = (lang) => {
+    root.lang = lang; root.dir = lang === "en" ? "ltr" : "rtl";
+    document.title = T("مارد · ابدأ ببلاش", "Mared · Start for free");
+    document.querySelectorAll("[data-i]").forEach((el) => { el.innerHTML = lang === "en" ? en[el.dataset.i] : ar[el.dataset.i]; });
+    $("lang").textContent = lang === "en" ? "العربية" : "English";
+    $("lang").lang = lang === "en" ? "ar" : "en";
+    refreshText();
+  };
+  let lang = "ar";
+  try { lang = localStorage.getItem("mared-lang") || "ar"; } catch (e) {}
+  $("lang").addEventListener("click", () => {
+    const next = root.lang === "en" ? "ar" : "en";
+    try { localStorage.setItem("mared-lang", next); } catch (e) {}
+    setLang(next);
+  });
+
+  // Steps
+  const STEPS = ["s-account", "s-about", "s-plan", "s-download", "s-pay"];
+  let session = null, details = null, current = "s-account";
+  const show = (id) => {
+    current = id;
+    STEPS.forEach((s) => { $(s).hidden = s !== id; });
+    const n = { "s-account": 1, "s-about": 2, "s-plan": 3, "s-download": 4 }[id] || 0;
+    $("dots").hidden = !n;
+    [...$("dots").children].forEach((d, i) => d.classList.toggle("on", i < n));
+    refreshText();
+    const h = $(id).querySelector("h1");
+    if (h) { h.tabIndex = -1; h.focus({ preventScroll: true }); }
+    scrollTo(0, 0);
+  };
+  // Lines that include the learner's own email or numbers.
+  function refreshText() {
+    const email = session?.user?.email ?? "";
+    $("sent-text").textContent = T(`بعتنالك لينك على ${email || $("email").value}. افتحه من الجهاز ده وهتكمّل من هنا.`, `We sent a link to ${email || $("email").value}. Open it on this device to continue.`);
+    $("dl-sub").textContent = T("لو التنزيل ما بدأش لوحده، دوس على الزرار.", "If the download didn't start by itself, click the button.");
+    $("st3").textContent = T(`افتح مارد وادخل بنفس الإيميل: ${email}`, `Open Mared and sign in with the same email: ${email}`);
+    if (details) paintPay();
+  }
+
+  // Where to go after signing in, kept through the email link.
+  const back = () => {
+    const q = new URLSearchParams();
+    if (location.hash === "#pay" || params.get("next") === "pay") q.set("next", "pay");
+    return HERE + (q.toString() ? "?" + q : "");
+  };
+
+  async function route() {
+    if (!session) return show("s-account");
+    if (location.hash === "#pay" || params.get("next") === "pay") return openPay();
+    const { data: profile } = await db.from("profiles").select("phone").eq("user_id", session.user.id).maybeSingle();
+    if (!profile?.phone) return show("s-about");
+    if (params.get("card") === "ok") return download();
+    if (params.get("card") === "back") $("plan-flash").textContent = T("الكارت ما اتحطش. مفيش مشكلة: تقدر تجرّب تاني، أو تبدأ التجربة وتدفع بمحفظة بعدين.", "No card was added. No problem: try again, or start the trial and pay with a wallet later.");
+    show("s-plan");
+  }
+
+  // 1. Account
+  fetch(`${SUPABASE_URL}/auth/v1/settings`, { headers: { apikey: SUPABASE_KEY } })
+    .then((r) => r.json()).then((s) => { if (s?.external?.google) { $("google").hidden = false; $("or").hidden = false; } }).catch(() => {});
+  $("google").addEventListener("click", () => db.auth.signInWithOAuth({ provider: "google", options: { redirectTo: back() } }));
+  $("email-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const input = $("email"), err = $("email-err"), btn = e.submitter;
+    const email = input.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { input.setAttribute("aria-invalid", "true"); err.textContent = T("اكتب إيميل صحيح، زي name@gmail.com.", "Enter a valid email, like name@gmail.com."); input.focus(); return; }
+    input.removeAttribute("aria-invalid"); err.textContent = ""; btn.disabled = true;
+    const { error } = await db.auth.signInWithOtp({ email, options: { emailRedirectTo: back() } });
+    btn.disabled = false;
+    if (error) { err.textContent = /rate|seconds/i.test(error.message) ? T("استنى دقيقة وجرّب تاني.", "Wait a minute and try again.") : T("الإيميل ما اتبعتش. جرّب تاني بعد شوية.", "The email didn't send. Try again in a moment."); return; }
+    $("email-form").hidden = true; $("email-sent").hidden = false; refreshText();
+  });
+  $("email-again").addEventListener("click", () => { $("email-form").hidden = false; $("email-sent").hidden = true; $("email").focus(); });
+
+  // 2. About you
+  document.querySelectorAll('input[name="heard"]').forEach((r) => r.addEventListener("change", () => { $("heard-other-box").hidden = r.value !== "other" || !r.checked; }));
+  // Egyptian numbers as people type them (010..., 0020..., 20...) become +20...; others need their + country code.
+  const normalPhone = (v) => {
+    let d = v.replace(/[\s\-()]/g, "");
+    if (/^00\d+$/.test(d)) d = "+" + d.slice(2);
+    if (/^01\d{9}$/.test(d)) d = "+2" + d;
+    if (/^201\d{9}$/.test(d)) d = "+" + d;
+    return /^\+\d{8,15}$/.test(d) ? d : null;
+  };
+  $("about-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const err = $("about-err"), btn = e.submitter, phone = normalPhone($("phone").value);
+    if (!phone) { $("phone").setAttribute("aria-invalid", "true"); err.textContent = T("اكتب رقمك كامل، زي 01012345678.", "Enter your full number, like +201012345678."); $("phone").focus(); return; }
+    $("phone").removeAttribute("aria-invalid");
+    const heard = document.querySelector('input[name="heard"]:checked')?.value ?? null;
+    if (!heard) { err.textContent = T("اختار عرفتنا منين.", "Choose how you found us."); return; }
+    err.textContent = ""; btn.disabled = true;
+    const { error } = await db.from("profiles").update({ phone, heard_from: heard, heard_detail: heard === "other" ? $("heard-other").value.trim() || null : null }).eq("user_id", session.user.id);
+    btn.disabled = false;
+    if (error) { err.textContent = T("ما اتحفظش. جرّب تاني.", "That didn't save. Try again."); return; }
+    show("s-plan");
+  });
+
+  // 3. After the trial
+  $("card").addEventListener("click", async (e) => {
+    const btn = e.currentTarget, err = $("card-err");
+    btn.disabled = true; err.textContent = "";
+    const r = await callBilling({ action: "trial" });
+    btn.disabled = false;
+    if (r.url) { location.href = r.url; return; }
+    if (r.error === "trial_used") { err.textContent = T("خدت التجربة المجانية قبل كده. نزّل مارد واشترك من جوّاه، أو ادفع بمحفظة.", "You've already had your free trial. Download Mared and subscribe inside it, or pay with a wallet."); return; }
+    if (r.error === "payments_not_set_up") { err.textContent = T("الدفع بالكارت لسه بيتجهّز. ابدأ التجربة من غير كارت.", "Card payments are still being set up. Start the trial without a card."); return; }
+    err.textContent = T("صفحة الكارت ما فتحتش. جرّب تاني بعد دقيقة.", "The card page didn't open. Try again in a minute.");
+  });
+  $("no-card").addEventListener("click", download);
+  async function callBilling(body) {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/billing`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY, Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify(body)
+      });
+      return await res.json();
+    } catch (e) { return { error: "network" }; }
+  }
+
+  // 4. Download (starts by itself once)
+  function download() {
+    show("s-download");
+    try { if (sessionStorage.getItem("mared-dl") !== "1") { sessionStorage.setItem("mared-dl", "1"); location.href = $("dl").href; } } catch (e) {}
+  }
+
+  // Wallet payment
+  async function openPay() {
+    show("s-pay");
+    if (!details) {
+      const { data } = await db.rpc("payment_details");
+      details = data || { wallets: {}, packs: {} };
+      const box = $("methods");
+      Object.entries(METHODS).forEach(([k]) => {
+        if (!details.wallets?.[k]) return;
+        const l = document.createElement("label");
+        l.innerHTML = `<input type="radio" name="method" value="${k}"><span></span>`;
+        l.querySelector("input").addEventListener("change", paintPay);
+        box.append(l);
+      });
+      const first = box.querySelector("input");
+      if (first) first.checked = true;
+      $("no-wallets").hidden = !!first;
+      $("pay-form").querySelectorAll('input[name="plan"], input[name="months"]').forEach((i) => i.addEventListener("change", paintPay));
+    }
+    paintPay();
+    loadMine();
+  }
+  function paintPay() {
+    const plan = document.querySelector('input[name="plan"]:checked')?.value, months = document.querySelector('input[name="months"]:checked')?.value;
+    const amount = details?.packs?.[plan]?.[months];
+    $("amount").textContent = amount ? T(`${amount.toLocaleString("en")} جنيه`, `EGP ${amount.toLocaleString("en")}`) : "";
+    $("methods").querySelectorAll("label").forEach((l) => { l.querySelector("span").textContent = T(...METHODS[l.querySelector("input").value]); });
+    const method = document.querySelector('input[name="method"]:checked')?.value;
+    $("send").hidden = !method;
+    if (method) {
+      $("send-text").textContent = T(`حوّل ${amount?.toLocaleString("en")} جنيه بـ${METHODS[method][0]} على:`, `Send EGP ${amount?.toLocaleString("en")} by ${METHODS[method][1]} to:`);
+      $("send-to").textContent = details.wallets[method];
+    }
+    $("pay-form").querySelector('button[type="submit"]').disabled = !method;
+  }
+  $("send-copy").addEventListener("click", () => {
+    const b = $("send-copy");
+    navigator.clipboard?.writeText($("send-to").textContent).then(() => { b.textContent = T("اتنسخ ✓", "Copied ✓"); }, () => {});
+  });
+  $("pay-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const err = $("pay-err"), btn = e.submitter, sender = $("sender").value.trim();
+    if (sender.length < 3) { $("sender").setAttribute("aria-invalid", "true"); err.textContent = T("اكتب الرقم أو الاسم اللي حوّلت منه.", "Enter the number or name you sent it from."); $("sender").focus(); return; }
+    $("sender").removeAttribute("aria-invalid"); err.textContent = ""; btn.disabled = true;
+    const { error } = await db.rpc("report_manual_payment", {
+      p_method: document.querySelector('input[name="method"]:checked').value,
+      p_plan: document.querySelector('input[name="plan"]:checked').value,
+      p_months: Number(document.querySelector('input[name="months"]:checked').value),
+      p_sender: sender, p_reference: $("reference").value.trim() || null
+    });
+    btn.disabled = false;
+    if (error) { err.textContent = /pending/.test(error.message) ? T("عندك تحويلات لسه بنراجعها. استنى لما نأكّدها.", "You have transfers we're still checking. Wait until we confirm them.") : T("ما اتبعتش. جرّب تاني.", "That didn't send. Try again."); return; }
+    $("pay-form").hidden = true;
+    $("pay-done").hidden = false;
+    $("pay-done").textContent = T("تمام! هنراجع التحويل ونفعّل اشتراكك في أقرب وقت. هتلاقيه شغّال في مارد على طول.", "Done! We'll check the transfer and turn on your plan soon. You'll see it in Mared right away.");
+    loadMine();
+  });
+  async function loadMine() {
+    const { data } = await db.from("manual_payments").select("id, method, plan, months, amount_egp, status, created_at").order("created_at", { ascending: false }).limit(5);
+    $("mine").replaceChildren(...(data || []).map((p) => {
+      const li = document.createElement("li");
+      li.innerHTML = `<span></span><span class="st-${p.status}"></span>`;
+      li.firstChild.textContent = `${T(...METHODS[p.method])} · ${p.amount_egp.toLocaleString("en")} ${T("جنيه", "EGP")}`;
+      li.lastChild.textContent = T(...STATUS[p.status]);
+      return li;
+    }));
+  }
+  addEventListener("hashchange", () => { if (location.hash === "#pay" && session) openPay(); });
+
+  setLang(lang);
+  // Once on load (INITIAL_SESSION), and again when the email link or Google signs them in.
+  db.auth.onAuthStateChange((event, s) => {
+    const was = session;
+    session = s;
+    if (event === "INITIAL_SESSION" || (!was && s)) route();
+  });
+})();
+</script>
+</body>
+</html>
