@@ -168,6 +168,7 @@
   <!-- 2. About you -->
   <section id="s-about" hidden>
     <h1 data-i="aboutT">حاجتين صغيرين</h1>
+    <p class="flash" id="about-flash" role="status"></p>
     <p class="sub" data-i="aboutP">عشان نقدر نساعدك لو احتجت حاجة.</p>
     <form id="about-form" novalidate>
       <div class="field">
@@ -283,6 +284,10 @@
   const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { flowType: "implicit", detectSessionInUrl: true, persistSession: true } });
   const $ = (id) => document.getElementById(id);
   const params = new URLSearchParams(location.search);
+  // Arriving from the email link: say the email is confirmed, or that the link expired (Supabase puts #error=... in the address).
+  const linkHash = new URLSearchParams(location.hash.slice(1));
+  const FROM_LINK = linkHash.has("access_token") || new URLSearchParams(location.search).has("code");
+  const LINK_FAILED = linkHash.get("error_code") || linkHash.get("error");
   const PRICES = { mini: ["ميني", "Mini"], plus: ["بلس", "Plus"], max: ["ماكس", "Max"] };
   const PLAN = PRICES[params.get("plan")] ? params.get("plan") : "plus";
   const root = document.documentElement;
@@ -371,6 +376,8 @@
   };
 
   async function route() {
+    if (!session && LINK_FAILED) $("email-err").textContent = T("اللينك ده خلص أو اتستخدم قبل كده. اطلب كود جديد، أو اكتب الكود اللي في الإيميل.", "That link has expired or was already used. Ask for a new code, or type the code from the email.");
+    if (session && FROM_LINK) $("about-flash").textContent = T("✓ تم تأكيد إيميلك.", "✓ Your email is confirmed.");
     if (!session) { show("s-account"); if (pending()) showSent(pending()); return; }
     forget();
     if (location.hash === "#pay" || params.get("next") === "pay") return openPay();

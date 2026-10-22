@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مارد · تم تأكيد إيميلك</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#111214">
+<link rel="icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* Where the sign-in link lands after the app has signed the learner in (the app redirects here), or when a link
+     has expired. One message in the middle of the screen, the gold check glowing like the pointer when Mared works. */
+  :root { --bg: #111214; --raised: #1a1b1f; --line: #27282c; --ink: #eeeef0; --muted: #a0a1a6; --dim: #6e6f75;
+          --gold: #f2b544; --gold-light: #ffd58a; --bad: #ff8a7a; --ease: cubic-bezier(0.16, 1, 0.3, 1); color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin: 0; display: grid; place-items: center; background: radial-gradient(60% 50% at 50% 38%, rgb(242 181 68 / 0.1), transparent 70%), var(--bg);
+         color: var(--ink); font-family: "Readex Pro", "Segoe UI", system-ui, sans-serif; line-height: 1.7; text-align: center;
+         padding: max(1.5rem, env(safe-area-inset-top, 0px)) max(1.25rem, env(safe-area-inset-right, 0px)) max(1.5rem, env(safe-area-inset-bottom, 0px)) max(1.25rem, env(safe-area-inset-left, 0px)); }
+  ::selection { background: var(--gold); color: var(--bg); }
+  :focus-visible { outline: 2px solid var(--gold-light); outline-offset: 4px; border-radius: 8px; }
+  main { width: min(30rem, 100%); }
+  .mark { position: relative; width: 112px; height: 112px; margin: 0 auto 2rem; }
+  .mark img { width: 112px; height: 112px; border-radius: 26px; box-shadow: 0 24px 60px -20px rgb(242 181 68 / 0.55); }
+  .badge { position: absolute; inset-inline-end: -14px; bottom: -14px; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%;
+           background: var(--gold); color: var(--bg); box-shadow: 0 0 0 5px var(--bg), 0 0 28px rgb(242 181 68 / 0.7);
+           animation: pop 0.6s var(--ease) 0.15s both; }
+  .bad .badge { background: var(--bad); box-shadow: 0 0 0 5px var(--bg), 0 0 24px rgb(255 138 122 / 0.5); }
+  .badge svg { width: 26px; height: 26px; }
+  .badge path { stroke-dasharray: 30; stroke-dashoffset: 30; animation: draw 0.5s var(--ease) 0.45s forwards; }
+  @keyframes pop { from { transform: scale(0.4); opacity: 0; } }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  h1 { margin: 0 0 0.6rem; font-size: clamp(1.9rem, 7vw, 2.6rem); font-weight: 600; line-height: 1.25; text-wrap: balance; }
+  :root[lang="en"] h1 { letter-spacing: -0.02em; }
+  p { margin: 0 auto; max-width: 26rem; color: var(--muted); font-size: 1.1rem; text-wrap: pretty; }
+  .next { display: grid; gap: 0.6rem; margin: 2rem auto 0; padding: 1rem 1.25rem; max-width: 24rem; border-radius: 16px; background: var(--raised); color: var(--muted); font-size: 0.98rem; text-align: start; }
+  .next b { color: var(--ink); font-weight: 500; }
+  kbd { padding: 0.05rem 0.45rem; border-radius: 6px; background: #0b0b0d; color: var(--gold); font: inherit; font-weight: 600; direction: ltr; unicode-bidi: isolate; }
+  .links { display: flex; justify-content: center; gap: 1.25rem; margin-top: 2rem; font-size: 0.95rem; }
+  a { color: var(--gold); text-underline-offset: 0.25em; }
+  .lang { position: fixed; top: max(1rem, env(safe-area-inset-top, 0px)); inset-inline-end: max(1rem, env(safe-area-inset-right, 0px)); min-height: 44px; padding: 0 1rem;
+          border: 0; border-radius: 999px; background: var(--raised); color: var(--ink); font: inherit; font-size: 0.95rem; cursor: pointer; }
+  [hidden] { display: none !important; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } .badge path { stroke-dashoffset: 0; } }
+</style>
+</head>
+<body>
+<button class="lang" id="lang" type="button" lang="en">English</button>
+<main id="main">
+  <div class="mark">
+    <img src="icon.png" width="112" height="112" alt="">
+    <span class="badge" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path id="tick" d="m5 12.5 4.5 4.5L19 7.5"/></svg>
+    </span>
+  </div>
+  <h1 id="title"></h1>
+  <p id="sub"></p>
+  <div class="next" id="next"></div>
+  <div class="links"><a href="./" id="home"></a><a href="mailto:contact@yamared.com" translate="no">contact@yamared.com</a></div>
+</main>
+<script>
+(() => {
+  // ?lang=ar|en (the app passes its language). An expired or used link arrives as ?error=1 from the app, or with
+  // Supabase's own #error=...&error_code=otp_expired; then the page says so and points to the 6-digit code.
+  const q = new URLSearchParams(location.search), h = new URLSearchParams(location.hash.slice(1));
+  const failed = q.get("error") || h.get("error") || h.get("error_code");
+  let lang = q.get("lang") === "en" ? "en" : "ar";
+  try { if (!q.get("lang")) lang = localStorage.getItem("mared-lang") || "ar"; } catch (e) {}
+  if (failed) { document.getElementById("main").classList.add("bad"); document.getElementById("tick").setAttribute("d", "M7 7l10 10M17 7 7 17"); }
+
+  const TEXT = {
+    ok: {
+      ar: ["تم تأكيد إيميلك.", "ودخلت مارد خلاص. ارجع للبرنامج، كل حاجة جاهزة.",
+           "<span>دوس <kbd>Right Ctrl</kbd> وخليك دايس، واسأل عن أي حاجة على شاشتك.</span><span><b>تقدر تقفل الصفحة دي.</b></span>", "yamared.com"],
+      en: ["Your email is confirmed.", "You're signed in to Mared. Head back to the app; everything's ready.",
+           "<span>Hold <kbd>Right Ctrl</kbd> and ask about anything on your screen.</span><span><b>You can close this page.</b></span>", "yamared.com"],
+    },
+    bad: {
+      ar: ["اللينك ده خلص.", "لينك الدخول بيشتغل مرة واحدة، ولمدة ساعة بس.",
+           "<span><b>ولا يهمك:</b> الإيميل فيه كمان كود من 6 أرقام. اكتبه في مارد، أو اطلب إيميل جديد من شاشة الدخول.</span>", "ارجع للموقع"],
+      en: ["This link has expired.", "A sign-in link works once, and only for an hour.",
+           "<span><b>No problem:</b> the email also has a 6-digit code. Type it in Mared, or ask for a new email on the sign-in screen.</span>", "Back to the website"],
+    },
+  };
+  const paint = () => {
+    const [t, s, n, home] = TEXT[failed ? "bad" : "ok"][lang];
+    const root = document.documentElement;
+    root.lang = lang; root.dir = lang === "en" ? "ltr" : "rtl";
+    document.title = lang === "en" ? (failed ? "Mared · Link expired" : "Mared · Email confirmed") : (failed ? "مارد · اللينك خلص" : "مارد · تم تأكيد إيميلك");
+    document.getElementById("title").textContent = t;
+    document.getElementById("sub").textContent = s;
+    document.getElementById("next").innerHTML = n; // fixed strings above, never from the address
+    document.getElementById("home").textContent = home;
+    const b = document.getElementById("lang");
+    b.textContent = lang === "en" ? "العربية" : "English"; b.lang = lang === "en" ? "ar" : "en";
+  };
+  document.getElementById("lang").addEventListener("click", () => { lang = lang === "en" ? "ar" : "en"; try { localStorage.setItem("mared-lang", lang); } catch (e) {} paint(); });
+  paint();
+})();
+</script>
+</body>
+</html>
