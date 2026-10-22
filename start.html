@@ -68,6 +68,8 @@
   .field { margin-bottom: 1.5rem; }
   .row { display: flex; gap: 0.6rem; }
   .row > * { min-width: 0; }
+  #code { font-size: 1.4rem; letter-spacing: 0.4em; text-align: center; font-variant-numeric: tabular-nums; }
+  .owner { margin: 3rem 0 0; color: var(--dim); font-size: 0.8rem; text-align: center; }
   .err { margin: 0.75rem 0 0; color: var(--bad); font-size: 0.95rem; }
   .err:empty { display: none; }
   .note { margin: 1rem 0 0; color: var(--muted); font-size: 0.95rem; text-align: center; }
@@ -149,6 +151,14 @@
     </form>
     <div id="email-sent" hidden>
       <p class="flash" id="sent-text"></p>
+      <form id="code-form" class="field" novalidate>
+        <label for="code" data-i="codeL">اكتب الكود اللي في الإيميل</label>
+        <div class="row">
+          <input id="code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" dir="ltr" placeholder="123456" required>
+          <button class="cta" type="submit" style="width:auto" data-i="codeB">ادخل</button>
+        </div>
+        <p class="err" id="code-err" role="alert"></p>
+      </form>
       <button class="ghost" id="email-again" type="button" data-i="again">إيميل تاني؟</button>
     </div>
   </section>
@@ -260,6 +270,7 @@
     <p class="flash" id="pay-done" hidden role="status"></p>
     <ul class="mine" id="mine"></ul>
   </section>
+  <p class="owner" data-i="owner">مارد منتج من <bdi dir="ltr" translate="no">Felicity Capital Limited Liability Company</bdi>، وكل الحقوق محفوظة لها. <span class="ltr">© 2026</span></p>
 </main>
 
 <script>
@@ -280,6 +291,7 @@
     brand: "Mared",
     accT: "Start your free trial", accP: "Try <b>3 questions, one “do it for me” task and a full lesson</b> for free. Start with your account:",
     agree: 'By signing up you agree to the <a href="privacy.html">privacy policy</a>.',
+    codeL: "Type the code from the email", codeB: "Sign in", owner: 'Mared is a product of <span translate="no">Felicity Capital Limited Liability Company</span>, which owns all rights to it. © 2026',
     google: "Continue with Google", or: "or with email", emailL: "Your email", emailB: "Email me a sign-in link", again: "A different email?",
     aboutT: "Two quick things", aboutP: "So we can help you if you ever need it.", phoneL: "Your mobile number",
     heardL: "How did you find Mared?", hFriend: "A friend or family", hGoogle: "Google search", hAd: "An ad", hOther: "Something else", hOtherL: "Where?",
@@ -336,7 +348,7 @@
   // Lines that include the learner's own email or numbers.
   function refreshText() {
     const email = session?.user?.email ?? "";
-    $("sent-text").textContent = T(`بعتنالك لينك على ${email || $("email").value}. افتحه من الجهاز ده وهتكمّل من هنا.`, `We sent a link to ${email || $("email").value}. Open it on this device to continue.`);
+    $("sent-text").textContent = T(`بعتنالك إيميل على ${email || $("email").value} فيه كود من 6 أرقام ولينك. اكتب الكود هنا، أو افتح اللينك من الجهاز ده.`, `We emailed ${email || $("email").value} a 6-digit code and a link. Type the code here, or open the link on this device.`);
     $("dl-sub").textContent = T("لو التنزيل ما بدأش لوحده، دوس على الزرار.", "If the download didn't start by itself, click the button.");
     $("dl-psub").textContent = T(`مارد بيشتغل على كمبيوتر Windows. افتح yamared.com من الكمبيوتر، نزّله، وادخل بنفس الإيميل: ${email}. تجربتك المجانية مستنياك.`,
       `Mared runs on a Windows computer. Open yamared.com on your computer, download it, and sign in with the same email: ${email}. Your free trial is waiting.`);
@@ -378,8 +390,21 @@
     const { error } = await db.auth.signInWithOtp({ email, options: { emailRedirectTo: back() } });
     btn.disabled = false;
     if (error) { err.textContent = /rate|seconds/i.test(error.message) ? T("استنى دقيقة وجرّب تاني.", "Wait a minute and try again.") : T("الإيميل ما اتبعتش. جرّب تاني بعد شوية.", "The email didn't send. Try again in a moment."); return; }
-    $("email-form").hidden = true; $("email-sent").hidden = false; refreshText();
+    $("email-form").hidden = true; $("email-sent").hidden = false; refreshText(); $("code").value = ""; $("code").focus();
   });
+  // The code from the email signs in here, so the email can be read on any device.
+  const verifyCode = async () => {
+    const input = $("code"), err = $("code-err"), token = input.value.replace(/\D/g, "");
+    if (token.length !== 6) { input.setAttribute("aria-invalid", "true"); err.textContent = T("الكود 6 أرقام.", "The code is 6 digits."); return; }
+    input.removeAttribute("aria-invalid"); err.textContent = "";
+    const btn = $("code-form").querySelector("button"); btn.disabled = true;
+    const { error } = await db.auth.verifyOtp({ email: $("email").value.trim(), token, type: "email" });
+    btn.disabled = false;
+    if (error) { input.setAttribute("aria-invalid", "true"); err.textContent = /expired/i.test(error.message) ? T("الكود ده خلص. ابعت إيميل تاني.", "That code has expired. Send a new email.") : T("الكود مش صح. راجعه وجرّب تاني.", "That code isn't right. Check it and try again."); input.select(); }
+    // A right code signs in; onAuthStateChange moves on to the next step.
+  };
+  $("code-form").addEventListener("submit", (e) => { e.preventDefault(); verifyCode(); });
+  $("code").addEventListener("input", (e) => { e.target.value = e.target.value.replace(/\D/g, "").slice(0, 6); if (e.target.value.length === 6) verifyCode(); });
   $("email-again").addEventListener("click", () => { $("email-form").hidden = false; $("email-sent").hidden = true; $("email").focus(); });
 
   // 2. About you
