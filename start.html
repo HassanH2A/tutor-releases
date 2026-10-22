@@ -94,6 +94,9 @@
   .flash:empty { display: none; }
 
   /* Download */
+  #s-download .ph-only, #s-download.phone .pc-only { display: none; }
+  #s-download.phone .ph-only { display: block; }
+  #s-download.phone .cta.ph-only { display: inline-flex; }
   .steps { display: grid; gap: 0.8rem; margin: 2rem 0 0; padding: 0; list-style: none; counter-reset: s; color: var(--muted); }
   .steps li { display: grid; grid-template-columns: 1.6rem minmax(0, 1fr); gap: 0.5rem; counter-increment: s; }
   .steps li::before { content: counter(s); color: var(--gold); font-weight: 600; }
@@ -201,10 +204,13 @@
 
   <!-- 4. Download -->
   <section id="s-download" hidden>
-    <h1 data-i="dlT">جاهز! مارد بينزل دلوقتي.</h1>
-    <p class="sub" id="dl-sub"></p>
-    <a class="cta" id="dl" href="https://github.com/HassanH2A/tutor-releases/releases/latest/download/Mared-Setup.exe" data-i="dlB">نزّل لـ Windows</a>
-    <ol class="steps">
+    <h1 class="pc-only" data-i="dlT">جاهز! مارد بينزل دلوقتي.</h1>
+    <h1 class="ph-only" data-i="dlPT">خلّصت! كمّل من الكمبيوتر.</h1>
+    <p class="sub pc-only" id="dl-sub"></p>
+    <p class="sub ph-only" id="dl-psub"></p>
+    <a class="cta pc-only" id="dl" href="https://github.com/HassanH2A/tutor-releases/releases/latest/download/Mared-Setup.exe" data-i="dlB">نزّل لـ Windows</a>
+    <button class="cta ph-only" id="send" type="button"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg><span data-i="sendB">ابعت اللينك لنفسك</span></button>
+    <ol class="steps pc-only">
       <li><span data-i="st1">افتح الملف اللي نزل.</span></li>
       <li><span data-i="st2">لو ظهر «<span translate="no" class="ltr">Windows protected your PC</span>»: دوس <b translate="no">More info</b> وبعدين <b translate="no">Run anyway</b>.</span></li>
       <li><span id="st3"></span></li>
@@ -280,6 +286,7 @@
     cardT: "By card", cardTag: "Easiest",
     cardB: "Add a card and start", walletT: "InstaPay or a wallet", walletP: "Start the trial now without a card, and pay from your phone when you want to continue.", walletB: "Start the trial",
     dlT: "You're in! Mared is downloading.", dlB: "Download for Windows",
+    dlPT: "Done! Continue on your computer.", sendB: "Send yourself the link",
     st1: "Open the file you downloaded.",
     st2: 'If you see “<span translate="no" class="ltr">Windows protected your PC</span>”, click <b translate="no">More info</b>, then <b translate="no">Run anyway</b>.',
     toPay: "Want to pay with InstaPay or a wallet?",
@@ -329,6 +336,8 @@
     const email = session?.user?.email ?? "";
     $("sent-text").textContent = T(`بعتنالك لينك على ${email || $("email").value}. افتحه من الجهاز ده وهتكمّل من هنا.`, `We sent a link to ${email || $("email").value}. Open it on this device to continue.`);
     $("dl-sub").textContent = T("لو التنزيل ما بدأش لوحده، دوس على الزرار.", "If the download didn't start by itself, click the button.");
+    $("dl-psub").textContent = T(`مارد بيشتغل على كمبيوتر Windows. افتح yamared.com من الكمبيوتر، نزّله، وادخل بنفس الإيميل: ${email}. تجربتك المجانية مستنياك.`,
+      `Mared runs on a Windows computer. Open yamared.com on your computer, download it, and sign in with the same email: ${email}. Your free trial is waiting.`);
     $("st3").textContent = T(`افتح مارد وادخل بنفس الإيميل: ${email}`, `Open Mared and sign in with the same email: ${email}`);
     const [pa, pe, egp, usd] = PRICES[PLAN];
     $("card-p").textContent = T(`مش هتدفع حاجة النهارده. لما التجربة تخلص (أو بعد 14 يوم)، بيبدأ مارد ${pa} بـ ${egp} جنيه في الشهر على نفس الكارت. تلغي في أي وقت.`,
@@ -419,8 +428,15 @@
   }
 
   // 4. Download (starts by itself once)
+  const PHONE = matchMedia("(hover: none) and (pointer: coarse)").matches;
+  $("send").addEventListener("click", async () => {
+    if (navigator.share) { try { await navigator.share({ title: T("مارد", "Mared"), text: T("نزّل مارد على الكمبيوتر", "Download Mared on your computer"), url: "https://yamared.com" }); } catch (e) {} return; }
+    navigator.clipboard?.writeText("https://yamared.com").then(() => { $("send").lastChild.textContent = T("اتنسخ ✓", "Copied ✓"); }, () => {});
+  });
   function download() {
+    $("s-download").classList.toggle("phone", PHONE);
     show("s-download");
+    if (PHONE) return; // nothing to install on a phone
     try { if (sessionStorage.getItem("mared-dl") !== "1") { sessionStorage.setItem("mared-dl", "1"); location.href = $("dl").href; } } catch (e) {}
   }
 

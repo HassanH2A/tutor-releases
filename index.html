@@ -66,6 +66,12 @@
   @media (max-width: 760px) { .nav { display: none; } .brand { margin-inline-end: auto; } }
   .phone-only { display: none; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; margin: 1.25rem 0 0; color: var(--muted); font-size: 0.95rem; }
   @media (hover: none) and (pointer: coarse) { .phone-only { display: flex; } }
+  .mbar { position: fixed; z-index: 25; inset: auto 0 0 0; display: none; align-items: center; gap: 0.6rem;
+          padding: 1.25rem max(1rem, env(safe-area-inset-right, 0px)) calc(0.75rem + env(safe-area-inset-bottom, 0px)) max(1rem, env(safe-area-inset-left, 0px));
+          background: linear-gradient(to top, rgb(17 18 20 / 0.98) 65%, rgb(17 18 20 / 0)); transform: translateY(110%); transition: transform 0.35s var(--ease); }
+  .mbar .cta { flex: 1; justify-content: center; min-height: 54px; font-size: 1.05rem; }
+  .mbar .share { display: grid; place-items: center; flex: none; width: 54px; height: 54px; border: 0; border-radius: 50%; background: var(--raised); color: var(--gold); cursor: pointer; }
+  @media (max-width: 760px) { .mbar { display: flex; } .mbar.on { transform: none; } body { padding-bottom: 6rem; } }
   .copy { min-height: 44px; padding: 0 1.1rem; border: 0; border-radius: 999px; background: var(--raised); color: var(--gold); font: inherit; font-weight: 600; cursor: pointer;
           box-shadow: inset 0 0 0 1px rgb(242 181 68 / 0.35); }
   .lang { display: inline-flex; align-items: center; gap: 0.45rem; min-height: 44px; padding: 0 0.95rem; border: 0; border-radius: 999px; background: var(--raised);
@@ -344,7 +350,9 @@
   @media (max-width: 620px) {
     .versus, .plans, .more { grid-template-columns: minmax(0, 1fr); }
     .receipt { padding-inline: 1.25rem; }
-    .stage { padding: 2em 0.9em; border-radius: 18px; }
+    .fdemo { margin-inline: calc(8px - var(--gutter-l)) calc(8px - var(--gutter-r)); }
+    .stage { padding: 1.7em 0.6em; border-radius: 16px; font-size: clamp(10px, 2.3cqi, 15px); }
+    h1 { font-size: clamp(2.1rem, 10vw, 2.8rem); }
     .get { padding: 0 0.95rem; }
   }
   @media (prefers-reduced-motion: reduce) {
@@ -385,7 +393,7 @@
         <li><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span data-i="free2">إنستاباي وفودافون كاش</span></li>
         <li><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span translate="no">Windows&nbsp;10 / 11</span></li>
       </ul>
-      <p class="phone-only"><span data-i="phoneT">على الموبايل؟ مارد بيشتغل على الكمبيوتر.</span><button class="copy" id="copy" type="button" data-i="copyB">انسخ اللينك</button></p>
+      <p class="phone-only"><span data-i="phoneT">على الموبايل؟ سجّل دلوقتي، ونزّله بعدين على الكمبيوتر.</span><button class="copy" id="copy" type="button" data-i="copyB">ابعت اللينك لنفسك</button></p>
     </div>
 
     <div class="fdemo">
@@ -676,6 +684,11 @@
   </section>
 </main>
 
+<div class="mbar" id="mbar">
+  <a class="cta" href="start.html" data-i="mbarB">ابدأ تجربتك المجانية</a>
+  <button class="share" id="share" type="button" aria-label="ابعت اللينك لنفسك" data-i-label="shareL"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg></button>
+</div>
+
 <footer>
   <div class="wrap">
     <p data-i="legal">مارد مش تابع لـ <span translate="no">OpenAI</span> ولا <span translate="no">Anthropic</span> ولا <span translate="no">Google</span> ولا <span translate="no">Higgsfield</span> ولا <span translate="no">ElevenLabs</span>، والأسماء دي ملك أصحابها.</p>
@@ -689,7 +702,8 @@
   const en = {
     get: "Start for free", skip: "Skip to content",
     navLabel: "Page", navF: "What it does", navP: "Pricing", navQ: "FAQ",
-    phoneT: "On your phone? Mared runs on your computer.", copyB: "Copy the link",
+    phoneT: "On your phone? Sign up now and download it on your computer later.", copyB: "Send yourself the link",
+    mbarB: "Start your free trial", shareL: "Send yourself the link",
     h1: "The first AI that <em>lives in your mouse</em>.",
     lead: 'Your computer-savvy friend, sitting right by your mouse. Hold <kbd translate="no">Right Ctrl</kbd> and ask: it sees your screen, points to the right button and teaches you step by step. In a hurry? Say <q>do it for me</q> and it does it for you.',
     whyT: 'You shouldn’t need to know how to write a <span class="ltr" translate="no">prompt</span>.',
@@ -1050,13 +1064,18 @@
     document.addEventListener("visibilitychange", () => stages.forEach((s) => (document.hidden ? s.stop() : s.vis && s.start())));
   }
 
-  // Phones can't install Mared: copy the address so they can open it on their computer.
-  const copyBtn = document.getElementById("copy");
-  copyBtn.addEventListener("click", () => {
-    const done = (label) => { copyBtn.textContent = label; };
-    if (!navigator.clipboard) return done("yamared.com"); // no clipboard: show the address to type
+  // Phones can't install Mared: send the address to themselves (WhatsApp, email...) to open it on the computer.
+  const sendLink = async (btn, label) => {
+    const done = (text) => { if (label) btn.textContent = text; };
+    if (navigator.share) { try { await navigator.share({ title: T("مارد", "Mared"), text: T("نزّل مارد على الكمبيوتر", "Download Mared on your computer"), url: "https://yamared.com" }); } catch (e) {} return; }
+    if (!navigator.clipboard) return done("yamared.com"); // nothing to share or copy with: show the address to type
     navigator.clipboard.writeText("https://yamared.com").then(() => done(T("اتنسخ ✓", "Copied ✓")), () => done("yamared.com"));
-  });
+  };
+  document.getElementById("copy").addEventListener("click", (e) => sendLink(e.currentTarget, true));
+  document.getElementById("share").addEventListener("click", (e) => sendLink(e.currentTarget, false));
+  // The bottom bar appears once the hero's own button is out of sight.
+  new IntersectionObserver(([e]) => document.getElementById("mbar").classList.toggle("on", !e.isIntersecting && e.boundingClientRect.top < 0))
+    .observe(document.querySelector(".hero .cta"));
 
   let saved = null;
   try { saved = localStorage.getItem("mared-lang"); } catch (e) {}
