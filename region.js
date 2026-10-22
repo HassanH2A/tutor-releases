@@ -3,12 +3,12 @@
 // the link overrides it, for testing. InstaPay and the Egyptian wallets show only to Egypt (class eg-only;
 // non-eg is the text shown elsewhere instead).
 (() => {
-  // shortcut: SAR prices are a draft from the dollar price at the riyal's fixed rate (3.75), not signed off, and Stripe
-  // has no SAR price yet, so a Saudi card checkout charges USD; add SAR currency_options to the Stripe prices when signed off.
+  // Hassan's prices (22 Oct 2026). shortcut: Stripe still holds the older draft (USD 7.99 / 19.99 / 99, no SAR), so a
+  // card checkout charges those until the Stripe prices are updated to match (needs STRIPE_SECRET_KEY or the dashboard).
   const PRICES = {
-    mini: { egp: 199, sar: 29.99, usd: 7.99 },
-    plus: { egp: 499, sar: 74.99, usd: 19.99 },
-    max: { egp: 4999, sar: 369.99, usd: 99 },
+    mini: { egp: 199, sar: 19.99, usd: 9.99 },
+    plus: { egp: 499, sar: 49.99, usd: 18.99 },
+    max: { egp: 4999, sar: 399.99, usd: 99.99 },
   };
   let zone = '';
   try { zone = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
