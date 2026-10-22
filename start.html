@@ -120,6 +120,7 @@
   [hidden] { display: none !important; }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
 </style>
+<script src="region.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -205,7 +206,7 @@
         <button class="cta" id="card" type="button" data-i="cardB">حط الكارت وابدأ</button>
         <p class="err" id="card-err" role="alert"></p>
       </div>
-      <div class="way">
+      <div class="way eg-only">
         <h2 data-i="walletT">إنستاباي أو محفظة</h2>
         <p data-i="walletP">ابدأ التجربة دلوقتي من غير كارت، ولما تحب تكمّل ادفع من الموبايل.</p>
         <ul class="wallets"><li translate="no">InstaPay</li><li translate="no">Vodafone Cash</li><li translate="no">Etisalat Cash</li><li translate="no">Orange Cash</li></ul>
@@ -227,7 +228,7 @@
       <li><span data-i="st2">لو ظهر «<span translate="no" class="ltr">Windows protected your PC</span>»: دوس <b translate="no">More info</b> وبعدين <b translate="no">Run anyway</b>.</span></li>
       <li><span id="st3"></span></li>
     </ol>
-    <p class="note"><a href="#pay" data-i="toPay">عايز تدفع بإنستاباي أو محفظة؟</a></p>
+    <p class="note eg-only"><a href="#pay" data-i="toPay">عايز تدفع بإنستاباي أو محفظة؟</a></p>
   </section>
 
   <!-- Wallet payment -->
@@ -282,7 +283,7 @@
   const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { flowType: "implicit", detectSessionInUrl: true, persistSession: true } });
   const $ = (id) => document.getElementById(id);
   const params = new URLSearchParams(location.search);
-  const PRICES = { mini: ["ميني", "Mini", "199", "$7.99"], plus: ["بلس", "Plus", "499", "$19.99"], max: ["ماكس", "Max", "4,999", "$99"] };
+  const PRICES = { mini: ["ميني", "Mini"], plus: ["بلس", "Plus"], max: ["ماكس", "Max"] };
   const PLAN = PRICES[params.get("plan")] ? params.get("plan") : "plus";
   const root = document.documentElement;
   const T = (ar, en) => (root.lang === "en" ? en : ar);
@@ -355,9 +356,9 @@
     $("dl-psub").textContent = T(`مارد بيشتغل على كمبيوتر Windows. افتح yamared.com من الكمبيوتر، نزّله، وادخل بنفس الإيميل: ${email}. تجربتك المجانية مستنياك.`,
       `Mared runs on a Windows computer. Open yamared.com on your computer, download it, and sign in with the same email: ${email}. Your free trial is waiting.`);
     $("st3").textContent = T(`افتح مارد وادخل بنفس الإيميل: ${email}`, `Open Mared and sign in with the same email: ${email}`);
-    const [pa, pe, egp, usd] = PRICES[PLAN];
-    $("card-p").textContent = T(`مش هتدفع حاجة النهارده. لما التجربة تخلص (أو بعد 14 يوم)، بيبدأ مارد ${pa} بـ ${egp} جنيه في الشهر على نفس الكارت. تلغي في أي وقت.`,
-      `Nothing is charged today. When your trial is used up (or after 14 days), Mared ${pe} starts at EGP ${egp} / ${usd} a month on the same card. Cancel anytime.`);
+    const [pa, pe] = PRICES[PLAN];
+    $("card-p").textContent = T(`مش هتدفع حاجة النهارده. لما التجربة تخلص (أو بعد 14 يوم)، بيبدأ مارد ${pa} بـ ${MARED.price(PLAN, false)} في الشهر على نفس الكارت. تلغي في أي وقت.`,
+      `Nothing is charged today. When your trial is used up (or after 14 days), Mared ${pe} starts at ${MARED.price(PLAN, true)} a month on the same card. Cancel anytime.`);
     if (details) paintPay();
   }
 

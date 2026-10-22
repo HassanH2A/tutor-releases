@@ -14,6 +14,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
+<script src="region.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600&display=swap" rel="stylesheet">
@@ -415,7 +416,8 @@
       </a>
       <ul class="free">
         <li><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span data-i="free1">تجربة مجانية</span></li>
-        <li><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span data-i="free2">إنستاباي وفودافون كاش</span></li>
+        <li class="eg-only"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span data-i="free2">إنستاباي وفودافون كاش</span></li>
+        <li class="non-eg"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span data-i="free4">تلغي في أي وقت</span></li>
         <li><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span translate="no">Windows&nbsp;10 / 11</span></li>
       </ul>
       <p class="phone-only"><span data-i="phoneT">على الموبايل؟ سجّل دلوقتي، ونزّله بعدين على الكمبيوتر.</span><button class="copy" id="copy" type="button" data-i="copyB">ابعت اللينك لنفسك</button></p>
@@ -642,7 +644,7 @@
           <div class="line"><dt><span translate="no">ElevenLabs Starter</span></dt><dd class="ltr">$6.00</dd></div>
           <div class="line total"><dt data-i="total">المجموع</dt><dd class="ltr">$80.98</dd></div>
         </dl>
-        <p class="total-local ar-only">يعني حوالي 4,390 جنيه في الشهر</p>
+        <p class="total-local" id="total-local"></p>
       </figure>
     </div>
     <p class="note" data-i="billNote">الأسعار هي أقل باقة مدفوعة شهرية لكل خدمة زي ما هي معلنة في أكتوبر 2026. مارد بيديك موديلاتهم جوّه رصيدك الشهري، مش اشتراكاتهم نفسها.</p>
@@ -650,28 +652,26 @@
 
   <section aria-labelledby="plans-t">
     <h2 id="plans-t" data-i="plansT">ابدأ ببلاش. ادفع لما تحبه.</h2>
-    <p class="sub" data-i="plansSub">كل باقة بتبدأ بتجربة مجانية: 3 أسئلة، ومهمة «اعملهالي»، ودرس كامل، من غير ما تدفع حاجة. كل الباقات فيها كل حاجة، والفرق في الرصيد بس (رصيد واحد يساوي سؤال تقريبًا). ادفع بالكارت أو بإنستاباي أو فودافون كاش أو اتصالات كاش أو أورنج كاش، وتلغي في أي وقت.</p>
+    <p class="sub" data-i="plansSub">كل باقة بتبدأ بتجربة مجانية: 3 أسئلة، ومهمة «اعملهالي»، ودرس كامل، من غير ما تدفع حاجة. كل الباقات فيها كل حاجة، والفرق في الرصيد بس (رصيد واحد يساوي سؤال تقريبًا)، وتلغي في أي وقت.</p>
+    <p class="sub eg-only" data-i="plansWallets" style="margin-top:0.5rem">ادفع بالكارت أو بإنستاباي أو فودافون كاش أو اتصالات كاش أو أورنج كاش.</p>
     <div class="plans">
       <div class="plan">
         <h3 translate="no"><span class="ar-only">مارد ميني</span><span class="en-only">Mared Mini</span></h3>
-        <p class="amount"><span class="ar-only">199 <small>جنيه / شهر</small></span><span class="en-only">$7.99 <small>/ month</small></span></p>
-        <p class="amount-alt"><span class="ar-only ltr">$7.99</span><span class="en-only">EGP 199</span></p>
+        <p class="amount" data-price="mini"></p>
         <p class="allow" data-i="a1">75 رصيد في الشهر</p>
         <p class="promise" data-i="p1">اسأل عن أي حاجة على شاشتك.</p>
         <a class="buy" href="start.html?plan=mini" data-i="buy">اشترك</a>
       </div>
       <div class="plan pick">
         <h3><span translate="no"><span class="ar-only">مارد بلس</span><span class="en-only">Mared Plus</span></span><span class="tag" data-i="tag">ننصحك بيه</span></h3>
-        <p class="amount"><span class="ar-only">499 <small>جنيه / شهر</small></span><span class="en-only">$19.99 <small>/ month</small></span></p>
-        <p class="amount-alt"><span class="ar-only ltr">$19.99</span><span class="en-only">EGP 499</span></p>
+        <p class="amount" data-price="plus"></p>
         <p class="allow" data-i="a2">335 رصيد في الشهر</p>
         <p class="promise" data-i="p2">يكفيك الشهر كله: يشرح، يعلّمك، ويعملهالك.</p>
         <a class="buy cta" href="start.html?plan=plus" data-i="buy">اشترك</a>
       </div>
       <div class="plan">
         <h3 translate="no"><span class="ar-only">مارد ماكس</span><span class="en-only">Mared Max</span></h3>
-        <p class="amount"><span class="ar-only">4,999 <small>جنيه / شهر</small></span><span class="en-only">$99 <small>/ month</small></span></p>
-        <p class="amount-alt"><span class="ar-only ltr">$99</span><span class="en-only">EGP 4,999</span></p>
+        <p class="amount" data-price="max"></p>
         <p class="allow" data-i="a3">4,000 رصيد في الشهر</p>
         <p class="promise" data-i="p3">لأتقل شغل: مهام وكورسات ودروس كتير.</p>
         <a class="buy" href="start.html?plan=max" data-i="buy">اشترك</a>
@@ -682,14 +682,14 @@
   <section aria-labelledby="faq-t">
     <h2 id="faq-t" data-i="faqT">أسئلة بتتسأل كتير</h2>
     <div class="faq">
-      <details><summary data-i="q1">هو ببلاش فعلًا؟</summary><p data-i="r1">أيوه. التجربة المجانية فيها 3 أسئلة، ومهمة «اعملهالي»، ودرس كامل. ولو عجبك، كمّل بالكارت أو بإنستاباي أو محفظة.</p></details>
+      <details><summary data-i="q1">هو ببلاش فعلًا؟</summary><p data-i="r1">أيوه. التجربة المجانية فيها 3 أسئلة، ومهمة «اعملهالي»، ودرس كامل. ولو عجبك، اختار باقتك وكمّل.</p></details>
       <details><summary data-i="q2">هو بيشوف شاشتي على طول؟</summary><p data-i="r2">لأ. بيشوف شاشتك بس لما تطلب منه حاجة: سؤال، أو درس، أو مهمة. والمايك شغّال وإنت دايس على الزرار، أو لما تشغّل الكلام من غير إيد.</p></details>
       <details><summary data-i="q3">بيشتغل على أنهي برامج؟</summary><p data-i="r3">أي برنامج أو موقع على <span translate="no">Windows</span>: <span translate="no">Office</span> و<span translate="no">Photoshop</span> و<span translate="no">AutoCAD</span> والمتصفح وغيرهم. مش محتاج إضافات.</p></details>
       <details><summary data-i="q4">هيدوس على حاجات من غير ما أعرف؟</summary><p data-i="r4">لأ. بيعمل حاجات بس لما تقوله «اعملهالي»، وبيسألك قبل أي حاجة ممكن تبوّظ زي المسح أو الدفع، واللي بيمسحه بيروح سلة المحذوفات. ولو حرّكت الماوس بيستنّاك، وEsc بيوقّفه.</p></details>
       <details><summary data-i="q5">بيتكلم بأنهي لغة؟</summary><p data-i="r5">بالمصري، وتقدر تخلّيه يرد بالعربي الفصحى أو بالإنجليزي من الإعدادات.</p></details>
       <details><summary data-i="q6">فيه نسخة للماك؟</summary><p data-i="r6">لسه. مارد شغّال على <span translate="no">Windows&nbsp;10</span> و&nbsp;11 بس دلوقتي.</p></details>
       <details><summary data-i="q7">أقدر ألغي إمتى؟</summary><p data-i="r7">في أي وقت، بضغطة من صفحة الحساب في مارد، وباقتك بتفضل شغّالة لحد آخر الشهر اللي دفعته.</p></details>
-      <details><summary data-i="q9">أقدر أدفع بفودافون كاش أو إنستاباي؟</summary><p data-i="r9">أيوه: إنستاباي وفودافون كاش واتصالات كاش وأورنج كاش. بتحوّل من الموبايل، وبنفعّل اشتراكك أول ما نتأكد من التحويل.</p></details>
+      <details class="eg-only"><summary data-i="q9">أقدر أدفع بفودافون كاش أو إنستاباي؟</summary><p data-i="r9">أيوه: إنستاباي وفودافون كاش واتصالات كاش وأورنج كاش. بتحوّل من الموبايل، وبنفعّل اشتراكك أول ما نتأكد من التحويل.</p></details>
       <details><summary data-i="q10">بتحفظوا إيه عني؟</summary><p data-i="r10">بنحفظ عندنا سجل لاستخدامك 30 يوم بس: الشاشات اللي فتحتها، أسئلتك وردود مارد، الكلام اللي كان ظاهر على شاشتك وقت السؤال، خطوات المهام، الأخطاء، ومواصفات جهازك. مفيش فيه صور ولا تسجيل لصوتك ولا باسوردات، وبيتمسح لوحده بعد 30 يوم. محدش بيشوفه غير فريق مارد، وبنستخدمه عشان نصلّح المشاكل ونحسّن مارد. ومحادثاتك نفسها متحفظة على جهازك.</p></details>
       <details><summary data-i="q8">محتاج إنترنت؟</summary><p data-i="r8">أيوه، مارد محتاج إنترنت عشان يفكّر ويتكلّم.</p></details>
     </div>
@@ -739,7 +739,7 @@
     whyBig: "So Mared comes to you: next to your mouse, inside the app you have open, talking to you in your own language.",
     a0: "3 questions, one “do it for me” task and a full lesson", a1: "75 credits a month", a2: "335 credits a month", a3: "4,000 credits a month",
     faqT: "Questions people ask",
-    q1: "Is it really free?", r1: "Yes. The free trial gives you 3 questions, one “do it for me” task and a full lesson. If you love it, continue by card or with InstaPay or a wallet.",
+    q1: "Is it really free?", r1: "Yes. The free trial gives you 3 questions, one “do it for me” task and a full lesson. If you love it, pick a plan and carry on.",
     q9: "Can I pay with Vodafone Cash or InstaPay?", r9: "Yes: InstaPay, Vodafone Cash, Etisalat Cash and Orange Cash. You send it from your phone, and we turn on your plan as soon as we confirm the transfer.",
     q2: "Does it watch my screen all the time?", r2: "No. It only looks at your screen when you ask it for something: a question, a lesson or a task. The mic is on while you hold the key, or when you turn on hands-free talking.",
     q3: "Which apps does it work with?", r3: 'Any app or website on <span translate="no">Windows</span>: <span translate="no">Office</span>, <span translate="no">Photoshop</span>, <span translate="no">AutoCAD</span>, your browser and more. No plugins needed.',
@@ -795,7 +795,8 @@
     rcT: "Without Mared, every month", from: "lowest plan", total: "Total",
     billNote: "Prices are each service's lowest monthly paid plan as listed in October 2026. Mared gives you their models within your monthly credits, not their subscriptions.",
     plansT: "Start free. Pay when you love it.",
-    plansSub: "Every plan starts with a free trial: 3 questions, one \u201cdo it for me\u201d task and a full lesson, without paying anything. Every plan has every feature; only the credits differ (one credit is about one question). Pay by card or with InstaPay, Vodafone Cash, Etisalat Cash or Orange Cash, and cancel anytime.",
+    plansSub: "Every plan starts with a free trial: 3 questions, one \u201cdo it for me\u201d task and a full lesson, without paying anything. Every plan has every feature; only the credits differ (one credit is about one question), and you can cancel anytime.",
+    plansWallets: "Pay by card or with InstaPay, Vodafone Cash, Etisalat Cash or Orange Cash.", free4: "Cancel anytime",
     buy: "Subscribe",
     tag: "Recommended",
     p1: "Ask about anything on your screen.", p2: "Enough for your whole month: it explains, teaches and does it for you.", p3: "For the heaviest work: lots of tasks, courses and lessons.",
@@ -1186,6 +1187,14 @@
       return li;
     }));
   }
+  // Plan prices and the receipt's local total, in the visitor's currency (region.js).
+  function renderPrices() {
+    const isEn = root.lang === "en";
+    document.querySelectorAll("[data-price]").forEach((el) => { el.innerHTML = MARED.amountHtml(el.dataset.price, isEn); });
+    const local = { egp: T("يعني حوالي 4,390 جنيه في الشهر", "About EGP 4,390 a month"), sar: T("يعني حوالي 304 ريال في الشهر", "About SAR 304 a month") }[MARED.cur];
+    const tl = document.getElementById("total-local");
+    tl.textContent = local || ""; tl.hidden = !local;
+  }
   const catalog = document.getElementById("catalog");
   function renderCatalog() {
     const isEn = root.lang === "en";
@@ -1223,6 +1232,7 @@
     langBtn.lastChild.textContent = isEn ? "العربية" : "English";
     langBtn.lang = isEn ? "ar" : "en";
     renderCatalog();
+    renderPrices();
     renderShots();
     // Demos restart in the new language.
     stages.forEach((s) => { if (s.live || still) { s.stop(); if (s.vis || still) s.start(); } });
