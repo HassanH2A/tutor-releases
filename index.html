@@ -266,6 +266,21 @@
   .apps { margin: 3rem 0 0; color: var(--dim); font-size: 0.95rem; }
   .apps b { color: var(--muted); font-weight: 500; }
 
+  /* The real app: screenshots (rendered by the app's snapshot mode with a sample learner). A grid on wide screens,
+     a swipeable strip on phones. */
+  .shots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem 1.5rem; margin: 2.5rem 0 0; padding: 0; list-style: none; }
+  .shots figure { margin: 0; }
+  .shots img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: contain; border-radius: 14px; background: #111214;
+               box-shadow: 0 0 0 1px var(--line), 0 24px 50px -30px #000; }
+  .shots figcaption { margin-top: 0.7rem; color: var(--muted); font-size: 0.95rem; text-wrap: pretty; }
+  .shots-note { margin: 1.5rem 0 0; color: var(--dim); font-size: 0.85rem; }
+  @media (max-width: 760px) {
+    .shots { display: flex; gap: 0.75rem; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain;
+             margin-inline: calc(-1 * var(--gutter-l)) calc(-1 * var(--gutter-r)); padding-inline: var(--gutter-l) var(--gutter-r); }
+    .shots::-webkit-scrollbar { display: none; }
+    .shots li { flex: 0 0 84%; scroll-snap-align: center; }
+  }
+
   /* Why: the one-paragraph belief, set large */
   .why p { max-width: 40rem; margin: 0; color: var(--muted); font-size: 1.15rem; text-wrap: pretty; }
   .why p.big { max-width: 30ch; margin-top: 2rem; color: var(--ink); font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 500; line-height: 1.45; text-wrap: balance; }
@@ -562,6 +577,13 @@
     </div>
   </section>
 
+  <section aria-labelledby="real-t">
+    <h2 id="real-t" data-i="realT">ده مارد بجد.</h2>
+    <p class="sub" data-i="realSub">لقطات من البرنامج نفسه، مش رسومات.</p>
+    <ul class="shots" id="shots"></ul>
+    <p class="shots-note" data-i="realNote">اتصوّرت بحساب تجريبي. على جهازك بتظهر فوق البرامج اللي إنت فاتحها.</p>
+  </section>
+
   <section class="why" aria-labelledby="why-t">
     <h2 id="why-t" data-i="whyT">مش لازم تعرف تكتب <span class="ltr" translate="no">prompt</span>.</h2>
     <p data-i="whyP">معظم أدوات الذكاء الاصطناعي شات بتكتب فيه، غالبًا بالإنجليزي، وبعدين ترجع لشغلك وتحاول تطبّق اللي قاله. إحنا شايفين إن المشكلة في الطريقة نفسها، مش في الذكاء.</p>
@@ -756,6 +778,8 @@
     n3: "Points to the button and checks you clicked it", n4: "Ask anytime, and it answers out loud",
     apps: 'Try it on <b translate="no">Excel</b>, <b translate="no">Word</b>, <b translate="no">PowerPoint</b>, <b translate="no">Photoshop</b>, <b translate="no">AutoCAD</b>, <b translate="no">Revit</b>, <b translate="no">Canva</b>, or any other app or website.',
     allT: "Everything Mared does.",
+    realT: "This is the real Mared.", realSub: "Screens from the app itself, not drawings.",
+    realNote: "Captured with a sample account. On your PC it appears over the apps you have open.",
     m1T: "“Make me notes”", m1: "Everything you learned, written to a file you can come back to.",
     m2T: "It remembers you", m2: "It knows your level and what you've learned, so you never start over.",
     m3T: "A plan for any app", m3: "Tell it what you want to learn, and it builds a course that fits you.",
@@ -1136,6 +1160,30 @@
       ["افتح الإعدادات بالصوت", "اطلب شباكه بالصوت ويفتحلك الإعدادات أو المحادثات.", "Opens its window by voice", "Ask for settings or chats and it opens them."]
     ]]
   ];
+  // Real screenshots, in the page's language (media/app and media/app/en, made by the app's --snapshot mode).
+  const SHOTS = [
+    ["onboarding-welcome", 960, 618, "أول ما تفتحه: «أنا مارد. اسألني عن أي حاجة على الشاشة.»", "First launch: \u201cI'm Mared. Ask me about anything on your screen.\u201d"],
+    ["study-circle-1", 960, 344, "ارسم حوالين كلمة واسأل «يعني إيه دي؟»", "Circle a word and ask \u201cwhat does this mean?\u201d"],
+    ["lesson-blender", 960, 358, "درس حي في Blender: خطوة بخطوة، ورسمة توضّح.", "A live Blender lesson: step by step, with a diagram."],
+    ["courses-map", 960, 618, "كورس كامل لأي برنامج، بفصول ودروس.", "A full course for any app, in chapters and lessons."],
+    ["do-it-word", 960, 618, "«اعملهالي»: ملخص في Word وإنت بتتفرّج.", "\u201cDo it for me\u201d: a summary in Word while you watch."],
+    ["task-cards", 752, 824, "مهامك جنب الشاشة، و«افتح النتيجة» لما تخلص.", "Your tasks at the edge of the screen, and \u201cOpen result\u201d when done."],
+    ["home-credits", 960, 618, "الرئيسية: رصيدك وتجربتك المجانية قدامك.", "Home: your credits and free trial at a glance."],
+    ["settings-explain", 960, 618, "إنت اللي تختار: يشرح وهو بيعمل ولا لأ.", "You choose whether it explains while it works."],
+    ["account-plans", 960, 618, "الباقات والرصيد في صفحة الحساب.", "Plans and credits on the Account page."]
+  ];
+  const shots = document.getElementById("shots");
+  function renderShots() {
+    const isEn = root.lang === "en";
+    shots.replaceChildren(...SHOTS.map(([name, w, h, ar, en]) => {
+      const li = document.createElement("li"), fig = document.createElement("figure"), img = document.createElement("img"), cap = document.createElement("figcaption");
+      img.src = `media/app/${isEn ? "en/" : ""}${name}.webp`;
+      img.width = w; img.height = h; img.loading = "lazy"; img.decoding = "async";
+      img.alt = cap.textContent = isEn ? en : ar;
+      fig.append(img, cap); li.append(fig);
+      return li;
+    }));
+  }
   const catalog = document.getElementById("catalog");
   function renderCatalog() {
     const isEn = root.lang === "en";
@@ -1173,6 +1221,7 @@
     langBtn.lastChild.textContent = isEn ? "العربية" : "English";
     langBtn.lang = isEn ? "ar" : "en";
     renderCatalog();
+    renderShots();
     // Demos restart in the new language.
     stages.forEach((s) => { if (s.live || still) { s.stop(); if (s.vis || still) s.start(); } });
   };
