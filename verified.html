@@ -73,10 +73,8 @@
 
   const TEXT = {
     ok: {
-      ar: ["تم تأكيد إيميلك.", "ودخلت مارد خلاص. ارجع للبرنامج، كل حاجة جاهزة.",
-           "<span>دوس <kbd>Right Ctrl</kbd> وخليك دايس، واسأل عن أي حاجة على شاشتك.</span><span><b>تقدر تقفل الصفحة دي.</b></span>", "yamared.com"],
-      en: ["Your email is confirmed.", "You're signed in to Mared. Head back to the app; everything's ready.",
-           "<span>Hold <kbd>Right Ctrl</kbd> and ask about anything on your screen.</span><span><b>You can close this page.</b></span>", "yamared.com"],
+      ar: ["تم تأكيد إيميلك.", "ودخلت مارد خلاص. مارد مفتوح قدامك، وتقدر تقفل الصفحة دي.", "", "yamared.com"],
+      en: ["Your email is confirmed.", "You're signed in. Mared is open for you, and you can close this page.", "", "yamared.com"],
     },
     bad: {
       ar: ["اللينك ده خلص.", "لينك الدخول بيشتغل مرة واحدة، ولمدة ساعة بس.",
@@ -93,6 +91,7 @@
     document.getElementById("title").textContent = t;
     document.getElementById("sub").textContent = s;
     document.getElementById("next").innerHTML = n; // fixed strings above, never from the address
+    document.getElementById("next").hidden = !n;
     document.getElementById("home").textContent = home;
     const b = document.getElementById("lang");
     b.textContent = lang === "en" ? "العربية" : "English"; b.lang = lang === "en" ? "ar" : "en";
