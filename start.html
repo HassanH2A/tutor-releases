@@ -94,6 +94,8 @@
   .wallets li { padding: 0.15rem 0.7rem; border-radius: 999px; background: var(--field); color: var(--muted); font-size: 0.85rem; }
   .flash { margin: 0 0 1.5rem; padding: 0.9rem 1.1rem; border-radius: 14px; background: rgb(242 181 68 / 0.1); color: var(--gold-light); }
   .flash:empty { display: none; }
+  .who { margin: -1rem 0 1.5rem; color: var(--dim); font-size: 0.9rem; overflow-wrap: anywhere; }
+  .who button { min-height: 44px; padding: 0 0.25rem; border: 0; background: none; color: var(--gold); font: inherit; text-decoration: underline; text-underline-offset: 0.25em; cursor: pointer; }
 
   /* Download */
   #s-download .ph-only, #s-download.phone .pc-only { display: none; }
@@ -131,6 +133,7 @@
 
 <main>
   <div class="dots" id="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <p class="who" id="who" hidden><span data-i="who">داخل بـ</span> <bdi dir="ltr" id="who-e"></bdi> · <button type="button" id="not-me" data-i="notMe">مش إنت؟</button></p>
 
   <!-- 1. Account -->
   <section id="s-account" hidden>
@@ -197,8 +200,8 @@
 
   <!-- 3. After the trial -->
   <section id="s-plan" hidden>
-    <h1 data-i="planT">لما التجربة تخلص، تحب تكمّل إزاي؟</h1>
-    <p class="sub" data-i="planP">اختار دلوقتي، والتجربة ببلاش في الحالتين.</p>
+    <h1 data-i="planT">تحب تبدأ إزاي؟</h1>
+    <p class="sub" data-i="planP">التجربة المجانية بتبدأ بالكارت، ومش هتدفع حاجة النهارده.</p>
     <p class="flash" id="plan-flash" role="status"></p>
     <div class="ways">
       <div class="way main">
@@ -209,9 +212,9 @@
       </div>
       <div class="way eg-only">
         <h2 data-i="walletT">إنستاباي أو محفظة</h2>
-        <p data-i="walletP">ابدأ التجربة دلوقتي من غير كارت، ولما تحب تكمّل ادفع من الموبايل.</p>
+        <p data-i="walletP">ادفع من موبايلك وابدأ على طول، من غير كارت.</p>
         <ul class="wallets"><li translate="no">InstaPay</li><li translate="no">Vodafone Cash</li><li translate="no">Etisalat Cash</li><li translate="no">Orange Cash</li></ul>
-        <button class="ghost" id="no-card" type="button" data-i="walletB">ابدأ التجربة</button>
+        <button class="ghost" id="no-card" type="button" data-i="walletB">ادفع وابدأ</button>
       </div>
     </div>
   </section>
@@ -304,9 +307,10 @@
     aboutT: "Two quick things", aboutP: "So we can help you if you ever need it.", phoneL: "Your mobile number",
     heardL: "How did you find Mared?", hFriend: "A friend or family", hGoogle: "Google search", hAd: "An ad", hOther: "Something else", hOtherL: "Where?",
     next: "Continue",
-    planT: "When the trial ends, how would you like to continue?", planP: "Choose now. The trial is free either way.",
+    who: "Signed in as", notMe: "Not you?",
+    planT: "How would you like to start?", planP: "The free trial starts with a card, and nothing is charged today.",
     cardT: "By card", cardTag: "Easiest",
-    cardB: "Add a card and start", walletT: "InstaPay or a wallet", walletP: "Start the trial now without a card, and pay from your phone when you want to continue.", walletB: "Start the trial",
+    cardB: "Add a card and start", walletT: "InstaPay or a wallet", walletP: "Pay from your phone and start right away, no card needed.", walletB: "Pay and start",
     dlT: "You're in! Mared is downloading.", dlB: "Download for Windows",
     dlPT: "Done! Continue on your computer.", sendB: "Send yourself the link",
     st1: "Open the file you downloaded.",
@@ -347,6 +351,7 @@
     STEPS.forEach((s) => { $(s).hidden = s !== id; });
     const n = { "s-account": 1, "s-about": 2, "s-plan": 3, "s-download": 4 }[id] || 0;
     $("dots").hidden = !n;
+    $("who").hidden = !session || id === "s-account";
     [...$("dots").children].forEach((d, i) => d.classList.toggle("on", i < n));
     refreshText();
     const h = $(id).querySelector("h1");
@@ -356,6 +361,7 @@
   // Lines that include the learner's own email or numbers.
   function refreshText() {
     const email = session?.user?.email ?? "";
+    $("who-e").textContent = email;
     $("sent-text").textContent = T(`بعتنالك إيميل على ${email || $("email").value} فيه كود من 6 أرقام ولينك. اكتب الكود هنا، أو افتح اللينك من الجهاز ده.`, `We emailed ${email || $("email").value} a 6-digit code and a link. Type the code here, or open the link on this device.`);
     $("dl-sub").textContent = T("لو التنزيل ما بدأش لوحده، دوس على الزرار.", "If the download didn't start by itself, click the button.");
     $("dl-psub").textContent = T(`مارد بيشتغل على كمبيوتر Windows. افتح yamared.com من الكمبيوتر، نزّله، وادخل بنفس الإيميل: ${email}. تجربتك المجانية مستنياك.`,
@@ -384,7 +390,7 @@
     const { data: profile } = await db.from("profiles").select("phone").eq("user_id", session.user.id).maybeSingle();
     if (!profile?.phone) return show("s-about");
     if (params.get("card") === "ok") return download();
-    if (params.get("card") === "back") $("plan-flash").textContent = T("الكارت ما اتحطش. مفيش مشكلة: تقدر تجرّب تاني، أو تبدأ التجربة وتدفع بمحفظة بعدين.", "No card was added. No problem: try again, or start the trial and pay with a wallet later.");
+    if (params.get("card") === "back") $("plan-flash").textContent = T("الكارت ما اتحطش. مفيش مشكلة: جرّب تاني، أو ادفع من موبايلك.", "No card was added. No problem: try again, or pay from your phone.");
     show("s-plan");
   }
 
@@ -466,10 +472,17 @@
     btn.disabled = false;
     if (r.url) { location.href = r.url; return; }
     if (r.error === "trial_used") { err.textContent = T("خدت التجربة المجانية قبل كده. نزّل مارد واشترك من جوّاه، أو ادفع بمحفظة.", "You've already had your free trial. Download Mared and subscribe inside it, or pay with a wallet."); return; }
-    if (r.error === "payments_not_set_up") { err.textContent = T("الدفع بالكارت لسه بيتجهّز. ابدأ التجربة من غير كارت.", "Card payments are still being set up. Start the trial without a card."); return; }
+    if (r.error === "payments_not_set_up") { err.textContent = T("الدفع بالكارت لسه بيتجهّز. جرّب تاني بعدين.", "Card payments are still being set up. Try again later."); return; }
     err.textContent = T("صفحة الكارت ما فتحتش. جرّب تاني بعد دقيقة.", "The card page didn't open. Try again in a minute.");
   });
-  $("no-card").addEventListener("click", download);
+  $("no-card").addEventListener("click", openPay);
+  // An old session restored from this browser may be someone else's (Hassan, 24 Oct): let them switch.
+  $("not-me").addEventListener("click", async () => {
+    await db.auth.signOut();
+    session = null; details = null; forget();
+    $("email").value = ""; $("email-form").hidden = false; $("email-sent").hidden = true;
+    show("s-account");
+  });
   async function callBilling(body) {
     try {
       const res = await fetch(`${SUPABASE_URL}/functions/v1/billing`, {
