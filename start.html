@@ -132,7 +132,7 @@
 </header>
 
 <main>
-  <div class="dots" id="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="dots" id="dots" aria-hidden="true"><i></i><i></i><i></i></div>
   <p class="who" id="who" hidden><span data-i="who">داخل بـ</span> <bdi dir="ltr" id="who-e"></bdi> · <button type="button" id="not-me" data-i="notMe">مش إنت؟</button></p>
 
   <!-- 1. Account -->
@@ -198,7 +198,7 @@
     </form>
   </section>
 
-  <!-- 3. After the trial -->
+  <!-- 3. After the trial. shortcut: unreachable since 25 Oct 2026 (no card for the trial); delete with its handlers once Hassan is sure. -->
   <section id="s-plan" hidden>
     <h1 data-i="planT">تحب تبدأ إزاي؟</h1>
     <p class="sub" data-i="planP">التجربة المجانية بتبدأ بالكارت، ومش هتدفع حاجة النهارده.</p>
@@ -349,7 +349,7 @@
   const show = (id) => {
     current = id;
     STEPS.forEach((s) => { $(s).hidden = s !== id; });
-    const n = { "s-account": 1, "s-about": 2, "s-plan": 3, "s-download": 4 }[id] || 0;
+    const n = { "s-account": 1, "s-about": 2, "s-download": 3 }[id] || 0;
     $("dots").hidden = !n;
     $("who").hidden = !session || id === "s-account";
     [...$("dots").children].forEach((d, i) => d.classList.toggle("on", i < n));
@@ -389,9 +389,8 @@
     if (location.hash === "#pay" || params.get("next") === "pay") return openPay();
     const { data: profile } = await db.from("profiles").select("phone").eq("user_id", session.user.id).maybeSingle();
     if (!profile?.phone) return show("s-about");
-    if (params.get("card") === "ok") return download();
-    if (params.get("card") === "back") $("plan-flash").textContent = T("الكارت ما اتحطش. مفيش مشكلة: جرّب تاني، أو ادفع من موبايلك.", "No card was added. No problem: try again, or pay from your phone.");
-    show("s-plan");
+    // No card needed for the trial (Hassan, 25 Oct 2026): straight to the download. Paying happens inside Mared.
+    return download();
   }
 
   // 1. Account
@@ -461,7 +460,7 @@
     const { error } = await db.from("profiles").update({ phone, heard_from: heard, heard_detail: heard === "other" ? $("heard-other").value.trim() || null : null }).eq("user_id", session.user.id);
     btn.disabled = false;
     if (error) { err.textContent = T("ما اتحفظش. جرّب تاني.", "That didn't save. Try again."); return; }
-    show("s-plan");
+    download();
   });
 
   // 3. After the trial
