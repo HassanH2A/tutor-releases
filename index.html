@@ -235,6 +235,32 @@
   .phs i:nth-child(4n) { background: linear-gradient(135deg, #35384d, #9aa3c4); }
   .phs i.gone { opacity: 0; transform: scale(0.4); }
 
+  /* Chat (dictation): two talk keys, the words typed into the message box */
+  .keys { position: absolute; z-index: 5; bottom: 0.8em; inset-inline-end: 1.1em; display: flex; gap: 0.4em; direction: ltr; }
+  .keys .key { position: static; }
+  .chat { display: grid; align-content: end; gap: 0.6em; min-height: 14em; padding: 1em 1.1em 1.2em; }
+  .chat i { display: block; height: 2em; width: 55%; border-radius: 0.9em; background: var(--win-2); }
+  .chat i.s { width: 36%; }
+  .chat i.me { justify-self: end; width: 44%; background: rgb(242 181 68 / 0.12); }
+  .compose { display: flex; align-items: center; min-height: 2.7em; margin-top: 0.5em; padding: 0.5em 1em; border-radius: 1.4em; background: var(--win-2); color: var(--ink); }
+  .compose .caret { flex: none; width: 2px; height: 1.2em; margin-inline-start: 1px; background: var(--gold); animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* Board: Mared draws the explanation over whatever is open, with a subtitle at the bottom */
+  .board { position: absolute; z-index: 3; inset: 0; background: rgb(5 5 6 / 0); transition: background-color 0.6s var(--ease); pointer-events: none; }
+  .board.on { background: rgb(5 5 6 / 0.8); }
+  .board svg { position: absolute; left: 4%; top: 5%; width: 92%; height: 78%; overflow: visible; font-family: var(--font); }
+  .board path, .board rect, .board circle { fill: none; stroke: var(--ink); stroke-width: 0.8; stroke-linecap: round; stroke-linejoin: round;
+                                            stroke-dasharray: 1 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.1s var(--ease); }
+  .board .ac { stroke: var(--gold); filter: drop-shadow(0 0 1.5px rgb(242 181 68 / 0.7)); }
+  .board .glow { fill: var(--gold); stroke: none; opacity: 0; transition: opacity 0.5s 0.9s; }
+  .board text { fill: var(--ink); font-size: 6px; text-anchor: middle; opacity: 0; transition: opacity 0.5s 0.5s; }
+  .board text.ttl { fill: var(--gold-light); font-size: 7.5px; font-weight: 600; }
+  .board .show :is(path, rect, circle) { stroke-dashoffset: 0; }
+  .board .show :is(text, .glow) { opacity: 1; }
+  .subt { position: absolute; left: 50%; bottom: 0.9em; width: max-content; max-width: 90%; margin: 0; color: var(--ink); font-size: max(12px, 0.95em); text-align: center;
+          text-shadow: 0 1px 4px #000; transform: translateX(-50%); }
+
   /* Sections */
   section { padding-block: clamp(4rem, 9vw, 7.5rem); border-top: 1px solid var(--line); }
   h2 { margin: 0 0 1rem; max-width: 20ch; font-size: clamp(1.8rem, 3.8vw, 3rem); font-weight: 600; line-height: 1.25; text-wrap: balance; }
@@ -479,6 +505,25 @@
 
       <div class="feature">
         <div class="ftext">
+          <h3 data-i="fT">اتكلم، وهو يكتب مكانك.</h3>
+          <p data-i="fP">دوس <kbd translate="no">Right Ctrl</kbd> وخليك دايس، ودوس <kbd translate="no">Shift</kbd>، واتكلم، وسيب. كلامك بيتكتب مكان المؤشر في أي برنامج: Word أو WhatsApp أو الإيميل أو الشات، بالعربي أو English. وده ببلاش، مش بيصرف من رصيدك.</p>
+        </div>
+        <div class="fdemo">
+          <div class="stage" data-demo="dictate" tabindex="0" role="img" aria-label="مثال: دوس Right Ctrl وShift واتكلم، وكلامك بيتكتب في الشات" data-i-label="aDictate">
+            <div class="win" dir="ltr" aria-hidden="true">
+              <div class="bar"><i></i><i></i><i></i><span>Chat</span></div>
+              <div class="chat">
+                <i></i><i class="s"></i><i class="me"></i><i></i>
+                <div class="compose"><span class="typed" data-reset=""></span><span class="caret"></span></div>
+              </div>
+            </div>
+            <span class="keys" aria-hidden="true"><span class="key" data-k="ctrl">Right Ctrl</span><span class="key" data-k="shift">Shift</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature">
+        <div class="ftext">
           <h3 data-i="bT">بيشاورلك على الزرار الصح.</h3>
           <p data-i="bP">مش هتدوّر في القوائم تاني. مارد بيرسم سهم على المكان بالظبط ويكتب اسمه.</p>
         </div>
@@ -542,6 +587,38 @@
               </div>
             </div>
             <div class="card" aria-hidden="true"><small class="cs"></small><p class="ct"></p><div class="dots"><i></i><i></i><i></i></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature">
+        <div class="ftext">
+          <h3 data-i="gT">شاشتك كلها بقت سبورة.</h3>
+          <p data-i="gP">اسأله يشرحلك أي موضوع، وهو يرسمهولك على شاشتك وهو بيتكلم: حكاية قصيرة ورسومات خطوة خطوة، والكلام مكتوب تحت. كأنه فيديو معمول مخصوص ليك، وكل شرح بيتحفظ عشان تتفرّج عليه تاني.</p>
+        </div>
+        <div class="fdemo">
+          <div class="stage" data-demo="board" tabindex="0" role="img" aria-label="مثال: مارد بيشرح الكهربا بتوصل البيت إزاي، بيرسمها على الشاشة والكلام مكتوب تحت" data-i-label="aBoard">
+            <div class="win" dir="ltr" aria-hidden="true">
+              <div class="bar"><i></i><i></i><i></i><span>Notes</span></div>
+              <div class="page"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            </div>
+            <div class="board" aria-hidden="true">
+              <svg viewBox="0 0 160 90">
+                <g class="b0"><text class="ttl" x="80" y="7"></text></g>
+                <g class="b1">
+                  <rect pathLength="1" x="14" y="38" width="30" height="24" rx="1.5"/><rect pathLength="1" x="34" y="25" width="6" height="13"/>
+                  <path pathLength="1" d="M37 23 q-3 -2.5 0 -5 q3 -2.5 0 -5"/><text x="29" y="72"></text>
+                </g>
+                <g class="b2">
+                  <path pathLength="1" d="M74 62 L80 30 L86 62 M76.5 50 H83.5 M77.8 42 H82.2 M71 33 H89"/>
+                  <path class="ac" pathLength="1" d="M44 42 Q60 32 71 33 M89 33 Q106 32 118 44"/><text x="80" y="72"></text>
+                </g>
+                <g class="b3">
+                  <path pathLength="1" d="M118 62 V45 L132 33 L146 45 V62 Z M129 62 V53 H135 V62"/><circle class="glow" cx="132" cy="45" r="2.6"/><text x="132" y="72"></text>
+                </g>
+              </svg>
+              <p class="subt" data-reset=""></p>
+            </div>
           </div>
         </div>
       </div>
@@ -757,6 +834,12 @@
     aT: "Ask out loud, in your own words.",
     aP: 'Hold <kbd translate="no">Right Ctrl</kbd> and say what you need. Mared listens, sees your screen and answers out loud, right by your mouse.',
     aVoice: "Example: a spoken question about changing the wallpaper, and Mared points at the setting",
+    fT: "Speak, and it types for you.",
+    fP: 'Hold <kbd translate="no">Right Ctrl</kbd>, press <kbd translate="no">Shift</kbd>, speak, and let go. Your words are typed wherever your cursor is, in any app: Word, WhatsApp, email or chat, in Arabic or English. It\'s free and uses no credits.',
+    aDictate: "Example: hold Right Ctrl and Shift, speak, and your words are typed into a chat",
+    gT: "Your whole screen is a canvas.",
+    gP: "Ask Mared to explain any topic, and it draws it on your screen while it talks: a short story, diagrams, step by step, with subtitles. Like a video made just for you, and every explanation is saved so you can watch it again.",
+    aBoard: "Example: Mared explains how electricity reaches your home by drawing it on the screen, with subtitles",
     bT: "It points to the exact button.",
     bP: "No more hunting through menus. Mared draws an arrow to the exact spot and labels it.",
     aPoint: "Example: Mared draws an arrow to Insert, then Pictures",
@@ -954,6 +1037,46 @@
       s.say("say", T("وبعدين Background، واختار الصورة اللي تعجبك.", "Then Background, and pick the picture you like."));
       await s.wait(3200);
     },
+    // Dictation: talk key, then Shift; the heard words show by the pointer, then are typed at the cursor (no answer).
+    async dictate(s) {
+      const box = s.el.querySelector(".compose"), out = box.querySelector(".typed");
+      const said = T("أنا في الطريق، هوصل كمان ربع ساعة", "On my way, I'll be there in 15 minutes");
+      box.dir = root.lang === "en" ? "ltr" : "rtl";
+      s.jump(".compose", 0.55, 0.5);
+      await s.wait(700);
+      s.on('[data-k="ctrl"]', "on");
+      await s.wait(450);
+      s.on('[data-k="shift"]', "on");
+      await s.type(said);
+      await s.wait(400);
+      s.off(".key", "on"); s.say("hide"); s.move(".compose", 0.5, 1.2);
+      for (let n = 1; n <= said.length; n++) { out.textContent = said.slice(0, n); await s.wait(22); }
+      await s.wait(3200);
+    },
+    // The board: the screen dims, each beat draws itself while its subtitle shows, then it's saved.
+    async board(s) {
+      const sub = s.el.querySelector(".subt"), lbl = s.el.querySelectorAll(".board text");
+      [T("الكهربا بتوصلك إزاي؟", "How does electricity reach you?"), T("محطة الكهربا", "Power plant"), T("سلوك عالية", "High wires"), T("بيتك", "Your home")]
+        .forEach((t, i) => { lbl[i].textContent = t; });
+      const beats = [
+        [".b1", T("الكهربا بتبدأ من محطة كبيرة بعيد عنك.", "It starts at a big power plant far away.")],
+        [".b2", T("بتمشي مسافات طويلة في سلوك عالية.", "It travels a long way on high wires.")],
+        [".b3", T("ولما توصل منطقتك، بتتوزّع على البيوت لحد الفيشة.", "Near you, it's split up to every home, all the way to your socket.")]
+      ];
+      s.jump(".page", 0.5, 0.55);
+      await s.wait(600);
+      await s.type(T("اشرحلي الكهربا بتوصل البيت إزاي", "Explain how electricity gets to my home"));
+      await s.wait(350);
+      s.say("think", T("بفكّر…", "Thinking…"));
+      await s.wait(800);
+      s.say("hide"); s.move(".page", 0.9, 0.9);
+      s.on(".board", "on"); s.on(".b0", "show");
+      await s.wait(700);
+      for (const [g, line] of beats) { s.on(g, "show"); sub.textContent = line; await s.wait(2800); }
+      sub.textContent = "";
+      s.say("say", T("اتحفظ في «شروحاتك»، تتفرّج عليه تاني وقت ما تحب.", "Saved, so you can watch it again anytime."));
+      await s.wait(3200);
+    },
     async point(s) {
       s.jump(".page", 0.45, 0.6);
       await s.wait(600);
@@ -1078,6 +1201,7 @@
     ["اسأل وافهم", "Ask and understand", [
       ["دوس واسأل", "دوس Right Ctrl وخليك دايس، اسأل عن أي حاجة على شاشتك، ومارد يبص ويرد عليك بصوته.", "Hold and ask", "Hold Right Ctrl, ask about anything on your screen, and Mared looks and answers out loud."],
       ["اتكلم من غير ما تمسك", "دوس الزرار مرتين ورا بعض وكمّل كلام براحتك من غير ما تفضل دايس.", "Hands-free", "Double-press the talk key and keep talking without holding it."],
+      ["اتكلم وهو يكتب", "دوس الزرار وخليك دايس، ودوس Shift واتكلم، وكلامك يتكتب مكان المؤشر في أي برنامج. ببلاش.", "Dictation", "Hold the talk key, press Shift and speak: your words are typed at the cursor in any app. Free."],
       ["اكتب بدل ما تتكلم", "دوس الزرار وSpace مع بعض واكتب سؤالك.", "Type instead", "Press the talk key with Space and type your question."],
       ["ارسم حوالين أي حاجة واسأل", "وإنت دايس، ارسم بالماوس حوالين أي حاجة، ومارد يشرحلك اللي رسمت عليه بالظبط.", "Circle it and ask", "While holding the key, draw around anything and Mared explains exactly that."],
       ["إيه اللي على شاشتي؟", "بيشرحلك المحتوى نفسه: PDF أو سلايد أو رسم بياني أو صفحة، وكمان «لخّصلي».", "What's on my screen?", "It explains what's open (a PDF, slide, chart or page) and can sum it up."],
@@ -1104,6 +1228,7 @@
       ["بيتأكد إنك عملتها", "في الكتابة أو السحب، بيبص على الشاشة ويقولك لو لسه في حاجة ناقصة.", "Checks your work", "For typing or dragging, it looks and tells you what's still missing."],
       ["«وريني»", "قول «وريني» وهو يحرّك الماوس بنفسه ويوريك، وفي الخطوات الحساسة بيسيبهالك.", "“Show me”", "It moves the pointer and clicks to demonstrate, and hands back on risky steps."],
       ["«علّمني»: درس حي", "بيعلّمك جوّه البرنامج وإنت بتشتغل: شايف شاشتك، يستنّاك، ويصحّحلك.", "“Teach me”: live lessons", "It teaches inside the real app as you work: watches, waits and corrects."],
+      ["شاشتك سبورة", "اسأله يشرحلك أي موضوع، وهو يرسمه على شاشتك بحكاية ورسومات والكلام مكتوب تحت، ويحفظ الشرح عشان تتفرّج عليه تاني.", "Your screen is a canvas", "Ask about any topic and it draws the explanation on your screen with a story, diagrams and subtitles, saved to watch again."],
       ["رسومات وقت الدرس", "بيعرض رسم توضيحي أو صورة متحركة في مكان فاضي، أو على الشاشة التانية.", "Visuals in lessons", "Diagrams, pictures or GIFs in empty screen space, or on your second monitor."],
       ["«اعملي ملاحظات»", "بيكتبلك كل اللي اتعلمته في صفحة ويفتحهالك، وتلاقيها بعدين في Documents.", "“Make me notes”", "It writes up everything covered, opens it, and keeps it in Documents."],
       ["دروس جاهزة", "دروس قصيرة جاهزة من أيقونة مارد جنب الساعة.", "Ready-made lessons", "Short built-in lessons from the tray icon."]
