@@ -5,20 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>مارد · سياسة الخصوصية</title>
 <meta name="description" content="سياسة الخصوصية لبرنامج مارد. Mared privacy policy.">
-<meta name="theme-color" content="#111214">
+<meta name="theme-color" content="#0a0f1e">
 <link rel="icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Playball&family=Readex+Pro:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   /* A plain reading page: one narrow column, the site's colours. Built from docs/legal/privacy.md; don't edit by hand. */
-  :root { --bg: #111214; --raised: #1a1b1f; --line: #27282c; --ink: #eeeef0; --muted: #b4b5ba; --dim: #6e6f75; --gold: #f2b544; color-scheme: dark; }
+  :root { --bg: #0a0f1e; --raised: #1e273f; --line: #2a3450; --ink: #f3ead8; --muted: #a4acbd; --dim: #7d8699; --action: #f3ead8; --gold: #d9a440; color-scheme: dark; }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Readex Pro", "Segoe UI", system-ui, sans-serif; line-height: 1.8;
          padding: env(safe-area-inset-top, 0px) max(1.25rem, env(safe-area-inset-right, 0px)) 4rem max(1.25rem, env(safe-area-inset-left, 0px)); }
-  ::selection { background: var(--gold); color: var(--bg); }
-  a { color: var(--gold); text-underline-offset: 0.25em; }
-  :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 4px; }
+  ::selection { background: var(--action); color: var(--bg); }
+  a { color: var(--action); text-underline-offset: 0.25em; }
+  :focus-visible { outline: 2px solid var(--action); outline-offset: 3px; border-radius: 4px; }
   .top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; max-width: 46rem; margin: 0 auto; padding-block: 1rem; }
   .brand { display: flex; align-items: center; gap: 0.6rem; color: var(--ink); font-weight: 600; text-decoration: none; }
   .brand img { border-radius: 8px; }
@@ -28,18 +28,20 @@
   h1 { margin: 0 0 0.25rem; font-size: clamp(1.8rem, 5vw, 2.4rem); line-height: 1.25; text-wrap: balance; }
   h1 + p { margin-top: 0; color: var(--dim); }
   h2 { margin: 2.5rem 0 0.75rem; font-size: 1.35rem; line-height: 1.4; }
-  h3 { margin: 1.75rem 0 0.5rem; font-size: 1.1rem; color: var(--gold); }
+  h3 { margin: 1.75rem 0 0.5rem; font-size: 1.1rem; color: var(--action); }
   p, li { color: var(--muted); }
   strong { color: var(--ink); font-weight: 600; }
   ul { padding-inline-start: 1.25rem; }
   li { margin-bottom: 0.4rem; }
-  li::marker { color: var(--gold); }
+  li::marker { color: var(--action); }
   code { padding: 0.1rem 0.4rem; border-radius: 6px; background: var(--raised); font-size: 0.9em; }
+  .logo { color: var(--gold); font-family: "Aref Ruqaa", Playball, serif; font-weight: 700; font-size: 1.6em; line-height: 1; }
+  :root[lang="en"] .logo { font-family: Playball, cursive; font-weight: 400; }
 </style>
 </head>
 <body>
 <header class="top">
-  <a class="brand" href="./"><img src="icon.png" width="30" height="30" alt=""><span translate="no">مارد</span></a>
+  <a class="brand" href="./"><img src="icon.png" width="30" height="30" alt=""><span translate="no" class="logo">مارد</span></a>
   <nav><a href="#en" lang="en">English</a><a href="./">yamared.com</a></nav>
 </header>
 <article lang="ar" dir="rtl" id="ar">

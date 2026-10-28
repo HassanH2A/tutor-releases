@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>مارد · تم تأكيد إيميلك</title>
 <meta name="robots" content="noindex">
-<meta name="theme-color" content="#111214">
+<meta name="theme-color" content="#0a0f1e">
 <link rel="icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,22 +13,22 @@
 <style>
   /* Where the sign-in link lands after the app has signed the learner in (the app redirects here), or when a link
      has expired. One message in the middle of the screen, the gold check glowing like the pointer when Mared works. */
-  :root { --bg: #111214; --raised: #1a1b1f; --line: #27282c; --ink: #eeeef0; --muted: #a0a1a6; --dim: #6e6f75;
-          --gold: #f2b544; --gold-light: #ffd58a; --bad: #ff8a7a; --ease: cubic-bezier(0.16, 1, 0.3, 1); color-scheme: dark; }
+  :root { --bg: #0a0f1e; --raised: #1e273f; --line: #2a3450; --ink: #f3ead8; --muted: #a4acbd; --dim: #7d8699;
+          --action: #f3ead8; --action-hover: #ffffff; --gold: #d9a440; --bad: #ff8a7a; --ease: cubic-bezier(0.16, 1, 0.3, 1); color-scheme: dark; }
   * { box-sizing: border-box; }
   html, body { height: 100%; }
-  body { margin: 0; display: grid; place-items: center; background: radial-gradient(60% 50% at 50% 38%, rgb(242 181 68 / 0.1), transparent 70%), var(--bg);
+  body { margin: 0; display: grid; place-items: center; background: var(--bg);
          color: var(--ink); font-family: "Readex Pro", "Segoe UI", system-ui, sans-serif; line-height: 1.7; text-align: center;
          padding: max(1.5rem, env(safe-area-inset-top, 0px)) max(1.25rem, env(safe-area-inset-right, 0px)) max(1.5rem, env(safe-area-inset-bottom, 0px)) max(1.25rem, env(safe-area-inset-left, 0px)); }
-  ::selection { background: var(--gold); color: var(--bg); }
-  :focus-visible { outline: 2px solid var(--gold-light); outline-offset: 4px; border-radius: 8px; }
+  ::selection { background: var(--action); color: var(--bg); }
+  :focus-visible { outline: 2px solid var(--action-hover); outline-offset: 4px; border-radius: 8px; }
   main { width: min(30rem, 100%); }
   .mark { position: relative; width: 112px; height: 112px; margin: 0 auto 2rem; }
-  .mark img { width: 112px; height: 112px; border-radius: 26px; box-shadow: 0 24px 60px -20px rgb(242 181 68 / 0.55); }
+  .mark img { width: 112px; height: 112px; border-radius: 26px; }
   .badge { position: absolute; inset-inline-end: -14px; bottom: -14px; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%;
-           background: var(--gold); color: var(--bg); box-shadow: 0 0 0 5px var(--bg), 0 0 28px rgb(242 181 68 / 0.7);
+           background: var(--gold); color: var(--bg); box-shadow: 0 0 0 5px var(--bg); /* Mared confirming: its gold */
            animation: pop 0.6s var(--ease) 0.15s both; }
-  .bad .badge { background: var(--bad); box-shadow: 0 0 0 5px var(--bg), 0 0 24px rgb(255 138 122 / 0.5); }
+  .bad .badge { background: var(--bad); box-shadow: 0 0 0 5px var(--bg); }
   .badge svg { width: 26px; height: 26px; }
   .badge path { stroke-dasharray: 30; stroke-dashoffset: 30; animation: draw 0.5s var(--ease) 0.45s forwards; }
   @keyframes pop { from { transform: scale(0.4); opacity: 0; } }
@@ -38,9 +38,9 @@
   p { margin: 0 auto; max-width: 26rem; color: var(--muted); font-size: 1.1rem; text-wrap: pretty; }
   .next { display: grid; gap: 0.6rem; margin: 2rem auto 0; padding: 1rem 1.25rem; max-width: 24rem; border-radius: 16px; background: var(--raised); color: var(--muted); font-size: 0.98rem; text-align: start; }
   .next b { color: var(--ink); font-weight: 500; }
-  kbd { padding: 0.05rem 0.45rem; border-radius: 6px; background: #0b0b0d; color: var(--gold); font: inherit; font-weight: 600; direction: ltr; unicode-bidi: isolate; }
+  kbd { padding: 0.05rem 0.45rem; border-radius: 6px; background: #0b0b0d; color: var(--action); font: inherit; font-weight: 600; direction: ltr; unicode-bidi: isolate; }
   .links { display: flex; justify-content: center; gap: 1.25rem; margin-top: 2rem; font-size: 0.95rem; }
-  a { color: var(--gold); text-underline-offset: 0.25em; }
+  a { color: var(--action); text-underline-offset: 0.25em; }
   .lang { position: fixed; top: max(1rem, env(safe-area-inset-top, 0px)); inset-inline-end: max(1rem, env(safe-area-inset-right, 0px)); min-height: 44px; padding: 0 1rem;
           border: 0; border-radius: 999px; background: var(--raised); color: var(--ink); font: inherit; font-size: 0.95rem; cursor: pointer; }
   [hidden] { display: none !important; }
