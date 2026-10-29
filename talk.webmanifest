@@ -1,0 +1,11 @@
+{
+  "name": "Mared · English",
+  "short_name": "Mared",
+  "description": "Talk English with Mared like a phone call.",
+  "start_url": "talk.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f3ea",
+  "theme_color": "#f7f3ea",
+  "icons": [{ "src": "icon.png", "sizes": "256x256", "type": "image/png", "purpose": "any" }]
+}
