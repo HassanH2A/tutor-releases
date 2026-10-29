@@ -3,12 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>مارد · أول ذكاء اصطناعي عايش في الماوس</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="مارد عايش في الماوس بتاعك على Windows. اسأله بصوتك، يشاورلك على الزرار، يعلّمك خطوة خطوة، ولو قلتله «اعملهالي» يعملها بدالك. ابدأ ببلاش.">
-<meta name="theme-color" content="#0a0f1e">
-<meta property="og:title" content="مارد · أول ذكاء اصطناعي عايش في الماوس">
-<meta property="og:description" content="اسأله بصوتك، يشاورلك على الزرار ويعلّمك خطوة خطوة. ابدأ ببلاش.">
+<title>مارد · صاحبك اللي فاهم في الكمبيوتر</title>
+<meta name="description" content="مارد عايش جنب الماوس بتاعك على Windows. اسأله بصوتك وبلهجتك، يشاورلك على الزرار الصح، يعلّمك خطوة خطوة، ولو قلتله «اعملهالي» يعملها قدامك. ابدأ ببلاش.">
+<meta name="theme-color" content="#f7f3ea">
+<meta property="og:title" content="مارد · صاحبك اللي فاهم في الكمبيوتر">
+<meta property="og:description" content="اسأله بصوتك وبلهجتك، يشاورلك على الزرار ويعلّمك خطوة خطوة. ابدأ ببلاش.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://yamared.com/media/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
@@ -19,661 +18,444 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Playball&family=Readex+Pro:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  /* Layout: the gold pointer is the hero (gold is only ever Mared: its pointer, arrows, rings, voice). Each feature is one row: a few words beside a live demo of that feature on a drawn screen. */
+  /* Lamp Navy (brand book, 28 Oct 2026), light theme for the page with navy bands. Gold is Mared's alone: its mark,
+     its pointer, its rings and its voice. Buttons, links and headings are ink. No gradients, glows or sparkles. */
   :root {
-    /* Lamp Navy (the brand book, 28 Oct 2026): true navy, warm ivory, and gold for Mared alone. Actions are ink. */
-    --bg: #0a0f1e; --surface: #0e1426; --raised: #1e273f; --line: #2a3450;
-    --ink: #f3ead8; --muted: #a4acbd; --dim: #7d8699;
-    --action: var(--ink); --action-hover: #ffffff;
-    --gold: #d9a440;
-    --win: #151c31; --win-2: #1e273f; --win-3: #2a3450;
+    --bg: #f7f3ea; --panel: #ffffff; --raised: #efe9dc; --line: #e2dacb; --ink: #0a0f1e; --muted: #566074; --gold: #9a6a17;
+    --navy: #0a0f1e; --navy-2: #151c31; --navy-3: #1e273f; --navy-line: #2a3450; --ivory: #f3ead8; --ivory-muted: #a4acbd; --gold-d: #d9a440;
     --font: "Readex Pro", "Segoe UI", system-ui, sans-serif;
-    --ease: cubic-bezier(0.16, 1, 0.3, 1);
-    --gutter-l: max(1.25rem, env(safe-area-inset-left, 0px));
-    --gutter-r: max(1.25rem, env(safe-area-inset-right, 0px));
-    color-scheme: dark;
+    --display: "Aref Ruqaa", serif;
+    --ease: cubic-bezier(.65, 0, .35, 1); --out: cubic-bezier(.16, 1, .3, 1);
+    --gutter: max(1.25rem, env(safe-area-inset-left, 0px));
+    color-scheme: light;
   }
+  :root[lang="en"] { --display: Playball, cursive; }
   * { box-sizing: border-box; }
-  html { background: var(--bg); scrollbar-color: var(--line) var(--bg); scroll-padding-top: 5rem; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 1.0625rem; line-height: 1.7;
-         caret-color: var(--action); -webkit-tap-highlight-color: rgb(243 234 216 / 0.15); overflow-x: hidden;
-         padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
-  ::selection { background: var(--action); color: var(--bg); }
-  :focus-visible { outline: 2px solid var(--action-hover); outline-offset: 4px; border-radius: 6px; }
+  html { background: var(--bg); scroll-padding-top: 5rem; scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 1.0625rem; line-height: 1.7; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+  ::selection { background: var(--ink); color: var(--bg); }
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; border-radius: 6px; }
+  .band :focus-visible { outline-color: var(--ivory); }
   img { max-width: 100%; height: auto; display: block; }
-  a { color: inherit; touch-action: manipulation; }
-  .en-only { display: none; }
-  :root[lang="en"] .en-only { display: inline; }
-  :root[lang="en"] .ar-only { display: none; }
+  a { color: inherit; }
+  .wrap { max-width: 78rem; margin: 0 auto; padding: 0 var(--gutter); }
   .ltr { direction: ltr; unicode-bidi: isolate; }
-  .logo { color: var(--gold); font-family: "Aref Ruqaa", serif; font-weight: 700; font-size: 1.6em; line-height: 1; }
-  .logo .en-only { font-family: Playball, cursive; font-weight: 400; }
-  .wrap { max-width: 72rem; margin-inline: auto; }
-  q { quotes: "«" "»"; }
-  :root[lang="en"] q { quotes: "\201C" "\201D"; }
-
-  .skip { position: fixed; z-index: 50; top: calc(0.75rem + env(safe-area-inset-top, 0px)); inset-inline-start: 1rem; padding: 0.75rem 1.1rem;
-          border-radius: 999px; background: var(--action); color: var(--bg); font-weight: 600; text-decoration: none;
-          transform: translateY(-220%); transition: transform 0.25s var(--ease); }
+  .en-only { display: none; } :root[lang="en"] .en-only { display: inline; } :root[lang="en"] .ar-only { display: none; }
+  q { quotes: "«" "»"; } :root[lang="en"] q { quotes: "\201C" "\201D"; }
+  kbd { font: 600 .82em var(--font); background: var(--raised); border-radius: 6px; padding: .1em .5em; direction: ltr; unicode-bidi: isolate; white-space: nowrap; }
+  .band kbd { background: var(--navy-3); }
+  .skip { position: fixed; z-index: 60; top: .75rem; inset-inline-start: 1rem; padding: .7rem 1.1rem; border-radius: 999px; background: var(--ink); color: var(--bg);
+          font-weight: 600; text-decoration: none; transform: translateY(-220%); transition: transform .25s var(--out); }
   .skip:focus-visible { transform: none; }
 
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: .55rem; background: var(--ink); color: var(--bg); border-radius: 999px;
+         padding: .9rem 1.65rem; font: 600 1rem var(--font); text-decoration: none; border: 0; cursor: pointer; transition: transform .2s var(--out), background .2s; touch-action: manipulation; }
+  .btn:hover { background: #1e273f; } .btn:active { transform: scale(.97); }
+  .btn.ghost { background: none; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line); } .btn.ghost:hover { box-shadow: inset 0 0 0 1.5px var(--ink); }
+  .band .btn { background: var(--ivory); color: var(--navy); } .band .btn:hover { background: #fff; }
+
   /* Top bar */
-  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg); }
-  .topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; margin-inline: calc(-1 * var(--gutter-l)) calc(-1 * var(--gutter-r));
-            padding: 0.75rem var(--gutter-r) 0.75rem var(--gutter-l);
-            background: rgb(10 15 30 / 0.94); }
-  .topbar .wrap { display: flex; align-items: center; gap: 0.75rem; }
-  .brand { display: flex; align-items: center; gap: 0.6rem; font-size: 1.125rem; font-weight: 600; text-decoration: none; }
-  .brand img { border-radius: 8px; }
-  .nav { display: flex; gap: 0.25rem; margin-inline: 1.5rem auto; }
-  .nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 0.75rem; color: var(--muted); font-size: 0.95rem; text-decoration: none; transition: color 0.2s var(--ease); }
-  .nav a:hover { color: var(--ink); }
-  @media (max-width: 760px) { .nav { display: none; } .brand { margin-inline-end: auto; } }
-  .phone-only { display: none; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; margin: 1.25rem 0 0; color: var(--muted); font-size: 0.95rem; }
-  @media (hover: none) and (pointer: coarse) { .phone-only { display: flex; } }
-  .mbar { position: fixed; z-index: 25; inset: auto 0 0 0; display: none; align-items: center; gap: 0.6rem;
-          padding: 1.25rem max(1rem, env(safe-area-inset-right, 0px)) calc(0.75rem + env(safe-area-inset-bottom, 0px)) max(1rem, env(safe-area-inset-left, 0px));
-          background: rgb(10 15 30 / 0.98); transform: translateY(110%); transition: transform 0.35s var(--ease); }
-  .mbar .cta { flex: 1; justify-content: center; min-height: 54px; font-size: 1.05rem; }
-  .mbar .share { display: grid; place-items: center; flex: none; width: 54px; height: 54px; border: 0; border-radius: 50%; background: var(--raised); color: var(--action); cursor: pointer; }
-  @media (max-width: 760px) { .mbar { display: flex; } .mbar.on { transform: none; } body { padding-bottom: 6rem; } }
-  .copy { min-height: 44px; padding: 0 1.1rem; border: 0; border-radius: 999px; background: var(--raised); color: var(--action); font: inherit; font-weight: 600; cursor: pointer;
-          box-shadow: inset 0 0 0 1px var(--line); }
-  .lang { display: inline-flex; align-items: center; gap: 0.45rem; min-height: 44px; padding: 0 0.95rem; border: 0; border-radius: 999px; background: var(--raised);
-          color: var(--ink); font: inherit; font-size: 0.95rem; cursor: pointer; transition: background-color 0.2s var(--ease), color 0.2s var(--ease); }
-  .lang svg { color: var(--action); }
-  .lang:hover { background: #24252a; }
-  .get { display: inline-flex; align-items: center; min-height: 44px; padding: 0 1.15rem; border-radius: 999px; color: var(--action); font-weight: 600; text-decoration: none;
-         white-space: nowrap; box-shadow: inset 0 0 0 1px var(--line); transition: background-color 0.2s var(--ease), color 0.2s var(--ease); }
-  .get:hover { background: var(--action); color: var(--bg); }
+  .top { position: sticky; top: 0; z-index: 40; background: rgb(247 243 234 / .9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+  .top .wrap { display: flex; align-items: center; gap: 1.75rem; height: 4.5rem; }
+  .brand { display: flex; align-items: center; gap: .6rem; color: var(--gold); font: 700 1.85rem/1 "Aref Ruqaa", serif; text-decoration: none; }
+  .brand img { width: 30px; height: 30px; }
+  :root[lang="en"] .brand { font: 400 1.85rem/1 Playball, cursive; }
+  .nav { display: flex; gap: 1.6rem; margin-inline-start: auto; font-size: .95rem; color: var(--muted); }
+  .nav a { text-decoration: none; } .nav a:hover { color: var(--ink); }
+  .lang { display: inline-flex; align-items: center; gap: .4rem; background: none; border: 0; color: var(--muted); font: inherit; font-size: .95rem; cursor: pointer; padding: .5rem; }
+  .lang:hover { color: var(--ink); }
+  .top .btn { padding: .65rem 1.25rem; font-size: .95rem; }
 
   /* Hero */
-  .hero { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); align-items: center; gap: clamp(2rem, 5vw, 4.5rem);
-          padding-block: clamp(2.5rem, 7vw, 6rem) clamp(4rem, 9vw, 8rem); }
-  h1 { margin: 0; font-size: clamp(2.5rem, 5.6vw, 4.8rem); font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; text-wrap: balance; }
-  :root[lang="en"] h1 { letter-spacing: -0.035em; line-height: 1.02; }
-  h1 em { font-style: normal; color: var(--ink); }
-  .lead { max-width: 34rem; margin: 1.5rem 0 2rem; color: var(--muted); font-size: clamp(1.05rem, 1.4vw, 1.25rem); line-height: 1.85; text-wrap: pretty; }
-  .lead q { color: var(--ink); }
-  .cta { display: inline-flex; align-items: center; gap: 0.65rem; min-height: 56px; padding: 0 1.75rem; border-radius: 999px; background: var(--action);
-         color: var(--bg); font-size: 1.125rem; font-weight: 600; text-decoration: none;
-         transition: background-color 0.25s var(--ease), box-shadow 0.25s var(--ease), transform 0.25s var(--ease); }
-  .cta:hover { background: var(--action-hover); transform: translateY(-2px); }
-  .cta:active { transform: translateY(0) scale(0.98); }
-  .free { display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; margin: 1rem 0 0; padding: 0; list-style: none; color: var(--muted); font-size: 0.95rem; }
-  .free li { display: inline-flex; align-items: center; gap: 0.45rem; }
-  .free svg { color: var(--action); flex: none; }
-  kbd { display: inline-block; padding: 0.1rem 0.55rem; border-radius: 8px; background: var(--raised); color: var(--action); font: inherit; font-size: 0.9em; font-weight: 600;
-        white-space: nowrap; direction: ltr; unicode-bidi: isolate; box-shadow: inset 0 -2px 0 var(--line); }
+  .hero { padding: 4rem 0 0; text-align: center; }
+  .eyebrow { display: inline-flex; gap: .55rem; align-items: center; font-size: .92rem; color: var(--muted); margin: 0 0 1.5rem; }
+  .eyebrow i { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); flex: none; }
+  h1 { font: 700 clamp(3rem, 8.2vw, 7.4rem)/1.12 var(--display); margin: 0 0 1.5rem; }
+  :root[lang="en"] h1 { font-weight: 400; line-height: 1.15; }
+  /* The rotating app name, circled by Mared's own two rings, its pointer at the corner. */
+  .spin { position: relative; display: inline-block; padding: 0 .25em; }
+  .spin .w { display: inline-block; transition: opacity .35s var(--out), transform .35s var(--out); }
+  .spin .w.out { opacity: 0; transform: translateY(.25em); }
+  .spin .r { position: absolute; inset: .18em -.05em -.02em; border-radius: .45em; box-shadow: 0 0 0 3px var(--bg), 0 0 0 7px var(--gold); pointer-events: none; }
+  :root[lang="en"] .spin .r { inset: .12em -.05em .02em; }
+  .spin .cur { position: absolute; width: .42em; height: .42em; inset-inline-end: -.18em; bottom: -.12em; color: var(--gold); }
+  :root[lang="en"] .spin .cur { transform: scaleX(1); }
+  .lead { color: var(--muted); font-size: clamp(1.08rem, 1.6vw, 1.25rem); max-width: 41rem; margin: 0 auto 2.1rem; line-height: 1.85; }
+  .ctas { display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; }
+  .fine { margin: 1rem 0 0; color: var(--muted); font-size: .88rem; }
+  .phone-only { display: none; }
 
-  /* A demo stage: a desk surface with a drawn window, the gold pointer (with Mared's pill), arrows and tags. Sizes are in em, scaled to the stage's width. */
-  .fdemo { container-type: inline-size; min-width: 0; }
-  .stage { position: relative; overflow: hidden; padding: 2.4em 1.8em; border-radius: 24px; font-size: clamp(9px, 2.05cqi, 15px); line-height: 1.4;
-           background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
-  .win { position: relative; overflow: hidden; border-radius: 0.9em; background: var(--win); color: var(--muted);
-         box-shadow: 0 30px 60px -30px #000, 0 0 0 1px var(--line); transition: box-shadow 0.5s var(--ease); }
-  .stage.working .win { box-shadow: 0 0 0 2px var(--gold); }
-  .bar { display: flex; align-items: center; gap: 0.4em; padding: 0.6em 0.9em; background: var(--win-2); color: var(--dim); font-size: 0.8em; }
-  .bar i { width: 0.75em; height: 0.75em; border-radius: 50%; background: var(--line); }
-  .bar span { margin-inline-start: 0.5em; }
-  .hit { color: var(--ink) !important; box-shadow: 0 0 0 2px var(--bg), 0 0 0 6px var(--gold) !important; }
-  .cur { position: absolute; z-index: 6; top: 0; left: 0; width: 1.7em; height: 1.7em; pointer-events: none; transform: translate(60%, 60%);
-         transition: transform 0.9s var(--ease); }
-  .cur.jump { transition: none; }
-  .cur > svg { display: block; width: 1.7em; height: 1.7em; color: var(--gold); transform: translate(-0.28em, -0.18em); }
-  .rip { position: absolute; left: -0.7em; top: -0.7em; width: 1.4em; height: 1.4em; border-radius: 50%; border: 2px solid var(--gold); opacity: 0; }
-  .rip.go { animation: rip 0.55s ease-out; }
-  @keyframes rip { from { transform: scale(0.3); opacity: 0.9; } to { transform: scale(1.9); opacity: 0; } }
-  .pill { position: absolute; top: 1.7em; left: 1em; display: none; align-items: center; gap: 0.55em; width: max-content; max-width: 17em; padding: 0.5em 0.9em;
-          border-radius: 1.2em; background: var(--bg); color: var(--ink); font-size: max(12px, 0.95em); line-height: 1.45; text-align: start;
-          box-shadow: 0 0 0 1px var(--line), 0 12px 30px -10px #000; animation: pop 0.3s var(--ease); }
-  :root[dir="rtl"] .pill { direction: rtl; }
-  .cur.flip .pill { left: auto; right: 0.6em; }
-  .cur.up .pill { top: auto; bottom: 1em; }
-  .pill.listen, .pill.think, .pill.say, .pill.work { display: flex; }
-  .pill::before { content: ""; flex: none; width: 0.6em; height: 0.6em; border-radius: 50%; background: var(--gold); }
-  .pill.listen::before { display: none; }
-  .pill.think::before, .pill.work::before { animation: pulse 1s ease-in-out infinite; }
-  .pill.think::before { background: var(--muted); } /* thinking: quiet dots, not gold */
-  .pill.think .txt { color: var(--muted); }
-  @keyframes pop { from { opacity: 0; transform: translateY(4px) scale(0.96); } }
-  @keyframes pulse { 50% { opacity: 0.3; } }
-  .wave { display: none; align-items: center; gap: 0.18em; height: 1em; flex: none; }
-  .pill.listen .wave { display: inline-flex; }
-  .wave i { width: 0.18em; height: 100%; border-radius: 1em; background: var(--gold); animation: wv 0.9s ease-in-out infinite; transform-origin: center; }
-  .wave i:nth-child(2) { animation-delay: -0.2s; } .wave i:nth-child(3) { animation-delay: -0.45s; } .wave i:nth-child(4) { animation-delay: -0.1s; } .wave i:nth-child(5) { animation-delay: -0.6s; }
-  @keyframes wv { 0%, 100% { transform: scaleY(0.3); } 50% { transform: scaleY(1); } }
-  .tagl { position: absolute; z-index: 5; padding: 0.15em 0.6em; border-radius: 0.4em; background: var(--bg); color: var(--ink); box-shadow: inset 0 0 0 1px var(--gold); font-size: max(11px, 0.8em); font-weight: 600;
-          white-space: nowrap; pointer-events: none; transform: translate(-50%, calc(-100% - 0.55em)); opacity: 0; transition: opacity 0.3s var(--ease); }
-  .tagl.show { opacity: 1; }
-  .ov { position: absolute; z-index: 4; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-  .ov path, .ov rect { fill: none; stroke: var(--gold); stroke-width: 2.5; stroke-linecap: round; }
-  .ov .draw { stroke-dasharray: 1 1; stroke-dashoffset: 1; transition: stroke-dashoffset 0.75s var(--ease); }
-  .ov .draw.go { stroke-dashoffset: 0; }
-  .ov rect.dashed { stroke-dasharray: 0.018 0.012; }
-  .ov .head { fill: var(--gold); stroke: none; opacity: 0; transition: opacity 0.2s 0.6s; }
-  .ov .head.go { opacity: 1; }
-  .key { position: absolute; z-index: 5; bottom: 0.8em; inset-inline-end: 1.1em; padding: 0.3em 0.75em; border-radius: 0.5em; background: var(--win-2); color: var(--dim);
-         font-size: max(11px, 0.85em); font-weight: 600; direction: ltr; box-shadow: inset 0 -2px 0 var(--line); transition: color 0.3s, box-shadow 0.3s, background-color 0.3s; }
-  .key.on { color: var(--bg); background: var(--ink); }
+  /* Live desktop demo */
+  .desk { position: relative; max-width: 68rem; margin: 3.75rem auto 0; aspect-ratio: 16/9.2; border-radius: 18px; background: var(--navy);
+          box-shadow: 0 40px 100px rgb(10 15 30 / .26); overflow: hidden; direction: ltr; font-family: "Segoe UI", system-ui, sans-serif; text-align: left; }
+  .xl { position: absolute; inset: 4% 4.5% 12% 4.5%; background: #fff; border-radius: 8px; overflow: hidden; color: #222; font-size: 13px; display: flex; flex-direction: column; }
+  .xl .title { background: #1f6e43; color: #fff; padding: 6px 12px; font-size: 12px; display: flex; justify-content: space-between; }
+  .tabs { display: flex; gap: 2px; background: #f3f3f3; padding: 4px 10px 0; border-bottom: 1px solid #ddd; overflow: hidden; }
+  .tabs span { padding: 6px 12px; border-radius: 4px 4px 0 0; white-space: nowrap; }
+  .tabs .on { background: #fff; color: #1f6e43; font-weight: 600; }
+  .ribbon { display: flex; gap: 14px; padding: 10px 14px; border-bottom: 1px solid #ddd; background: #fff; min-height: 64px; align-items: center; }
+  .ribbon .b { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 10px; border-radius: 6px; font-size: 11px; color: #444; }
+  .ribbon .b svg { width: 22px; height: 22px; }
+  .sheet { flex: 1; display: grid; grid-template-columns: 36px repeat(5, 1fr); grid-auto-rows: 26px; font-size: 12px; position: relative; }
+  .sheet span { border-right: 1px solid #e5e5e5; border-bottom: 1px solid #e5e5e5; padding: 4px 8px; white-space: nowrap; overflow: hidden; }
+  .sheet .h { background: #f3f3f3; color: #777; text-align: center; }
+  .sheet .t { font-weight: 600; }
+  .sheet .sel { outline: 2px solid #1f6e43; outline-offset: -2px; background: #e8f3ec; }
+  .chart { position: absolute; right: 4%; top: 12%; width: 38%; height: 76%; background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 14px 16px;
+           display: flex; align-items: flex-end; gap: 10%; opacity: 0; transform: scale(.92); transition: .6s var(--ease); }
+  .chart.show { opacity: 1; transform: none; }
+  .chart i { flex: 1; background: #1f6e43; border-radius: 3px 3px 0 0; height: 0; transition: height .8s var(--ease); }
+  .chart.show i:nth-child(1) { height: 82% } .chart.show i:nth-child(2) { height: 55% } .chart.show i:nth-child(3) { height: 24% } .chart.show i:nth-child(4) { height: 38% }
+  .taskbar { position: absolute; inset: auto 0 0 0; height: 8%; background: var(--navy-2); display: flex; justify-content: center; align-items: center; gap: 14px; }
+  .taskbar i { width: 26px; height: 26px; border-radius: 6px; background: var(--navy-line); }
+  .taskbar i.x { background: #1f6e43; }
+  .mared { position: absolute; left: 0; top: 0; z-index: 5; transition: transform 1.1s var(--ease); pointer-events: none; }
+  .mared > svg { width: 26px; height: 26px; color: var(--gold-d); filter: drop-shadow(0 2px 3px rgb(0 0 0 / .35)); }
+  .say { position: absolute; top: 30px; left: 18px; background: var(--navy); color: var(--ivory); border-radius: 18px; padding: 10px 14px; width: max-content; max-width: 300px;
+         font: 500 15px/1.6 var(--font); text-align: start; box-shadow: 0 12px 30px rgb(0 0 0 / .35); opacity: 0; transform: translateY(6px); transition: .35s var(--ease); }
+  .say.on { opacity: 1; transform: none; }
+  .mared.flip .say { left: auto; right: 8px; }
+  .say b { color: var(--gold-d); font: 700 16px "Aref Ruqaa", serif; margin-inline-end: 6px; }
+  :root[lang="en"] .say b { font: 400 17px Playball, cursive; }
+  .bars { display: inline-flex; gap: 3px; align-items: center; height: 16px; vertical-align: middle; margin-inline-start: 6px; }
+  .bars i { width: 3px; background: var(--gold-d); border-radius: 2px; animation: v .9s ease-in-out infinite; }
+  .bars i:nth-child(2) { animation-delay: .15s } .bars i:nth-child(3) { animation-delay: .3s } .bars i:nth-child(4) { animation-delay: .45s }
+  @keyframes v { 0%, 100% { height: 4px } 50% { height: 16px } }
+  .ring { position: absolute; z-index: 4; border-radius: 8px; pointer-events: none; box-shadow: 0 0 0 2px var(--navy), 0 0 0 6px var(--gold-d); opacity: 0; transform: scale(1.25); transition: .45s var(--ease); }
+  .ring.on { opacity: 1; transform: none; }
+  .ask { position: absolute; bottom: 10%; left: 50%; transform: translate(-50%, 12px); background: var(--navy-3); color: var(--ivory); padding: 10px 16px; white-space: nowrap;
+         border-radius: 999px; font: 500 15px var(--font); opacity: 0; transition: .4s var(--ease); display: flex; gap: 10px; align-items: center; z-index: 6; }
+  .ask.on { opacity: 1; transform: translate(-50%, 0); }
+  .ask kbd { background: var(--navy); color: var(--ivory); }
+  .ask .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--gold-d); animation: p 1s ease-in-out infinite; }
+  @keyframes p { 50% { transform: scale(1.5); opacity: .6 } }
+  .try { display: flex; gap: .6rem; justify-content: center; flex-wrap: wrap; margin-top: 1.25rem; }
+  .try button { background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 999px; padding: .6rem 1.15rem; font: inherit; font-size: .92rem; cursor: pointer; }
+  .try button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 
-  /* Spreadsheet (hero, teach) */
-  .tabs { display: flex; gap: 0.2em; padding: 0.45em 0.8em 0; font-size: 0.85em; }
-  .tabs span { padding: 0.35em 0.75em; border-radius: 0.4em 0.4em 0 0; }
-  .tabs .t-home, .win.ins .tabs [data-k="insert"] { background: var(--win-2); color: var(--ink); }
-  .win.ins .tabs .t-home { background: none; color: var(--muted); }
-  .rib { display: flex; align-items: center; gap: 0.35em; min-height: 3.3em; padding: 0.45em 0.8em; background: var(--win-2); }
-  .rib .g { display: flex; gap: 0.35em; }
-  .rib .g.ins, .win.ins .rib .g.home { display: none; }
-  .win.ins .rib .g.ins { display: flex; }
-  .tool { display: grid; place-items: center; min-width: 2.4em; height: 2.3em; padding: 0 0.55em; border-radius: 0.45em; font-size: 0.85em; font-weight: 600; color: var(--muted);
-          transition: background-color 0.4s var(--ease), color 0.4s var(--ease), box-shadow 0.4s var(--ease); }
-  .tool svg { width: 1.3em; height: 1.3em; }
-  .grid { display: grid; grid-template-columns: 2.2em repeat(4, minmax(0, 1fr)); font-size: 0.8em; color: var(--dim); font-variant-numeric: tabular-nums; }
-  .grid > span { padding: 0.5em 0.6em; border-bottom: 1px solid #222327; border-inline-start: 1px solid #222327; white-space: nowrap; overflow: hidden; transition: background-color 0.3s; }
-  .grid > span.h { color: #4c4d53; text-align: center; }
-  .grid > span.t { color: var(--muted); }
-  .grid > span.sel { background: var(--raised); color: var(--ink); }
-  .grid.styled > span.t { background: var(--line); color: var(--ink); font-weight: 600; }
-  .grid.styled > span.r2, .grid.styled > span.r4 { background: var(--win-2); }
-  .grid.styled > span.d { color: var(--ink); }
-  .card { position: absolute; z-index: 5; bottom: 1em; inset-inline-start: 1.1em; width: min(17em, 70%); padding: 0.8em 1em; border-radius: 0.8em; background: var(--bg);
-          box-shadow: 0 0 0 1px var(--line), 0 16px 40px -12px #000; font-size: max(12px, 0.95em); }
-  .card small { display: block; color: var(--muted); font-size: 0.8em; font-weight: 600; }
-  .card p { margin: 0.2em 0 0.6em; color: var(--ink); }
-  .dots { display: flex; gap: 0.35em; }
-  .dots i { flex: 1; height: 0.25em; border-radius: 1em; background: var(--line); transition: background-color 0.3s; }
-  .dots i.done { background: var(--action); }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; max-width: 62rem; margin: 4rem auto 0; padding: 0; list-style: none; }
+  .stats li { text-align: center; }
+  .stats b { display: block; white-space: nowrap; font: 600 clamp(2rem, 3.8vw, 3rem)/1.2 var(--font); }
+  .stats span { color: var(--muted); font-size: .95rem; }
 
-  /* Settings */
-  .set { display: grid; grid-template-columns: 11em minmax(0, 1fr); min-height: 16em; }
-  .side { display: grid; align-content: start; gap: 0.15em; margin: 0; padding: 0.8em 0.5em; list-style: none; border-inline-end: 1px solid var(--line); }
-  .side li { padding: 0.45em 0.7em; border-radius: 0.4em; font-size: 0.9em; white-space: nowrap; overflow: hidden; transition: background-color 0.3s, color 0.3s; }
-  .side li.cur-page { background: var(--win-2); color: var(--ink); }
-  .pane { padding: 1em 1.2em; }
-  .pane > div { display: grid; align-content: start; gap: 0.6em; }
-  .pane b { color: var(--ink); font-size: 1.15em; font-weight: 600; }
-  .pane i { display: block; height: 2.3em; border-radius: 0.45em; background: var(--win-2); }
-  .pane .p2, .set.swap .p1 { display: none; }
-  .set.swap .p2 { display: grid; }
-  .walls { display: flex; gap: 0.5em; }
-  .walls span { flex: 1; height: 4.2em; border-radius: 0.45em; }
-  .walls span:nth-child(1) { background: linear-gradient(135deg, #2b3a55, #c08a4a); }
-  .walls span:nth-child(2) { background: linear-gradient(135deg, #1f3b36, #7fae97); }
-  .walls span:nth-child(3) { background: linear-gradient(135deg, #3c2a3f, #c47b6a); }
-  .rowx { display: block; padding: 0.55em 0.75em; border-radius: 0.45em; background: var(--win-2); font-size: 0.9em; transition: background-color 0.4s, color 0.4s, box-shadow 0.4s; }
+  /* App strip and request rows: lists are doubled so the loop is seamless. */
+  .apps { margin: 5.5rem 0 0; text-align: center; }
+  .apps > p { color: var(--muted); font-size: .95rem; margin: 0 0 1.5rem; }
+  .strip, .row { direction: ltr; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
+  .strip ul, .row ul { display: flex; width: max-content; margin: 0; padding: 0; list-style: none; animation: slide 45s linear infinite; }
+  .strip ul { gap: 3.25rem; }
+  .strip li { font: 600 1.35rem var(--font); opacity: .5; white-space: nowrap; }
+  @keyframes slide { to { transform: translateX(-50%); } }
+  section { position: relative; }
+  .sec { padding: 7rem 0 0; }
+  h2 { font: 700 clamp(2.3rem, 5vw, 4.2rem)/1.25 var(--display); margin: 0 0 1rem; text-align: center; }
+  :root[lang="en"] h2 { font-weight: 400; }
+  .sub { color: var(--muted); font-size: clamp(1.02rem, 1.4vw, 1.15rem); max-width: 42rem; margin: 0 auto 3rem; line-height: 1.85; text-align: center; }
+  .rows { display: grid; gap: 1rem; }
+  .row ul { gap: .75rem; animation-duration: 75s; }
+  .row.rev ul { animation-direction: reverse; animation-duration: 85s; }
+  .row li { background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: .8rem 1.3rem; font-size: 1.05rem; white-space: nowrap; }
+  .row li small { color: var(--muted); margin-inline-start: .55rem; font-size: .8rem; }
+  .strip:hover ul, .row:hover ul { animation-play-state: paused; }
 
-  /* Word */
-  .page { display: grid; gap: 0.55em; width: 72%; min-height: 9.5em; margin: 1.2em auto; padding: 1.4em; border-radius: 0.3em; background: var(--win-2); }
-  .page i { display: block; height: 0.5em; border-radius: 1em; background: var(--win-3); }
-  .page i:nth-child(3n) { width: 70%; }
-  .page i:first-child { height: 0.8em; width: 45%; background: #3a3b41; }
+  /* Navy bands */
+  .band { background: var(--navy); color: var(--ivory); padding: 7rem 0; margin-top: 7rem; }
+  .band .sub { color: var(--ivory-muted); }
+  .bento { display: grid; grid-template-columns: repeat(6, 1fr); grid-auto-rows: minmax(17rem, auto); gap: 1rem; }
+  .tile { background: var(--navy-2); border-radius: 20px; padding: 1.75rem; display: flex; flex-direction: column; overflow: hidden; }
+  .tile h3 { margin: 0 0 .4rem; font-size: 1.3rem; font-weight: 600; line-height: 1.5; }
+  .tile p { margin: 0; color: var(--ivory-muted); line-height: 1.75; font-size: .98rem; }
+  .tile .vis { margin-top: auto; padding-top: 1.5rem; }
+  .s2 { grid-column: span 2; } .s3 { grid-column: span 3; } .s4 { grid-column: span 4; }
+  .tile img { width: 100%; border-radius: 12px; }
+  .voice { display: flex; align-items: center; gap: .75rem; background: var(--navy); border-radius: 18px; padding: .8rem 1.1rem; min-height: 3.6rem; }
+  .voice .bars i { width: 4px; }
+  .voice .dl { margin-inline-start: auto; font-size: .78rem; color: var(--ivory-muted); white-space: nowrap; }
+  .voice q { transition: opacity .3s; } .voice q.out { opacity: 0; }
+  .typed { background: var(--ivory); color: var(--ink); border-radius: 12px; padding: 1rem 1.1rem; font-size: .95rem; min-height: 5.6rem; line-height: 1.8; }
+  .caret { display: inline-block; width: 2px; height: 1.1em; background: var(--ink); vertical-align: middle; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0 } }
+  .tasks { display: grid; gap: .6rem; }
+  .task { background: var(--navy); border-radius: 14px; padding: .8rem 1rem; font-size: .9rem; }
+  .task .bar { height: 5px; background: var(--navy-line); border-radius: 9px; margin-top: .5rem; overflow: hidden; }
+  .task .bar i { display: block; height: 100%; background: var(--ivory); border-radius: 9px; animation: fill 6s var(--ease) infinite; }
+  .task:nth-child(2) .bar i { animation-delay: -2s; } .task:nth-child(3) .bar i { animation-delay: -4s; }
+  @keyframes fill { 0% { width: 5% } 80%, 100% { width: 100% } }
+  .course { background: var(--navy); border-radius: 14px; padding: 1rem 1.1rem; font-size: .92rem; }
+  .course ol { margin: .5rem 0 0; padding: 0; list-style: none; display: grid; gap: .4rem; color: var(--ivory-muted); }
+  .course li::before { content: "○"; margin-inline-end: .5rem; }
+  .course li.done { color: var(--ivory); } .course li.done::before { content: "✓"; }
+  .models { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .models span { background: var(--navy); border-radius: 999px; padding: .5rem .95rem; font-size: .9rem; direction: ltr; }
+  .more { text-align: center; margin: 3rem 0 0; }
+  .more a { font-size: 1.05rem; text-underline-offset: 6px; }
 
-  /* Dashboard */
-  .dash { padding: 1.1em 1.3em 1.3em; }
-  .dash-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.9em; }
-  .dash-top b { color: var(--ink); font-weight: 600; }
-  .dash-top span { font-size: 0.8em; }
-  .bars { display: flex; align-items: flex-end; gap: 0.9em; height: 9em; padding: 0 0.4em; border-bottom: 1px solid var(--line); }
-  .bars span { flex: 1; height: var(--h); border-radius: 0.35em 0.35em 0 0; background: #3a3b42; }
-  .bars span:last-child { background: #4a4b53; }
-  .lbls { display: flex; gap: 0.9em; padding: 0.4em 0.4em 0; font-size: 0.75em; }
-  .lbls span { flex: 1; text-align: center; }
+  /* Real screenshots: a scroll-snap shelf */
+  .shots { display: flex; gap: 1.25rem; overflow-x: auto; scroll-snap-type: x mandatory; padding: 0 0 1.5rem; margin: 0; list-style: none; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+  .shots li { flex: 0 0 min(46rem, 86%); scroll-snap-align: center; }
+  .shots img { border-radius: 14px; box-shadow: 0 20px 50px rgb(10 15 30 / .14), 0 0 0 1px var(--line); width: 100%; height: auto; }
+  .shots figure { margin: 0; } .shots figcaption { color: var(--muted); font-size: .95rem; margin-top: .9rem; text-align: center; }
+  .note { color: var(--muted); font-size: .85rem; text-align: center; margin: .5rem 0 0; }
 
-  /* Explorer */
-  .exp { display: grid; grid-template-columns: 8.5em minmax(0, 1fr); min-height: 16em; }
-  .exp .side li:nth-child(3) { background: var(--win-2); color: var(--ink); }
-  .files { padding: 0.9em 1em; display: grid; align-content: start; gap: 0.9em; }
-  .folds { display: flex; gap: 0.8em; min-height: 3.6em; }
-  .fold { display: flex; align-items: center; gap: 0.5em; padding: 0.45em 0.7em; border-radius: 0.5em; background: var(--win-2); font-size: 0.85em; color: var(--ink);
-          opacity: 0; transform: scale(0.6); transition: opacity 0.4s var(--ease), transform 0.4s var(--ease); }
-  .fold.in { opacity: 1; transform: none; }
-  .fold svg { width: 1.6em; height: 1.6em; color: var(--action); flex: none; }
-  .fold .n { color: var(--dim); font-variant-numeric: tabular-nums; }
-  .phs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0.5em; }
-  .phs i { aspect-ratio: 4 / 3; border-radius: 0.35em; transition: transform 0.5s var(--ease), opacity 0.5s var(--ease); }
-  .phs i:nth-child(4n+1) { background: linear-gradient(135deg, #2b3a55, #c08a4a); }
-  .phs i:nth-child(4n+2) { background: linear-gradient(135deg, #1f3b36, #7fae97); }
-  .phs i:nth-child(4n+3) { background: linear-gradient(135deg, #3c2a3f, #c47b6a); }
-  .phs i:nth-child(4n) { background: linear-gradient(135deg, #35384d, #9aa3c4); }
-  .phs i.gone { opacity: 0; transform: scale(0.4); }
+  /* Old way vs with Mared */
+  .versus { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; max-width: 60rem; margin: 0 auto; }
+  .versus > div { border-radius: 20px; padding: 2rem; }
+  .versus .old { background: var(--raised); color: var(--muted); }
+  .versus .new { background: var(--navy); color: var(--ivory); }
+  .versus h3 { margin: 0 0 1rem; font-size: 1.15rem; }
+  .versus ul { margin: 0; padding: 0; list-style: none; display: grid; gap: .85rem; }
+  .versus li { display: flex; gap: .7rem; align-items: flex-start; }
+  .versus svg { flex: none; margin-top: .35rem; }
 
-  /* Chat (dictation): two talk keys, the words typed into the message box */
-  .keys { position: absolute; z-index: 5; bottom: 0.8em; inset-inline-end: 1.1em; display: flex; gap: 0.4em; direction: ltr; }
-  .keys .key { position: static; }
-  .chat { display: grid; align-content: end; gap: 0.6em; min-height: 14em; padding: 1em 1.1em 1.2em; }
-  .chat i { display: block; height: 2em; width: 55%; border-radius: 0.9em; background: var(--win-2); }
-  .chat i.s { width: 36%; }
-  .chat i.me { justify-self: end; width: 44%; background: var(--raised); }
-  .compose { display: flex; align-items: center; min-height: 2.7em; margin-top: 0.5em; padding: 0.5em 1em; border-radius: 1.4em; background: var(--win-2); color: var(--ink); }
-  .compose .caret { flex: none; width: 2px; height: 1.2em; margin-inline-start: 1px; background: var(--action); animation: blink 1s steps(1) infinite; }
-  @keyframes blink { 50% { opacity: 0; } }
+  /* Privacy */
+  .safe { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem 3rem; }
+  .safe b { display: block; font-size: 1.15rem; margin-bottom: .4rem; }
+  .safe p { margin: 0; color: var(--ivory-muted); line-height: 1.8; }
+  .safe svg { color: var(--ivory); margin-bottom: 1rem; }
 
-  /* Board: Mared draws the explanation over whatever is open, with a subtitle at the bottom */
-  .board { position: absolute; z-index: 3; inset: 0; background: rgb(5 5 6 / 0); transition: background-color 0.6s var(--ease); pointer-events: none; }
-  .board.on { background: rgb(5 5 6 / 0.8); }
-  .board svg { position: absolute; left: 4%; top: 5%; width: 92%; height: 78%; overflow: visible; font-family: var(--font); }
-  .board path, .board rect, .board circle { fill: none; stroke: var(--ink); stroke-width: 0.8; stroke-linecap: round; stroke-linejoin: round;
-                                            stroke-dasharray: 1 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.1s var(--ease); }
-  .board .ac { stroke: var(--gold); }
-  .board .glow { fill: var(--gold); stroke: none; opacity: 0; transition: opacity 0.5s 0.9s; }
-  .board text { fill: var(--ink); font-size: 6px; text-anchor: middle; opacity: 0; transition: opacity 0.5s 0.5s; }
-  .board text.ttl { fill: var(--ink); font-size: 7.5px; font-weight: 600; }
-  .board .show :is(path, rect, circle) { stroke-dashoffset: 0; }
-  .board .show :is(text, .glow) { opacity: 1; }
-  .subt { position: absolute; left: 50%; bottom: 0.9em; width: max-content; max-width: 90%; margin: 0; color: var(--ink); font-size: max(12px, 0.95em); text-align: center;
-          text-shadow: 0 1px 4px #000; transform: translateX(-50%); }
+  /* All features */
+  .catalog { columns: 3; column-gap: 1rem; }
+  .grp { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 0; break-inside: avoid; margin: 0 0 1rem; }
+  .grp summary { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1.15rem 1.35rem; cursor: pointer; font-weight: 600; font-size: 1.08rem; list-style: none; }
+  .grp summary::-webkit-details-marker { display: none; }
+  .grp summary .n { background: var(--raised); color: var(--muted); border-radius: 999px; padding: .1rem .65rem; font-size: .85rem; font-weight: 500; }
+  .grp dl { margin: 0; padding: 0 1.35rem 1.2rem; display: grid; gap: .85rem; }
+  .grp dt { font-weight: 600; font-size: .98rem; } .grp dd { margin: .1rem 0 0; color: var(--muted); font-size: .92rem; line-height: 1.75; }
 
-  /* Sections */
-  section { padding-block: clamp(4rem, 9vw, 7.5rem); border-top: 1px solid var(--line); }
-  h2 { margin: 0 0 1rem; max-width: 20ch; font-size: clamp(1.8rem, 3.8vw, 3rem); font-weight: 600; line-height: 1.25; text-wrap: balance; }
-  :root[lang="en"] h2 { letter-spacing: -0.02em; }
-  h2 em { font-style: normal; color: var(--action); }
-  .sub { max-width: 40rem; margin: 0; color: var(--muted); font-size: 1.125rem; text-wrap: pretty; }
+  /* Every AI in one subscription */
+  .bill { display: grid; grid-template-columns: 1.15fr 1fr; gap: 3rem; align-items: center; }
+  .bill h2, .bill .sub { text-align: start; margin-inline: 0; }
+  .modes { display: grid; gap: 1rem; }
+  .modes p { margin: 0; } .modes b { display: block; } .modes span { color: var(--muted); }
+  .receipt { background: var(--panel); border-radius: 20px; padding: 1.75rem 2rem; box-shadow: 0 20px 50px rgb(10 15 30 / .08), 0 0 0 1px var(--line); margin: 0; }
+  .receipt h3 { margin: 0 0 1rem; font-size: 1rem; color: var(--muted); font-weight: 500; }
+  .receipt dl { margin: 0; }
+  .receipt .line { display: flex; justify-content: space-between; gap: 1rem; padding: .6rem 0; border-bottom: 1px dashed var(--line); }
+  .receipt dt small { color: var(--muted); margin-inline-start: .4rem; }
+  .receipt dd { margin: 0; text-decoration: line-through; color: var(--muted); }
+  .receipt .total { border: 0; font-weight: 600; font-size: 1.15rem; } .receipt .total dd { color: var(--ink); }
+  .total-local { margin: .25rem 0 0; color: var(--muted); font-size: .9rem; text-align: end; }
+  .bill-note { color: var(--muted); font-size: .82rem; margin: 2rem 0 0; }
 
-  /* Feature rows */
-  .features { display: grid; gap: clamp(4rem, 10vw, 8rem); margin-top: clamp(3rem, 6vw, 5rem); }
-  .feature { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); align-items: center; gap: clamp(2rem, 5vw, 5rem); }
-  .feature:nth-child(even) { grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); }
-  .feature:nth-child(even) .ftext { order: 2; }
-  .ftext h3 { margin: 0 0 0.75rem; font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 600; line-height: 1.25; text-wrap: balance; }
-  :root[lang="en"] .ftext h3 { letter-spacing: -0.02em; }
-  .ftext p { max-width: 30rem; margin: 0; color: var(--muted); font-size: 1.125rem; text-wrap: pretty; }
-  .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.5rem 0 0; padding: 0; list-style: none; }
-  .chips li { padding: 0.35rem 0.85rem; border-radius: 999px; background: var(--raised); color: var(--ink); font-size: 0.9rem; }
-
-  /* Learn: the old way against Mared */
-  .versus { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 6vw, 6rem); margin-top: 3rem; }
-  .versus h3 { margin: 0 0 1rem; font-size: 1rem; font-weight: 500; color: var(--dim); }
-  .versus ul { display: grid; gap: 0.9rem; margin: 0; padding: 0; list-style: none; }
-  .versus li { display: grid; grid-template-columns: 1.4rem minmax(0, 1fr); gap: 0.6rem; align-items: baseline; }
-  .versus svg { transform: translateY(0.2em); }
-  .old li { color: var(--dim); }
-  .old svg { color: #4c4d53; }
-  .new h3 { color: var(--action); }
-  .new li { color: var(--ink); font-size: 1.125rem; }
-  .new svg { color: var(--action); }
-  .apps { margin: 3rem 0 0; color: var(--dim); font-size: 0.95rem; }
-  .apps b { color: var(--muted); font-weight: 500; }
-
-  /* The real app: screenshots (rendered by the app's snapshot mode with a sample learner). A grid on wide screens,
-     a swipeable strip on phones. */
-  .shots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem 1.5rem; margin: 2.5rem 0 0; padding: 0; list-style: none; }
-  .shots figure { margin: 0; }
-  .shots img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: contain; border-radius: 14px; background: #0a0f1e;
-               box-shadow: 0 0 0 1px var(--line), 0 24px 50px -30px #000; }
-  .shots figcaption { margin-top: 0.7rem; color: var(--muted); font-size: 0.95rem; text-wrap: pretty; }
-  .shots-note { margin: 1.5rem 0 0; color: var(--dim); font-size: 0.85rem; }
-  @media (max-width: 760px) {
-    .shots { display: flex; gap: 0.75rem; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain;
-             margin-inline: calc(-1 * var(--gutter-l)) calc(-1 * var(--gutter-r)); padding-inline: var(--gutter-l) var(--gutter-r); }
-    .shots::-webkit-scrollbar { display: none; }
-    .shots li { flex: 0 0 84%; scroll-snap-align: center; }
-  }
-
-  /* Why: the one-paragraph belief, set large */
-  .why p { max-width: 40rem; margin: 0; color: var(--muted); font-size: 1.15rem; text-wrap: pretty; }
-  .why p.big { max-width: 30ch; margin-top: 2rem; color: var(--ink); font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 500; line-height: 1.45; text-wrap: balance; }
+  /* Plans */
+  .every { display: flex; justify-content: center; margin: -1.5rem 0 2.5rem; }
+  .every span { background: var(--raised); border-radius: 999px; padding: .55rem 1.2rem; font-size: .95rem; }
+  .plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; align-items: stretch; }
+  .plan { background: var(--panel); border: 1px solid var(--line); border-radius: 22px; padding: 2rem; display: flex; flex-direction: column; }
+  .plan.pick { background: var(--navy); color: var(--ivory); border-color: var(--navy); }
+  .plan h3 { display: flex; justify-content: space-between; align-items: center; gap: .5rem; margin: 0; font-size: 1.25rem; }
+  .plan .tag { background: var(--ivory); color: var(--navy); font-size: .78rem; border-radius: 999px; padding: .2rem .7rem; font-weight: 600; }
+  .plan .who { color: var(--muted); margin: .35rem 0 1.5rem; min-height: 3.4em; line-height: 1.7; }
+  .plan.pick .who, .plan.pick .meta { color: var(--ivory-muted); }
+  .amount { font: 600 2.4rem/1.1 var(--font); margin: 0; }
+  .amount small { font-size: .95rem; font-weight: 400; color: var(--muted); }
+  .plan.pick .amount small { color: var(--ivory-muted); }
+  .meta { color: var(--muted); font-size: .92rem; margin: .5rem 0 0; }
+  .uses { margin: 1.5rem 0 1.75rem; padding: 0; list-style: none; display: grid; gap: .55rem; font-size: .95rem; }
+  .uses li { display: flex; gap: .55rem; } .uses li::before { content: "✓"; }
+  .plan .btn { margin-top: auto; }
+  .plan:not(.pick) .btn { background: none; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line); }
+  .plan:not(.pick) .btn:hover { box-shadow: inset 0 0 0 1.5px var(--ink); }
+  .plan.pick .btn { background: var(--ivory); color: var(--navy); }
+  .pay-note { text-align: center; color: var(--muted); font-size: .92rem; margin: 1.5rem 0 0; }
 
   /* FAQ */
-  .faq { max-width: 48rem; margin-top: 2.5rem; }
-  .faq details { border-top: 1px solid var(--line); }
-  .faq details:last-child { border-bottom: 1px solid var(--line); }
-  .faq summary { display: flex; justify-content: space-between; align-items: center; gap: 1rem; min-height: 44px; padding-block: 1.1rem; font-size: 1.15rem; font-weight: 500;
-                 cursor: pointer; list-style: none; transition: color 0.2s var(--ease); }
+  .faq { max-width: 50rem; margin: 0 auto; }
+  .faq details { border-bottom: 1px solid var(--line); }
+  .faq summary { cursor: pointer; padding: 1.25rem 0; font-weight: 600; font-size: 1.08rem; list-style: none; display: flex; justify-content: space-between; gap: 1rem; }
   .faq summary::-webkit-details-marker { display: none; }
-  .faq summary::after { content: ""; flex: none; width: 0.7rem; height: 0.7rem; border-inline-end: 2px solid var(--action); border-bottom: 2px solid var(--action);
-                        transform: rotate(45deg) translateY(-0.2rem); transition: transform 0.25s var(--ease); }
-  .faq details[open] summary::after { transform: rotate(-135deg) translateY(-0.1rem); }
-  .faq summary:hover { color: var(--action-hover); }
-  .faq p { max-width: 40rem; margin: 0 0 1.25rem; color: var(--muted); }
-  .allow { margin: 0.25rem 0 0; color: var(--ink); font-size: 0.95rem; }
-
-  /* Everything it does: one collapsible group per area (all open on wide screens, the first on phones) */
-  .catalog { display: grid; gap: 0.75rem; margin-top: 2.5rem; }
-  .grp { border-radius: 18px; background: var(--raised); }
-  .grp summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 60px; padding: 0.9rem 1.4rem; font-size: 1.2rem; font-weight: 600;
-                 cursor: pointer; list-style: none; }
-  .grp summary::-webkit-details-marker { display: none; }
-  .grp summary .n { display: inline-flex; align-items: center; gap: 0.75rem; color: var(--action); font-size: 0.9rem; font-weight: 500; font-variant-numeric: tabular-nums; }
-  .grp summary .n::after { content: ""; width: 0.6rem; height: 0.6rem; border-inline-end: 2px solid var(--action); border-bottom: 2px solid var(--action);
-                           transform: rotate(45deg) translateY(-0.15rem); transition: transform 0.25s var(--ease); }
-  .grp[open] summary .n::after { transform: rotate(-135deg) translateY(-0.05rem); }
-  .grp dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 2rem; margin: 0; padding: 0 1.4rem 1.1rem; }
-  .grp dl div { min-width: 0; padding-block: 0.95rem; border-top: 1px solid var(--line); }
-  .grp dt { color: var(--action); font-weight: 500; }
-  .grp dd { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.98rem; }
-
-  /* The bonus: every model in one subscription */
-  .bill { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 6vw, 6rem); align-items: start; }
-  .receipt { margin: 0; padding: 1.75rem 1.75rem calc(1.5rem + 10px); border-radius: 6px 6px 0 0; background: var(--raised); font-variant-numeric: tabular-nums;
-             -webkit-mask: linear-gradient(#000 0 0) top / 100% calc(100% - 10px) no-repeat, radial-gradient(circle at 50% 100%, transparent 6px, #000 6.5px) bottom / 18px 10px repeat-x;
-                     mask: linear-gradient(#000 0 0) top / 100% calc(100% - 10px) no-repeat, radial-gradient(circle at 50% 100%, transparent 6px, #000 6.5px) bottom / 18px 10px repeat-x; }
-  .receipt h3 { margin: 0 0 1rem; color: var(--dim); font-size: 0.85rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
-  .receipt dl { margin: 0; }
-  .line { display: flex; justify-content: space-between; gap: 1rem; padding-block: 0.5rem; }
-  .line dt, .line dd { margin: 0; }
-  .line dt small { color: var(--dim); font-size: 0.85rem; }
-  .line dd { white-space: nowrap; }
-  .total { margin-top: 0.75rem; padding-top: 1rem; border-top: 1px dashed #3a3b40; font-weight: 600; }
-  .total dd { text-decoration: line-through; text-decoration-color: var(--muted); text-decoration-thickness: 2px; }
-  .total-local { margin: 0.25rem 0 0; color: var(--dim); font-size: 0.9rem; text-align: end; }
-  .modes { display: grid; gap: 1.25rem; margin: 2rem 0 0; }
-  .modes p { margin: 0; color: var(--muted); }
-  .modes b { display: block; color: var(--ink); font-weight: 500; }
-  .note { max-width: 40rem; margin: 2.5rem 0 0; color: var(--dim); font-size: 0.875rem; }
-
-  /* Plans: free first */
-  .plans { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 3rem; }
-  .plan { display: flex; flex-direction: column; gap: 0.5rem; padding: 1.75rem 1.5rem; border-radius: 20px; }
-  .plan.pick { background: var(--raised); box-shadow: inset 0 0 0 1.5px var(--ink); }
-  .plan h3 { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; margin: 0; font-size: 1.15rem; font-weight: 600; }
-  .tag { padding: 0.1rem 0.6rem; border-radius: 999px; background: var(--raised); color: var(--action); font-size: 0.8rem; font-weight: 500; }
-  .amount { margin: 0.5rem 0 0; font-size: 2.2rem; font-weight: 600; line-height: 1.1; font-variant-numeric: tabular-nums; }
-  .amount small { font-size: 0.42em; font-weight: 400; color: var(--muted); }
-  .amount-alt { margin: 0; min-height: 1.5em; color: var(--dim); font-size: 0.9rem; font-variant-numeric: tabular-nums; }
-  .plan p.promise { margin: 0.75rem 0 1.5rem; color: var(--muted); }
-  .plan .buy { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; margin-top: auto; padding: 0 1.25rem; border-radius: 999px;
-               background: var(--raised); color: var(--action); font-weight: 600; text-decoration: none; box-shadow: inset 0 0 0 1px var(--line);
-               transition: background-color 0.2s var(--ease), color 0.2s var(--ease); }
-  .plan .buy:hover { background: var(--action); color: var(--bg); }
-  .plan .buy.cta { background: var(--action); color: var(--bg); }
-  .plan .buy.cta:hover { background: var(--action-hover); }
+  .faq summary::after { content: "+"; font-weight: 400; font-size: 1.4rem; line-height: 1; color: var(--muted); transition: transform .25s var(--out); }
+  .faq details[open] summary::after { transform: rotate(45deg); }
+  .faq p { margin: 0 0 1.35rem; color: var(--muted); line-height: 1.85; }
 
   /* Closing */
-  .closing { display: grid; justify-items: center; gap: 1.25rem; text-align: center; }
-  .closing img { border-radius: 22px; }
-  .closing h2 { margin: 0; max-width: 18ch; }
-  .closing .free { justify-content: center; margin: 0; }
-  .steps { max-width: 34rem; margin: 1rem 0 0; padding: 0; list-style: none; color: var(--muted); font-size: 0.95rem; text-align: start; counter-reset: s; display: grid; gap: 0.6rem; }
-  .steps li { display: grid; grid-template-columns: 1.5rem minmax(0, 1fr); gap: 0.5rem; counter-increment: s; }
-  .steps li::before { content: counter(s); color: var(--action); font-weight: 600; }
-  .steps b { color: var(--ink); font-weight: 500; }
+  .closing { text-align: center; }
+  .closing img { margin: 0 auto 1.5rem; width: 88px; height: 88px; }
+  .closing .steps { max-width: 34rem; margin: 2.5rem auto 0; padding: 0; list-style: none; counter-reset: s; text-align: start; display: grid; gap: .9rem; color: var(--ivory-muted); }
+  .closing .steps li { display: flex; gap: .85rem; counter-increment: s; }
+  .closing .steps li::before { content: counter(s); flex: none; width: 1.8rem; height: 1.8rem; border-radius: 50%; background: var(--navy-3); color: var(--ivory); display: grid; place-items: center; font-size: .85rem; }
+  .closing .steps b { color: var(--ivory); }
+  footer { padding: 3rem 0 6rem; color: var(--muted); font-size: .88rem; }
+  footer p { margin: .35rem 0; }
 
-  footer { padding-block: 2.5rem calc(2.5rem + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); color: var(--dim); font-size: 0.85rem; }
-  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem 2rem; }
-  footer p { margin: 0; max-width: 46rem; }
-  footer a { color: var(--muted); text-underline-offset: 0.3em; text-decoration-color: var(--line); }
-  footer a:hover { color: var(--action); }
+  /* Phone bar: Mared is for Windows, so phones get "start now, download later" and a share button. */
+  .mbar { display: none; }
 
-  @media (max-width: 1000px) { .grp dl { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (max-width: 900px) {
-    .hero, .bill, .feature, .feature:nth-child(even) { grid-template-columns: minmax(0, 1fr); }
-    .feature:nth-child(even) .ftext { order: 0; }
+  @media (max-width: 960px) {
+    .nav { display: none; }
+    .bento { grid-template-columns: 1fr 1fr; } .s2, .s3, .s4 { grid-column: span 2; }
+    .catalog { columns: 2; }
+    .bill { grid-template-columns: 1fr; }
   }
-  @media (max-width: 620px) {
-    .versus, .plans, .grp dl { grid-template-columns: minmax(0, 1fr); }
-    .grp summary, .grp dl { padding-inline: 1.1rem; }
-    .receipt { padding-inline: 1.25rem; }
-    .fdemo { margin-inline: calc(8px - var(--gutter-l)) calc(8px - var(--gutter-r)); }
-    .stage { padding: 1.7em 0.6em; border-radius: 16px; font-size: clamp(10px, 2.3cqi, 15px); }
-    h1 { font-size: clamp(2.1rem, 10vw, 2.8rem); }
-    .get { padding: 0 0.95rem; }
+  @media (max-width: 760px) {
+    .top .wrap { gap: .75rem; }
+    .top .btn { display: none; }
+    .lang { margin-inline-start: auto; }
+    .hero { padding-top: 2.5rem; }
+    .stats { grid-template-columns: 1fr 1fr; row-gap: 2rem; }
+    .desk { aspect-ratio: 4/3.6; border-radius: 14px; }
+    .xl { inset: 3% 3% 13% 3%; }
+    .tabs span:nth-child(n+5) { display: none; }
+    .sheet { grid-template-columns: 28px repeat(3, 1fr); } .sheet span:nth-child(6n+5), .sheet span:nth-child(6n) { display: none; }
+    .chart { width: 52%; right: 3%; }
+    .say { max-width: 210px; font-size: 13px; }
+    .ask { font-size: 13px; }
+    .catalog { columns: 1; }
+    .bento, .plans, .versus, .safe { grid-template-columns: 1fr; } .s2, .s3, .s4 { grid-column: auto; }
+    .band { padding: 5rem 0; margin-top: 5rem; } .sec { padding-top: 5rem; }
+    .plan .who { min-height: 0; }
+    .phone-only { display: block; color: var(--muted); font-size: .92rem; margin: 1.25rem 0 0; }
+    .phone-only button { background: none; border: 0; font: inherit; color: var(--ink); text-decoration: underline; text-underline-offset: 4px; cursor: pointer; padding: .4rem; }
+    .mbar { display: flex; gap: .5rem; position: fixed; z-index: 50; inset: auto .75rem calc(.75rem + env(safe-area-inset-bottom, 0px)); transform: translateY(160%); transition: transform .35s var(--out); }
+    .mbar.on { transform: none; }
+    .mbar .btn { flex: 1; box-shadow: 0 10px 30px rgb(10 15 30 / .3); }
+    .mbar .share { width: 3.25rem; flex: none; border-radius: 50%; border: 0; background: var(--panel); color: var(--ink); box-shadow: 0 10px 30px rgb(10 15 30 / .2), 0 0 0 1px var(--line); display: grid; place-items: center; }
   }
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { transition: none !important; animation: none !important; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+    .strip, .row { overflow-x: auto; }
   }
 </style>
 </head>
 <body>
-<a class="skip" href="#show-t" data-i="skip">تخطّى للمحتوى</a>
-<header class="topbar">
+<a class="skip" href="#features" data-i="skip">تخطّى للمحتوى</a>
+
+<header class="top">
   <div class="wrap">
-    <a class="brand" href="#top"><img src="icon.png" width="32" height="32" alt=""><span translate="no" class="logo"><span class="ar-only">مارد</span><span class="en-only">Mared</span></span></a>
-    <nav class="nav" aria-label="الصفحة" data-i-label="navLabel"><a href="#show-t" data-i="navF">بيعمل إيه</a><a href="#plans-t" data-i="navP">الأسعار</a><a href="#faq-t" data-i="navQ">أسئلة</a></nav>
+    <a class="brand" href="#top" aria-label="مارد" data-i-label="home"><img src="icon.png" width="30" height="30" alt=""><span translate="no"><span class="ar-only">مارد</span><span class="en-only">Mared</span></span></a>
+    <nav class="nav" aria-label="الصفحة" data-i-label="navLabel"><a href="#features" data-i="navF">بيعمل إيه</a><a href="#plans" data-i="navP">الأسعار</a><a href="#faq" data-i="navQ">أسئلة</a></nav>
     <button class="lang" id="lang" type="button" lang="en"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z"/></svg><span>English</span></button>
-    <a class="get" href="start.html" data-i="get">ابدأ ببلاش</a>
+    <a class="btn" href="start.html" data-i="get">ابدأ ببلاش</a>
   </div>
 </header>
 
-<!-- The gold pointer every stage shares; cloned into each .stage by the script. -->
-<template id="cursor">
-  <div class="cur"><span class="rip"></span><svg viewBox="0 0 24 24"><path fill="currentColor" stroke="#0a0f1e" stroke-width="1.2" stroke-linejoin="round" d="M4 2.5 19.5 13l-6.6 1.3 3.9 6.9-2.9 1.6-3.9-6.9L5 20.5Z"/></svg>
-    <div class="pill"><span class="wave"><i></i><i></i><i></i><i></i><i></i></span><span class="txt"></span></div></div>
-  <span class="tagl"></span>
-  <svg class="ov"></svg>
-</template>
+<main id="top">
+<div class="wrap">
+  <section class="hero" aria-labelledby="h1">
+    <p class="eyebrow"><i></i><span data-i="eyebrow">بيتكلم بلهجتك · بيشوف شاشتك · بيعلّمك · بيعملها بدالك</span></p>
+    <h1 id="h1"><span data-i="h1a">صاحبك اللي فاهم</span><br><span data-i="h1b">في</span> <span class="spin"><span class="w" id="word">الكمبيوتر</span><span class="r" aria-hidden="true"></span><svg class="cur" aria-hidden="true" viewBox="0 0 24 24"><path fill="currentColor" stroke="#f7f3ea" stroke-width="1.4" stroke-linejoin="round" d="M4 2.5 19.5 13l-6.6 1.3 3.9 6.9-2.9 1.6-3.9-6.9L5 20.5Z"/></svg></span></h1>
+    <p class="lead" data-i="lead">مارد عايش جنب الماوس. دوس <kbd translate="no">Right Ctrl</kbd> واسأل بصوتك، بلهجتك: يشوف شاشتك، يشاورلك على الزرار الصح، ويعلّمك خطوة خطوة. ولو مستعجل، قوله <q>اعملهالي</q> ويعملها قدامك.</p>
+    <div class="ctas">
+      <a class="btn hero-cta" href="start.html"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg><span data-i="cta">نزّل لـ Windows، ببلاش</span></a>
+      <a class="btn ghost" href="#demo" data-i="watch">شوفه شغّال</a>
+    </div>
+    <p class="fine" data-i="fine">من غير فيزا · <span translate="no">Windows&nbsp;10</span> و&nbsp;11 · بيحدّث نفسه</p>
+    <p class="phone-only"><span data-i="phoneT">على الموبايل؟ سجّل دلوقتي، ونزّله بعدين على الكمبيوتر.</span> <button id="copy" type="button" data-i="copyB">ابعت اللينك لنفسك</button></p>
 
-<main id="top" class="wrap">
-  <div class="hero">
-    <div>
-      <h1 data-i="h1">أول ذكاء اصطناعي <em>عايش في الماوس</em> بتاعك.</h1>
-      <p class="lead" data-i="lead">صاحبك اللي فاهم في الكمبيوتر، قاعد جنب الماوس. دوس <kbd translate="no">Right Ctrl</kbd> واسأل: بيشوف شاشتك، يشاورلك على الزرار الصح، ويعلّمك خطوة خطوة. ولو مستعجل، قوله <q>اعملهالي</q> ويعملها بدالك.</p>
-      <a class="cta" href="start.html">
-        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>
-        <span data-i="cta">ابدأ ببلاش</span>
-      </a>
-      <ul class="free">
-        <li><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span data-i="free1">تجربة مجانية</span></li>
-        <li class="eg-only"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span data-i="free2">إنستاباي وفودافون كاش</span></li>
-        <li class="non-eg"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span data-i="free4">تلغي في أي وقت</span></li>
-        <li><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span translate="no">Windows&nbsp;10 / 11</span></li>
-      </ul>
-      <p class="phone-only"><span data-i="phoneT">على الموبايل؟ سجّل دلوقتي، ونزّله بعدين على الكمبيوتر.</span><button class="copy" id="copy" type="button" data-i="copyB">ابعت اللينك لنفسك</button></p>
+    <div class="desk" id="demo" role="img" aria-label="مارد بيشاور على زرار Insert وبعدين Chart في Excel لحد ما الرسم البياني يتعمل" data-i-label="aDemo">
+      <div class="xl" aria-hidden="true">
+        <div class="title"><span>Book1 - Excel</span><span>— ▢ ✕</span></div>
+        <div class="tabs"><span>File</span><span class="on" id="tHome">Home</span><span id="tInsert">Insert</span><span>Draw</span><span>Page Layout</span><span>Formulas</span><span>Data</span></div>
+        <div class="ribbon" id="ribbon"></div>
+        <div class="sheet">
+          <span class="h"></span><span class="h">A</span><span class="h">B</span><span class="h">C</span><span class="h">D</span><span class="h">E</span>
+          <span class="h">1</span><span class="t" data-i="x0">المصروف</span><span class="t" data-i="x1">المبلغ</span><span></span><span></span><span></span>
+          <span class="h">2</span><span class="d" data-i="x2">إيجار</span><span class="d">4,500</span><span></span><span></span><span></span>
+          <span class="h">3</span><span class="d" data-i="x3">أكل</span><span class="d">3,000</span><span></span><span></span><span></span>
+          <span class="h">4</span><span class="d" data-i="x4">مواصلات</span><span class="d">1,300</span><span></span><span></span><span></span>
+          <span class="h">5</span><span class="d" data-i="x5">إنترنت</span><span class="d">2,100</span><span></span><span></span><span></span>
+          <span class="h">6</span><span></span><span></span><span></span><span></span><span></span>
+          <span class="h">7</span><span></span><span></span><span></span><span></span><span></span>
+          <span class="h">8</span><span></span><span></span><span></span><span></span><span></span>
+          <div class="chart" id="chart"><i></i><i></i><i></i><i></i></div>
+        </div>
+      </div>
+      <div class="taskbar" aria-hidden="true"><i></i><i></i><i class="x"></i><i></i><i></i></div>
+      <div class="ring" id="ring" aria-hidden="true"></div>
+      <div class="ask" id="ask" aria-hidden="true"><span class="dot"></span><span id="askT"></span><kbd>Right Ctrl</kbd></div>
+      <div class="mared" id="mared" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" stroke="#0a0f1e" stroke-width="1.2" stroke-linejoin="round" d="M4 2.5 19.5 13l-6.6 1.3 3.9 6.9-2.9 1.6-3.9-6.9L5 20.5Z"/></svg><div class="say" id="say"></div></div>
+    </div>
+    <div class="try" id="try">
+      <button type="button" aria-pressed="true" data-s="teach" data-i="try1">«إزاي أعمل رسم بياني؟»</button>
+      <button type="button" aria-pressed="false" data-s="do" data-i="try2">«اعملهالي»</button>
     </div>
 
-    <div class="fdemo">
-      <div class="stage" data-demo="hero" tabindex="0" role="img" aria-label="مارد بيرد على سؤال جنب الماوس ويشاور على الزرار" data-i-label="aHero">
-        <div class="win" dir="ltr" aria-hidden="true">
-          <div class="bar"><i></i><i></i><i></i><span>expenses.xlsx</span></div>
-          <div class="rib">
-            <span class="tool" data-t="bold">B</span>
-            <span class="tool"><i>I</i></span>
-            <span class="tool" data-t="sum">Σ</span>
-            <span class="tool" data-t="chart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 20V11M12 20V5M19 20v-6"/></svg></span>
-            <span class="tool" data-t="filter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16l-6 7v6l-4 2v-8Z"/></svg></span>
-          </div>
-          <div class="grid">
-            <span class="h"></span><span class="h">A</span><span class="h">B</span><span class="h">C</span><span class="h">D</span>
-            <span class="h">1</span><span class="t">Item</span><span class="t">Jan</span><span class="t">Feb</span><span class="t">Mar</span>
-            <span class="h">2</span><span>Rent</span><span>4,500</span><span>4,500</span><span>4,500</span>
-            <span class="h">3</span><span>Food</span><span>2,180</span><span>1,940</span><span>2,310</span>
-            <span class="h">4</span><span>Internet</span><span>350</span><span>350</span><span>350</span>
-            <span class="h">5</span><span>Transport</span><span>820</span><span>760</span><span>905</span>
-            <span class="h">6</span><span class="home"></span><span></span><span></span><span></span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <section aria-labelledby="show-t">
-    <h2 id="show-t" data-i="showT">شوفه وهو شغّال.</h2>
-    <p class="sub" data-i="showSub">مارد مش شات في تاب. هو جنب الماوس بتاعك، شايف اللي إنت شايفه، وجاهز في أي برنامج أو موقع.</p>
-
-    <div class="features">
-      <div class="feature">
-        <div class="ftext">
-          <h3 data-i="aT">اسأل بصوتك، بالمصري.</h3>
-          <p data-i="aP">دوس <kbd translate="no">Right Ctrl</kbd> وقول اللي عايزه. مارد بيسمعك، بيشوف شاشتك، ويرد عليك بصوته جنب الماوس.</p>
-        </div>
-        <div class="fdemo">
-          <div class="stage" data-demo="voice" tabindex="0" role="img" aria-label="مثال: سؤال بالصوت عن تغيير الخلفية، ومارد بيشاور على الإعداد" data-i-label="aVoice">
-            <div class="win" dir="ltr" aria-hidden="true">
-              <div class="bar"><i></i><i></i><i></i><span>Settings</span></div>
-              <div class="set">
-                <ul class="side">
-                  <li class="cur-page">System</li><li>Bluetooth &amp; devices</li><li>Network &amp; internet</li><li data-k="pers">Personalization</li><li>Apps</li><li>Accounts</li>
-                </ul>
-                <div class="pane">
-                  <div class="p1"><b>System</b><i></i><i></i><i></i><i></i></div>
-                  <div class="p2"><b>Personalization</b><div class="walls"><span></span><span></span><span></span></div><span class="rowx" data-k="bg">Background</span><span class="rowx">Colors</span><span class="rowx">Themes</span></div>
-                </div>
-              </div>
-            </div>
-            <span class="key" aria-hidden="true">Right Ctrl</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="feature">
-        <div class="ftext">
-          <h3 data-i="fT">اتكلم، وهو يكتب مكانك.</h3>
-          <p data-i="fP">دوس <kbd translate="no">Right Ctrl</kbd> وخليك دايس، ودوس <kbd translate="no">Shift</kbd>، واتكلم، وسيب. كلامك بيتكتب مكان المؤشر في أي برنامج: Word أو WhatsApp أو الإيميل أو الشات، بالعربي أو English. وده ببلاش، مش بيصرف من رصيدك.</p>
-        </div>
-        <div class="fdemo">
-          <div class="stage" data-demo="dictate" tabindex="0" role="img" aria-label="مثال: دوس Right Ctrl وShift واتكلم، وكلامك بيتكتب في الشات" data-i-label="aDictate">
-            <div class="win" dir="ltr" aria-hidden="true">
-              <div class="bar"><i></i><i></i><i></i><span>Chat</span></div>
-              <div class="chat">
-                <i></i><i class="s"></i><i class="me"></i><i></i>
-                <div class="compose"><span class="typed" data-reset=""></span><span class="caret"></span></div>
-              </div>
-            </div>
-            <span class="keys" aria-hidden="true"><span class="key" data-k="ctrl">Right Ctrl</span><span class="key" data-k="shift">Shift</span></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="feature">
-        <div class="ftext">
-          <h3 data-i="bT">بيشاورلك على الزرار الصح.</h3>
-          <p data-i="bP">مش هتدوّر في القوائم تاني. مارد بيرسم سهم على المكان بالظبط ويكتب اسمه.</p>
-        </div>
-        <div class="fdemo">
-          <div class="stage" data-demo="point" tabindex="0" role="img" aria-label="مثال: مارد بيرسم سهم على Insert وبعدين Pictures" data-i-label="aPoint">
-            <div class="win" dir="ltr" aria-hidden="true">
-              <div class="bar"><i></i><i></i><i></i><span>Report.docx</span></div>
-              <div class="tabs"><span>File</span><span class="t-home">Home</span><span data-k="insert">Insert</span><span>Design</span><span>Layout</span></div>
-              <div class="rib">
-                <div class="g home"><span class="tool">B</span><span class="tool"><i>I</i></span><span class="tool"><u>U</u></span><span class="tool">Aa</span></div>
-                <div class="g ins"><span class="tool">Table</span><span class="tool" data-k="pic">Pictures</span><span class="tool">Shapes</span><span class="tool">Chart</span></div>
-              </div>
-              <div class="page"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="feature">
-        <div class="ftext">
-          <h3 data-i="cT">ارسم حوالين أي حاجة واسأل.</h3>
-          <p data-i="cP">رسم بياني مش فاهمه؟ رسالة خطأ؟ وإنت دايس، ارسم حواليها بالماوس واسأل <q>ده إيه؟</q></p>
-        </div>
-        <div class="fdemo">
-          <div class="stage" data-demo="circle" tabindex="0" role="img" aria-label="مثال: رسم حوالين جزء من رسم بياني وسؤال عنه" data-i-label="aCircle">
-            <div class="win" dir="ltr" aria-hidden="true">
-              <div class="bar"><i></i><i></i><i></i><span>Sales dashboard</span></div>
-              <div class="dash">
-                <div class="dash-top"><b>Monthly sales</b><span>Oct – Mar</span></div>
-                <div class="bars"><span style="--h:52%"></span><span style="--h:61%"></span><span style="--h:82%"></span><span style="--h:70%"></span><span data-k="b5" style="--h:88%"></span><span data-k="b6" style="--h:54%"></span></div>
-                <div class="lbls"><span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span><span>Mar</span></div>
-              </div>
-            </div>
-            <span class="key" aria-hidden="true">Right Ctrl</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="feature">
-        <div class="ftext">
-          <h3 data-i="dT">بيعلّمك خطوة خطوة، وإنت اللي بتعمل.</h3>
-          <p data-i="dP">مارد بيقولك الخطوة، يستنّاك تعملها بإيدك، ويتأكد إنها اتعملت صح قبل ما يكمّل. كده بتتعلّم بجد، مش بتتفرّج.</p>
-        </div>
-        <div class="fdemo">
-          <div class="stage" data-demo="teach" tabindex="0" role="img" aria-label="مثال: درس من 3 خطوات لعمل جدول في Excel" data-i-label="aTeach">
-            <div class="win" dir="ltr" aria-hidden="true">
-              <div class="bar"><i></i><i></i><i></i><span>budget.xlsx</span></div>
-              <div class="tabs"><span>File</span><span class="t-home">Home</span><span data-k="insert">Insert</span><span>Data</span></div>
-              <div class="rib">
-                <div class="g home"><span class="tool">B</span><span class="tool"><i>I</i></span><span class="tool">Σ</span><span class="tool">%</span></div>
-                <div class="g ins"><span class="tool">PivotTable</span><span class="tool" data-k="tbl">Table</span><span class="tool">Chart</span></div>
-              </div>
-              <div class="grid">
-                <span class="h"></span><span class="h">A</span><span class="h">B</span><span class="h">C</span><span class="h">D</span>
-                <span class="h">1</span><span class="t">Item</span><span class="t">Jan</span><span class="t">Feb</span><span></span>
-                <span class="h">2</span><span class="d r2">Rent</span><span class="d r2">4,500</span><span class="d r2">4,500</span><span></span>
-                <span class="h">3</span><span class="d">Food</span><span class="d">2,180</span><span class="d">1,940</span><span></span>
-                <span class="h">4</span><span class="d r4">Internet</span><span class="d r4">350</span><span class="d r4">350</span><span></span>
-                <span class="h">5</span><span class="d">Transport</span><span class="d">820</span><span class="d" data-k="c5">760</span><span></span>
-                <span class="h">6</span><span></span><span></span><span></span><span></span>
-              </div>
-            </div>
-            <div class="card" aria-hidden="true"><small class="cs"></small><p class="ct"></p><div class="dots"><i></i><i></i><i></i></div></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="feature">
-        <div class="ftext">
-          <h3 data-i="gT">شاشتك كلها بقت سبورة.</h3>
-          <p data-i="gP">اسأله يشرحلك أي موضوع، وهو يرسمهولك على شاشتك وهو بيتكلم: حكاية قصيرة ورسومات خطوة خطوة، والكلام مكتوب تحت. كأنه فيديو معمول مخصوص ليك، وكل شرح بيتحفظ عشان تتفرّج عليه تاني.</p>
-        </div>
-        <div class="fdemo">
-          <div class="stage" data-demo="board" tabindex="0" role="img" aria-label="مثال: مارد بيشرح الكهربا بتوصل البيت إزاي، بيرسمها على الشاشة والكلام مكتوب تحت" data-i-label="aBoard">
-            <div class="win" dir="ltr" aria-hidden="true">
-              <div class="bar"><i></i><i></i><i></i><span>Notes</span></div>
-              <div class="page"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-            </div>
-            <div class="board" aria-hidden="true">
-              <svg viewBox="0 0 160 90">
-                <g class="b0"><text class="ttl" x="80" y="7"></text></g>
-                <g class="b1">
-                  <rect pathLength="1" x="14" y="38" width="30" height="24" rx="1.5"/><rect pathLength="1" x="34" y="25" width="6" height="13"/>
-                  <path pathLength="1" d="M37 23 q-3 -2.5 0 -5 q3 -2.5 0 -5"/><text x="29" y="72"></text>
-                </g>
-                <g class="b2">
-                  <path pathLength="1" d="M74 62 L80 30 L86 62 M76.5 50 H83.5 M77.8 42 H82.2 M71 33 H89"/>
-                  <path class="ac" pathLength="1" d="M44 42 Q60 32 71 33 M89 33 Q106 32 118 44"/><text x="80" y="72"></text>
-                </g>
-                <g class="b3">
-                  <path pathLength="1" d="M118 62 V45 L132 33 L146 45 V62 Z M129 62 V53 H135 V62"/><circle class="glow" cx="132" cy="45" r="2.6"/><text x="132" y="72"></text>
-                </g>
-              </svg>
-              <p class="subt" data-reset=""></p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="feature">
-        <div class="ftext">
-          <h3 data-i="eT"><q>اعملهالي</q>، ويعملها قدامك.</h3>
-          <p data-i="eP">مستعجل؟ قول اللي عايزه، ومارد يمسك الماوس والكيبورد ويخلّص المهمة وإنت بتتفرّج. بيسألك قبل أي حاجة ممكن تبوّظ، ولو حرّكت الماوس بيستنّاك لحد ما تسيبه. وEsc بيوقّفه.</p>
-          <ul class="chips">
-            <li><q data-i="c1">حوّل الجدول ده لرسم بياني</q></li>
-            <li><q data-i="c2">اكتبلي إيميل للعميل</q></li>
-            <li><q data-i="c3">لخّصلي الـ PDF ده</q></li>
-            <li><q data-i="c4">دوّرلي على أرخص لابتوب</q></li>
-          </ul>
-        </div>
-        <div class="fdemo">
-          <div class="stage" data-demo="doit" tabindex="0" role="img" aria-label="مثال: مارد بيرتّب 12 صورة في 3 فولدرات لوحده" data-i-label="aDoit">
-            <div class="win" dir="ltr" aria-hidden="true">
-              <div class="bar"><i></i><i></i><i></i><span>Pictures</span></div>
-              <div class="exp">
-                <ul class="side"><li>Desktop</li><li>Downloads</li><li>Pictures</li><li>Documents</li><li>Music</li></ul>
-                <div class="files">
-                  <div class="folds">
-                    <span class="fold"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h4.6l2 2h8.4A1.5 1.5 0 0 1 21 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5Z"/></svg><span>2026-01</span><span class="n" data-reset="0">0</span></span>
-                    <span class="fold"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h4.6l2 2h8.4A1.5 1.5 0 0 1 21 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5Z"/></svg><span>2026-02</span><span class="n" data-reset="0">0</span></span>
-                    <span class="fold"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h4.6l2 2h8.4A1.5 1.5 0 0 1 21 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5Z"/></svg><span>2026-03</span><span class="n" data-reset="0">0</span></span>
-                  </div>
-                  <div class="phs"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <ul class="stats">
+      <li><b class="ltr">70+</b><span data-i="st1">حاجة بيعملها</span></li>
+      <li><b data-i="st2b">أي برنامج</b><span data-i="st2">على <span translate="no">Windows</span></span></li>
+      <li><b data-i="st3b">كل اللهجات</b><span data-i="st3">مصري، خليجي، شامي، فصحى، <span translate="no">English</span></span></li>
+      <li><b data-i="st4b">ببلاش</b><span data-i="st4">تجربة من غير فيزا</span></li>
+    </ul>
   </section>
 
-  <section aria-labelledby="real-t">
+  <section class="apps" aria-labelledby="apps-t">
+    <p id="apps-t" data-i="appsT">شغّال جوّه أي برنامج أو موقع على جهازك</p>
+    <div class="strip"><ul id="apps" translate="no"></ul></div>
+  </section>
+
+  <section class="sec" aria-labelledby="asks-t">
+    <h2 id="asks-t" data-i="asksT">اطلب أي حاجة.</h2>
+    <p class="sub" data-i="asksSub">مش محتاج تعرف اسم الزرار ولا تكتب أمر. قوله اللي في دماغك، بلهجتك، زي ما بتكلم صاحبك.</p>
+    <div class="rows">
+      <div class="row"><ul id="r1"></ul></div>
+      <div class="row rev"><ul id="r2"></ul></div>
+      <div class="row"><ul id="r3"></ul></div>
+    </div>
+  </section>
+</div>
+
+<section class="band" id="features" aria-labelledby="team-t">
+  <div class="wrap">
+    <h2 id="team-t" data-i="teamT">مش مساعد واحد. ده فريق كامل.</h2>
+    <p class="sub" data-i="teamSub">بيشرح، ويعلّم، ويكتب، ويرسم، ويخلّص شغلك، كله من جنب الماوس.</p>
+    <div class="bento">
+      <div class="tile s4">
+        <h3 data-i="b1T">بيشاورلك على الزرار الصح</h3>
+        <p data-i="b1">سهم دهبي بيروح على المكان بالظبط في أي برنامج، والزرار ينوّر. ولو مش فاهم حاجة، ارسم حواليها واسأل <q>يعني إيه دي؟</q></p>
+        <div class="vis"><img class="shot" data-shot="study-circle-1" src="media/app/study-circle-1.webp" width="960" height="344" alt="مارد بيرسم دايرة حوالين نقطة في رسم بياني ويشرحها" data-i-alt="b1A" loading="lazy"></div>
+      </div>
+      <div class="tile s2">
+        <h3 data-i="b2T">بيتكلم بلهجتك</h3>
+        <p data-i="b2">اسأل بالمصري أو الخليجي أو الشامي أو الفصحى أو <span translate="no">English</span>، ومارد يرد بنفس لهجتك وبصوت طبيعي.</p>
+        <div class="vis"><div class="voice" aria-hidden="true"><span class="bars"><i></i><i></i><i></i><i></i></span><q id="dq"></q><span class="dl" id="dl"></span></div></div>
+      </div>
+      <div class="tile s2">
+        <h3 data-i="b3T"><q>اعملهالي</q></h3>
+        <p data-i="b3">يمسك الماوس والكيبورد ويخلّصها قدامك. 3 مهام مع بعض، وبيسألك قبل أي حاجة حساسة.</p>
+        <div class="vis tasks" aria-hidden="true">
+          <div class="task"><span data-i="t1">ملخص الـ <span translate="no">PDF</span> في <span translate="no">Word</span></span><div class="bar"><i></i></div></div>
+          <div class="task"><span data-i="t2">ترتيب فولدر الصور</span><div class="bar"><i></i></div></div>
+          <div class="task"><span data-i="t3">رسم بياني للمبيعات</span><div class="bar"><i></i></div></div>
+        </div>
+      </div>
+      <div class="tile s2">
+        <h3 data-i="b4T"><q>علّمني <span translate="no">AutoCAD</span></q></h3>
+        <p data-i="b4">قوله أي برنامج، يقرا أحسن الشروحات ويعملك كورس كامل على قدّك، ويعلّمك جوّه البرنامج نفسه.</p>
+        <div class="vis course" aria-hidden="true"><span data-i="c0">الدرس 3 من 16</span>
+          <ol><li class="done" data-i="c1">الواجهة والأدوات</li><li class="done" data-i="c2">الخطوط والأشكال</li><li data-i="c3">الطبقات</li></ol>
+        </div>
+      </div>
+      <div class="tile s2">
+        <h3 data-i="b5T">اتكلم، وهو يكتب</h3>
+        <p data-i="b5">في الإيميل، في الواتساب، في <span translate="no">Word</span>. كلامك يتكتب مكان المؤشر، بالعربي أو <span translate="no">English</span>. ببلاش.</p>
+        <div class="vis"><div class="typed" aria-hidden="true"><span id="tt"></span><span class="caret"></span></div></div>
+      </div>
+      <div class="tile s3">
+        <h3 data-i="b6T">شاشتك بقت سبورة</h3>
+        <p data-i="b6">اسأله يشرحلك أي موضوع، يرسمه على شاشتك خطوة خطوة والكلام مكتوب تحت، ويحفظ الشرح عشان ترجعله.</p>
+        <div class="vis"><img class="shot" data-shot="lesson-blender" src="media/app/lesson-blender.webp" width="960" height="358" alt="درس حي في Blender برسمة توضيحية" data-i-alt="b6A" loading="lazy"></div>
+      </div>
+      <div class="tile s3">
+        <h3 data-i="b7T">كل الذكاء الاصطناعي في اشتراك واحد</h3>
+        <p data-i="b7">صور وفيديو وصوت وكتابة وشرح. مارد بيبعت كل طلب للموديل الأقوى فيه، بدل 5 اشتراكات.</p>
+        <div class="vis models" translate="no"><span>Claude</span><span>ChatGPT</span><span>Gemini</span><span>ElevenLabs</span><span>Higgsfield</span></div>
+      </div>
+    </div>
+    <p class="more"><a href="#all" data-i="moreL">شوف كل اللي مارد بيعمله</a></p>
+  </div>
+</section>
+
+<div class="wrap">
+  <section class="sec" aria-labelledby="real-t">
     <h2 id="real-t" data-i="realT">ده مارد بجد.</h2>
     <p class="sub" data-i="realSub">لقطات من البرنامج نفسه، مش رسومات.</p>
     <ul class="shots" id="shots"></ul>
-    <p class="shots-note" data-i="realNote">اتصوّرت بحساب تجريبي. على جهازك بتظهر فوق البرامج اللي إنت فاتحها.</p>
+    <p class="note" data-i="realNote">اتصوّرت بحساب تجريبي. على جهازك بتظهر فوق البرامج اللي إنت فاتحها.</p>
   </section>
 
-  <section class="why" aria-labelledby="why-t">
-    <h2 id="why-t" data-i="whyT">مش لازم تعرف تكتب <span class="ltr" translate="no">prompt</span>.</h2>
-    <p data-i="whyP">معظم أدوات الذكاء الاصطناعي شات بتكتب فيه، غالبًا بالإنجليزي، وبعدين ترجع لشغلك وتحاول تطبّق اللي قاله. إحنا شايفين إن المشكلة في الطريقة نفسها، مش في الذكاء.</p>
-    <p class="big" data-i="whyBig">عشان كده مارد بيجيلك إنت: جنب الماوس، جوّه البرنامج اللي فاتحه، وبيكلّمك بالمصري.</p>
-  </section>
-
-  <section aria-labelledby="learn-t">
-    <h2 id="learn-t" data-i="learnT">مش محتاج كورس. <em>ولا فيديو على يوتيوب.</em></h2>
+  <section class="sec" aria-labelledby="learn-t">
+    <h2 id="learn-t" data-i="learnT">مش محتاج كورس. ولا فيديو على يوتيوب.</h2>
     <p class="sub" data-i="learnSub">قول «علّمني Excel» وخلاص. مارد بيعملك خطة على قدّك، ويعلّمك جوّه البرنامج نفسه وإنت بتشتغل.</p>
     <div class="versus">
       <div class="old">
@@ -691,24 +473,40 @@
           <li><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span data-i="n1">بيعلّمك اللي إنت محتاجه دلوقتي بس</span></li>
           <li><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span data-i="n2">جوّه البرنامج اللي فاتحه، على شاشتك إنت</span></li>
           <li><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span data-i="n3">بيشاورلك على الزرار ويتأكد إنك دوست عليه</span></li>
-          <li><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span data-i="n4">اسأل في أي وقت، بالمصري، وهيرد عليك بصوته</span></li>
+          <li><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span data-i="n4">اسأل في أي وقت، بلهجتك، وهيرد عليك بصوته</span></li>
         </ul>
       </div>
     </div>
-    <p class="apps" data-i="apps">جرّبه على <b translate="no">Excel</b> و<b translate="no">Word</b> و<b translate="no">PowerPoint</b> و<b translate="no">Photoshop</b> و<b translate="no">AutoCAD</b> و<b translate="no">Revit</b> و<b translate="no">Canva</b>، أو أي برنامج أو موقع تاني.</p>
   </section>
+</div>
 
-  <section aria-labelledby="all-t">
+<section class="band" aria-labelledby="safe-t">
+  <div class="wrap">
+    <h2 id="safe-t" data-i="safeT">شاشتك بتاعتك.</h2>
+    <p class="sub" data-i="safeSub">مارد بيشوف شاشتك بس لما تطلب منه، وعمره ما بيعمل حاجة من وراك.</p>
+    <div class="safe">
+      <div><svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg><b data-i="sf1T">بيبص بس لما تسأل</b><p data-i="sf1">شاشتك وصوتك بيتبعتوا بس لما تطلب حاجة: سؤال أو درس أو مهمة. والمايك شغّال وإنت دايس على الزرار بس.</p></div>
+      <div><svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><b data-i="sf2T">الباسوردات بعيد</b><p data-i="sf2">اللي بتكتبه في خانة باسورد عمره ما بيتقري ولا بيتبعت، ومارد مش بيكتب فيها أبدًا.</p></div>
+      <div><svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6Z"/><path d="m9 12 2 2 4-4"/></svg><b data-i="sf3T">بيسألك قبل أي حاجة حساسة</b><p data-i="sf3">قبل المسح أو الدفع أو الإرسال بيستنّى موافقتك، واللي بيمسحه بيروح سلة المحذوفات. وEsc بيوقّف كل حاجة.</p></div>
+      <div><svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><b data-i="sf4T">محادثاتك على جهازك</b><p data-i="sf4">المحادثات واللي بيفتكره عنك متحفظين على جهازك إنت، وتمسحهم في أي وقت.</p></div>
+      <div><svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><b data-i="sf5T">سجل 30 يوم بس</b><p data-i="sf5">بنحفظ سجل لاستخدامك 30 يوم عشان نصلّح ونحسّن، من غير صور ولا تسجيلات صوت، وبيتمسح لوحده.</p></div>
+      <div><svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3 19 13l-6 1.5 3.5 6.5-2.6 1.4-3.6-6.5L5 20Z"/></svg><b data-i="sf6T">الماوس بتاعك الأول</b><p data-i="sf6">لو حرّكت الماوس وهو شغّال، بيستنّاك لحد ما تخلص. إنت اللي ماسك الدفّة.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <section class="sec" id="all" aria-labelledby="all-t">
     <h2 id="all-t" data-i="allT">كل اللي مارد بيعمله.</h2>
     <p class="sub" id="all-sub"></p>
     <div class="catalog" id="catalog"></div>
   </section>
 
-  <section aria-labelledby="bill-t">
+  <section class="sec" aria-labelledby="bill-t">
     <div class="bill">
       <div>
-        <h2 id="bill-t" data-i="billT">وكمان: كل الذكاء الاصطناعي في اشتراك واحد.</h2>
-        <p class="sub" data-i="billSub">مارد بيستخدم موديلات <span translate="no">Claude</span> و<span translate="no">ChatGPT</span> و<span translate="no">Gemini</span> و<span translate="no">Higgsfield</span> و<span translate="no">ElevenLabs</span>. بدل خمس اشتراكات، واحد بس.</p>
+        <h2 id="bill-t" data-i="billT">كل الذكاء الاصطناعي في اشتراك واحد.</h2>
+        <p class="sub" data-i="billSub">مارد بيستخدم موديلات <span translate="no">Claude</span> و<span translate="no">ChatGPT</span> و<span translate="no">Gemini</span> و<span translate="no">Higgsfield</span> و<span translate="no">ElevenLabs</span>. بدل خمس اشتراكات، اشتراك واحد.</p>
         <div class="modes">
           <p><b data-i="md1T">سيب مارد يختار</b><span data-i="md1">بيبعت كل طلب للموديل الأقوى فيه: الشرح، الكتابة، الصور، الفيديو، أو الصوت.</span></p>
           <p><b data-i="md2T">أو اختار بنفسك</b><span data-i="md2">عايز <span translate="no">Claude</span> بالذات؟ اختاره وكلّمه على طول.</span></p>
@@ -727,46 +525,64 @@
         <p class="total-local" id="total-local"></p>
       </figure>
     </div>
-    <p class="note" data-i="billNote">الأسعار هي أقل باقة مدفوعة شهرية لكل خدمة زي ما هي معلنة في أكتوبر 2026. مارد بيديك موديلاتهم جوّه رصيدك الشهري، مش اشتراكاتهم نفسها.</p>
+    <p class="bill-note" data-i="billNote">الأسعار هي أقل باقة مدفوعة شهرية لكل خدمة زي ما هي معلنة في أكتوبر 2026. مارد بيديك موديلاتهم جوّه رصيدك الشهري، مش اشتراكاتهم نفسها.</p>
   </section>
 
-  <section aria-labelledby="plans-t">
+  <section class="sec" id="plans" aria-labelledby="plans-t">
     <h2 id="plans-t" data-i="plansT">ابدأ ببلاش. ادفع لما تحبه.</h2>
-    <p class="sub" data-i="plansSub">كل باقة بتبدأ بتجربة مجانية: 3 أسئلة، ومهمة «اعملهالي»، ودرس كامل، من غير ما تدفع حاجة. كل الباقات فيها كل حاجة، والفرق في الرصيد بس (رصيد واحد يساوي سؤال تقريبًا)، وتلغي في أي وقت.</p>
-    <p class="sub eg-only" data-i="plansWallets" style="margin-top:0.5rem">ادفع بالكارت أو بإنستاباي أو فودافون كاش أو اتصالات كاش أو أورنج كاش.</p>
+    <p class="sub" data-i="plansSub">كل باقة بتبدأ بتجربة مجانية: 3 أسئلة، ومهمة «اعملهالي»، ودرس كامل، من غير ما تدفع حاجة. وتلغي في أي وقت.</p>
+    <p class="every"><span data-i="every">كل الباقات فيها كل حاجة. الفرق بس قد إيه هتكفيك.</span></p>
     <div class="plans">
       <div class="plan">
         <h3 translate="no"><span class="ar-only">مارد ميني</span><span class="en-only">Mared Mini</span></h3>
+        <p class="who" data-i="w1">لو بتسأل كام سؤال في الأسبوع.</p>
         <p class="amount" data-price="mini"></p>
-        <p class="allow" data-i="a1">75 رصيد في الشهر</p>
-        <p class="promise" data-i="p1">اسأل عن أي حاجة على شاشتك.</p>
-        <a class="buy" href="start.html?plan=mini" data-i="buy">اشترك</a>
+        <p class="meta" data-i="a1">75 رصيد في الشهر</p>
+        <ul class="uses">
+          <li data-i="u1a">أسئلة عن أي حاجة على شاشتك</li>
+          <li data-i="u1b">شرح الزراير والبرامج</li>
+          <li data-i="u1c">كتابة بالصوت ببلاش</li>
+        </ul>
+        <a class="btn" href="start.html?plan=mini" data-i="buy">ابدأ ببلاش</a>
       </div>
       <div class="plan pick">
-        <h3><span translate="no"><span class="ar-only">مارد بلس</span><span class="en-only">Mared Plus</span></span><span class="tag" data-i="tag">ننصحك بيه</span></h3>
+        <h3><span translate="no"><span class="ar-only">مارد بلس</span><span class="en-only">Mared Plus</span></span><span class="tag" data-i="tag">الأكتر اختيارًا</span></h3>
+        <p class="who" data-i="w2">لو بتتعلم برنامج جديد أو بتشتغل عليه كل يوم.</p>
         <p class="amount" data-price="plus"></p>
-        <p class="allow" data-i="a2">335 رصيد في الشهر</p>
-        <p class="promise" data-i="p2">يكفيك الشهر كله: يشرح، يعلّمك، ويعملهالك.</p>
-        <a class="buy cta" href="start.html?plan=plus" data-i="buy">اشترك</a>
+        <p class="meta" data-i="a2">335 رصيد في الشهر · أكتر من 4 أضعاف ميني</p>
+        <ul class="uses">
+          <li data-i="u2a">دروس وكورسات كاملة</li>
+          <li data-i="u2b">مهام «اعملهالي» كل يوم</li>
+          <li data-i="u2c">يكفيك الشهر كله</li>
+        </ul>
+        <a class="btn" href="start.html?plan=plus" data-i="buy">ابدأ ببلاش</a>
       </div>
       <div class="plan">
         <h3 translate="no"><span class="ar-only">مارد ماكس</span><span class="en-only">Mared Max</span></h3>
+        <p class="who" data-i="w3">للي شغّال مع مارد طول اليوم.</p>
         <p class="amount" data-price="max"></p>
-        <p class="allow" data-i="a3">4,000 رصيد في الشهر</p>
-        <p class="promise" data-i="p3">لأتقل شغل: مهام وكورسات ودروس كتير.</p>
-        <a class="buy" href="start.html?plan=max" data-i="buy">اشترك</a>
+        <p class="meta" data-i="a3">4,000 رصيد في الشهر · 53 ضعف ميني</p>
+        <ul class="uses">
+          <li data-i="u3a">مونتاج فيديو وتصميم وأوتوكاد ساعات</li>
+          <li data-i="u3b">صور وفيديو وفويس أوفر بالذكاء الاصطناعي</li>
+          <li data-i="u3c">كورسات كتير ومهام طويلة مع بعض</li>
+        </ul>
+        <a class="btn" href="start.html?plan=max" data-i="buy">ابدأ ببلاش</a>
       </div>
     </div>
+    <p class="pay-note eg-only" data-i="plansWallets">ادفع بالكارت أو بإنستاباي أو فودافون كاش أو اتصالات كاش أو أورنج كاش.</p>
+    <p class="pay-note non-eg" data-i="payCard">ادفع بالكارت، وتلغي في أي وقت.</p>
   </section>
 
-  <section aria-labelledby="faq-t">
+  <section class="sec" id="faq" aria-labelledby="faq-t">
     <h2 id="faq-t" data-i="faqT">أسئلة بتتسأل كتير</h2>
     <div class="faq">
-      <details><summary data-i="q1">هو ببلاش فعلًا؟</summary><p data-i="r1">أيوه. التجربة المجانية فيها 3 أسئلة، ومهمة «اعملهالي»، ودرس كامل. ولو عجبك، اختار باقتك وكمّل.</p></details>
-      <details><summary data-i="q2">هو بيشوف شاشتي على طول؟</summary><p data-i="r2">لأ. بيشوف شاشتك بس لما تطلب منه حاجة: سؤال، أو درس، أو مهمة. والمايك شغّال وإنت دايس على الزرار، أو لما تشغّل الكلام من غير إيد.</p></details>
-      <details><summary data-i="q3">بيشتغل على أنهي برامج؟</summary><p data-i="r3">أي برنامج أو موقع على <span translate="no">Windows</span>: <span translate="no">Office</span> و<span translate="no">Photoshop</span> و<span translate="no">AutoCAD</span> والمتصفح وغيرهم. مش محتاج إضافات.</p></details>
+      <details><summary data-i="q1">هو ببلاش فعلًا؟</summary><p data-i="r1">أيوه. التجربة المجانية فيها 3 أسئلة، ومهمة «اعملهالي»، ودرس كامل، من غير فيزا. ولو عجبك، اختار باقتك وكمّل.</p></details>
+      <details><summary data-i="q2">هو بيشوف شاشتي على طول؟</summary><p data-i="r2">لأ. بيشوف شاشتك بس لما تطلب منه حاجة: سؤال، أو درس، أو مهمة. والمايك شغّال وإنت دايس على الزرار، أو لما تشغّل الكلام من غير ما تمسك.</p></details>
+      <details><summary data-i="q5">بيتكلم بأنهي لهجة؟</summary><p data-i="r5">بلهجتك. لو سبته على «زي ما بتتكلم» بيرد بنفس اللهجة اللي سألت بيها، وتقدر تختار مصري أو خليجي أو شامي أو فصحى أو <span translate="no">English</span> من الإعدادات.</p></details>
+      <details><summary data-i="q3">بيشتغل على أنهي برامج؟</summary><p data-i="r3">أي برنامج أو موقع على <span translate="no">Windows</span>: <span translate="no">Office</span> و<span translate="no">Photoshop</span> و<span translate="no">AutoCAD</span> و<span translate="no">Premiere</span> والمتصفح وغيرهم، من غير أي إضافات.</p></details>
       <details><summary data-i="q4">هيدوس على حاجات من غير ما أعرف؟</summary><p data-i="r4">لأ. بيعمل حاجات بس لما تقوله «اعملهالي»، وبيسألك قبل أي حاجة ممكن تبوّظ زي المسح أو الدفع، واللي بيمسحه بيروح سلة المحذوفات. ولو حرّكت الماوس بيستنّاك، وEsc بيوقّفه.</p></details>
-      <details><summary data-i="q5">بيتكلم بأنهي لغة؟</summary><p data-i="r5">بالمصري، وتقدر تخلّيه يرد بالعربي الفصحى أو بالإنجليزي من الإعدادات.</p></details>
+      <details><summary data-i="q11">إيه الفرق بين الباقات؟</summary><p data-i="r11">كل الباقات فيها كل حاجة. الفرق في الرصيد بس: السؤال العادي بياخد حوالي رصيد واحد، والدروس والمهام الطويلة والصور والفيديو بياخدوا أكتر. لو بتشتغل مع مارد ساعات كل يوم، ماكس هو اللي هيكفيك.</p></details>
       <details><summary data-i="q6">فيه نسخة للماك؟</summary><p data-i="r6">لسه. مارد شغّال على <span translate="no">Windows&nbsp;10</span> و&nbsp;11 بس دلوقتي.</p></details>
       <details><summary data-i="q7">أقدر ألغي إمتى؟</summary><p data-i="r7">في أي وقت، بضغطة من صفحة الحساب في مارد، وباقتك بتفضل شغّالة لحد آخر الشهر اللي دفعته.</p></details>
       <details class="eg-only"><summary data-i="q9">أقدر أدفع بفودافون كاش أو إنستاباي؟</summary><p data-i="r9">أيوه: إنستاباي وفودافون كاش واتصالات كاش وأورنج كاش. بتحوّل من الموبايل، وبنفعّل اشتراكك أول ما نتأكد من التحويل.</p></details>
@@ -774,26 +590,29 @@
       <details><summary data-i="q8">محتاج إنترنت؟</summary><p data-i="r8">أيوه، مارد محتاج إنترنت عشان يفكّر ويتكلّم.</p></details>
     </div>
   </section>
+</div>
 
-  <section class="closing" aria-labelledby="end-t">
-    <img src="icon.png" width="96" height="96" alt="" loading="lazy">
-    <h2 id="end-t" data-i="endT">ابدأ ببلاش النهارده.</h2>
-    <a class="cta" href="https://github.com/HassanH2A/tutor-releases/releases/latest/download/Mared-Setup.exe">
+<section class="band closing" aria-labelledby="end-t">
+  <div class="wrap">
+    <img src="icon.png" width="88" height="88" alt="" loading="lazy">
+    <h2 id="end-t" data-i="endT">جرّبه النهارده، ببلاش.</h2>
+    <p class="sub" data-i="endSub">دقيقتين وهيكون جنب الماوس بتاعك.</p>
+    <a class="btn" href="https://github.com/HassanH2A/tutor-releases/releases/latest/download/Mared-Setup.exe">
       <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>
       <span data-i="cta3">نزّل لـ <span translate="no">Windows</span></span>
     </a>
-    <ul class="free"><li><span data-i="free3">تجربة مجانية · من غير فيزا · بيحدّث نفسه لوحده</span></li></ul>
     <ol class="steps">
       <li><span data-i="s1">افتح الملف اللي نزل.</span></li>
       <li><span data-i="s2">لو ظهر «<span translate="no" class="ltr">Windows protected your PC</span>»: دوس <b translate="no">More info</b> وبعدين <b translate="no">Run anyway</b>.</span></li>
       <li><span data-i="s3">سجّل بإيميلك، ومارد هيوريك كل حاجة خطوة خطوة.</span></li>
     </ol>
-  </section>
+  </div>
+</section>
 </main>
 
 <div class="mbar" id="mbar">
-  <a class="cta" href="start.html" data-i="mbarB">ابدأ تجربتك المجانية</a>
-  <button class="share" id="share" type="button" aria-label="ابعت اللينك لنفسك" data-i-label="shareL"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg></button>
+  <a class="btn" href="start.html" data-i="mbarB">ابدأ تجربتك المجانية</a>
+  <button class="share" id="share" type="button" aria-label="ابعت اللينك لنفسك" data-i-label="shareL"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg></button>
 </div>
 
 <footer>
@@ -806,398 +625,185 @@
 
 <script>
 (() => {
-  // English copy; the Arabic is the page itself. Keys match data-i / data-i-label attributes.
+  // English copy; the Arabic is the page itself. Keys match data-i / data-i-label / data-i-alt.
   const en = {
-    get: "Start for free", skip: "Skip to content",
+    skip: "Skip to content", home: "Mared", get: "Start for free",
     navLabel: "Page", navF: "What it does", navP: "Pricing", navQ: "FAQ",
+    eyebrow: "Speaks your dialect · Sees your screen · Teaches you · Does it for you",
+    h1a: "Your friend who knows", h1b: "",
+    lead: 'Mared lives by your mouse. Hold <kbd translate="no">Right Ctrl</kbd> and ask out loud, in your own dialect: it sees your screen, points to the right button and teaches you step by step. In a hurry? Say <q>do it for me</q> and watch it happen.',
+    cta: 'Download for Windows, free', watch: "See it work",
+    fine: 'No card needed · <span translate="no">Windows&nbsp;10</span> and&nbsp;11 · Updates itself',
     phoneT: "On your phone? Sign up now and download it on your computer later.", copyB: "Send yourself the link",
-    mbarB: "Start your free trial", shareL: "Send yourself the link",
-    h1: "The first AI that <em>lives in your mouse</em>.",
-    lead: 'Your computer-savvy friend, sitting right by your mouse. Hold <kbd translate="no">Right Ctrl</kbd> and ask: it sees your screen, points to the right button and teaches you step by step. In a hurry? Say <q>do it for me</q> and it does it for you.',
-    whyT: 'You shouldn’t need to know how to write a <span class="ltr" translate="no">prompt</span>.',
-    whyP: "Most AI tools are a chat box you type into, then you go back to your work and try to apply what it said. We think the problem is the interface, not the intelligence.",
-    whyBig: "So Mared comes to you: next to your mouse, inside the app you have open, talking to you in your own language.",
-    a0: "3 questions, one “do it for me” task and a full lesson", a1: "75 credits a month", a2: "335 credits a month", a3: "4,000 credits a month",
-    faqT: "Questions people ask",
-    q1: "Is it really free?", r1: "Yes. The free trial gives you 3 questions, one “do it for me” task and a full lesson. If you love it, pick a plan and carry on.",
-    q9: "Can I pay with Vodafone Cash or InstaPay?", r9: "Yes: InstaPay, Vodafone Cash, Etisalat Cash and Orange Cash. You send it from your phone, and we turn on your plan as soon as we confirm the transfer.",
-    q2: "Does it watch my screen all the time?", r2: "No. It only looks at your screen when you ask it for something: a question, a lesson or a task. The mic is on while you hold the key, or when you turn on hands-free talking.",
-    q3: "Which apps does it work with?", r3: 'Any app or website on <span translate="no">Windows</span>: <span translate="no">Office</span>, <span translate="no">Photoshop</span>, <span translate="no">AutoCAD</span>, your browser and more. No plugins needed.',
-    q4: "Will it click things without me knowing?", r4: "No. It only acts when you say “do it for me”, asks before anything risky like deleting or paying, and anything it deletes goes to the Recycle Bin. Move the mouse and it waits; Esc stops it.",
-    q5: "What language does it speak?", r5: "Egyptian Arabic by default, and you can switch it to Modern Standard Arabic or English in Settings.",
-    q6: "Is there a Mac version?", r6: 'Not yet. Mared runs on <span translate="no">Windows&nbsp;10</span> and&nbsp;11 for now.',
-    q7: "When can I cancel?", r7: "Anytime, in one click from the Account page in Mared, and your plan keeps working until the end of the month you paid for.",
-    q10: "What do you keep about me?", r10: "We keep a log of your use for 30 days only: the screens you opened, your questions and Mared's answers, the text shown on your screen when you asked, task steps, errors and your PC's specs. It never has pictures, voice recordings or passwords, and it deletes itself after 30 days. Only the Mared team can see it, and we use it to fix problems and improve Mared. Your chats themselves stay on your PC.",
-    q8: "Do I need internet?", r8: "Yes, Mared needs the internet to think and talk.",
-    cta: "Start for free", cta2: "Start for free", cta3: 'Download for <span translate="no">Windows</span>',
-    free1: "Free trial", free2: "InstaPay and Vodafone Cash", free3: "Free trial · No card needed · Updates itself",
-    aHero: "Mared answers a question by the mouse pointer and points at the button",
-    showT: "Watch it work.",
-    showSub: "Mared isn't a chat in a browser tab. It sits by your mouse, sees what you see, and works in any app or website.",
-    aT: "Ask out loud, in your own words.",
-    aP: 'Hold <kbd translate="no">Right Ctrl</kbd> and say what you need. Mared listens, sees your screen and answers out loud, right by your mouse.',
-    aVoice: "Example: a spoken question about changing the wallpaper, and Mared points at the setting",
-    fT: "Speak, and it types for you.",
-    fP: 'Hold <kbd translate="no">Right Ctrl</kbd>, press <kbd translate="no">Shift</kbd>, speak, and let go. Your words are typed wherever your cursor is, in any app: Word, WhatsApp, email or chat, in Arabic or English. It\'s free and uses no credits.',
-    aDictate: "Example: hold Right Ctrl and Shift, speak, and your words are typed into a chat",
-    gT: "Your whole screen is a canvas.",
-    gP: "Ask Mared to explain any topic, and it draws it on your screen while it talks: a short story, diagrams, step by step, with subtitles. Like a video made just for you, and every explanation is saved so you can watch it again.",
-    aBoard: "Example: Mared explains how electricity reaches your home by drawing it on the screen, with subtitles",
-    bT: "It points to the exact button.",
-    bP: "No more hunting through menus. Mared draws an arrow to the exact spot and labels it.",
-    aPoint: "Example: Mared draws an arrow to Insert, then Pictures",
-    cT: "Circle anything and ask.",
-    cP: "A chart you don't get? An error message? While holding the key, circle it with the mouse and ask <q>what's this?</q>",
-    aCircle: "Example: circling part of a chart and asking about it",
-    dT: "It teaches you step by step, and you do it.",
-    dP: "Mared gives you a step, waits for you to do it yourself, and checks you got it right before moving on. You actually learn it, instead of watching.",
-    aTeach: "Example: a 3-step lesson on making a table in Excel",
-    eT: "<q>Do it for me</q>, and watch it happen.",
-    eP: "In a hurry? Say what you need, and Mared takes the mouse and keyboard and finishes the job while you watch. It asks before anything risky, waits whenever you move the mouse, and Esc stops it.",
-    c1: "Turn this table into a chart", c2: "Write the client an email", c3: "Sum up this PDF", c4: "Find the cheapest laptop",
-    aDoit: "Example: Mared sorts 12 photos into 3 folders by itself",
-    learnT: "No courses. <em>No YouTube tutorials.</em>",
+    aDemo: "Mared points at Insert, then Chart, in Excel until the chart is made",
+    x0: "Expense", x1: "Amount", x2: "Rent", x3: "Food", x4: "Transport", x5: "Internet",
+    try1: "“How do I make a chart?”", try2: "“Do it for me”",
+    st1: "things it does", st2b: "Any app", st2: 'on <span translate="no">Windows</span>', st3b: "Your dialect", st3: 'Egyptian, Gulf, Levantine, MSA, <span translate="no">English</span>', st4b: "Free", st4: "trial, no card",
+    appsT: "Works inside any app or website on your PC",
+    asksT: "Ask for anything.", asksSub: "No button names, no commands. Just say what's on your mind, the way you'd ask a friend.",
+    teamT: "Not one assistant. A whole team.", teamSub: "It explains, teaches, writes, draws and gets your work done, all from beside your mouse.",
+    b1T: "It points to the exact button", b1: "A gold arrow goes to the exact spot in any app, and the button lights up. Don't get something? Circle it and ask <q>what's this?</q>",
+    b1A: "Mared circles a point on a chart and explains it",
+    b2T: "It speaks your dialect", b2: 'Ask in Egyptian, Gulf, Levantine, Modern Standard Arabic or <span translate="no">English</span>, and Mared answers the way you spoke, in a natural voice.',
+    b3T: "<q>Do it for me</q>", b3: "It takes the mouse and keyboard and gets it done while you watch. Three tasks at once, and it asks before anything sensitive.",
+    t1: 'PDF summary in <span translate="no">Word</span>', t2: "Sorting the photos folder", t3: "Sales chart",
+    b4T: '<q>Teach me <span translate="no">AutoCAD</span></q>', b4: "Name any app: it reads the best tutorials, builds a full course at your level, and teaches you inside the app itself.",
+    c0: "Lesson 3 of 16", c1: "The interface and tools", c2: "Lines and shapes", c3: "Layers",
+    b5T: "Speak, and it types", b5: 'In email, WhatsApp, <span translate="no">Word</span>. Your words are typed where your cursor is, in Arabic or <span translate="no">English</span>. Free.',
+    b6T: "Your screen is a whiteboard", b6: "Ask it to explain any topic and it draws it on your screen step by step, with subtitles, and saves it so you can come back.",
+    b6A: "A live Blender lesson with a diagram",
+    b7T: "Every AI in one subscription", b7: "Images, video, voice, writing and explaining. Mared sends each request to the model that's best at it, instead of five subscriptions.",
+    moreL: "See everything Mared does",
+    realT: "This is the real Mared.", realSub: "Screens from the app itself, not drawings.",
+    realNote: "Captured with a sample account. On your PC it appears over the apps you have open.",
+    learnT: "No courses. No YouTube tutorials.",
     learnSub: "Just say “teach me Excel.” Mared makes a plan that fits you and teaches you inside the app itself, while you work.",
     oldT: "The old way", newT: "With Mared",
     o1: "An hour-long video, most of it not what you need", o2: "Pause, rewind, switch between the video and the app",
     o3: "Their screen looks nothing like yours", o4: "Get stuck, and nobody answers",
     n1: "Teaches only what you need right now", n2: "Inside the app you have open, on your own screen",
-    n3: "Points to the button and checks you clicked it", n4: "Ask anytime, and it answers out loud",
-    apps: 'Try it on <b translate="no">Excel</b>, <b translate="no">Word</b>, <b translate="no">PowerPoint</b>, <b translate="no">Photoshop</b>, <b translate="no">AutoCAD</b>, <b translate="no">Revit</b>, <b translate="no">Canva</b>, or any other app or website.',
-    privacyL: "Privacy", termsL: "Terms", owner: 'Mared is a product of <span translate="no">Felicity Capital Limited Liability Company</span>, which owns all rights to it. © 2026',
+    n3: "Points to the button and checks you clicked it", n4: "Ask anytime, in your dialect, and it answers out loud",
+    safeT: "Your screen is yours.", safeSub: "Mared only looks at your screen when you ask, and never does anything behind your back.",
+    sf1T: "Only looks when you ask", sf1: "Your screen and voice are sent only when you ask for something: a question, a lesson or a task. The mic is on only while you hold the key.",
+    sf2T: "Passwords stay out", sf2: "What you type in a password box is never read or sent, and Mared never types into one.",
+    sf3T: "Asks before anything sensitive", sf3: "Before deleting, paying or sending, it waits for your OK, and anything it deletes goes to the Recycle Bin. Esc stops everything.",
+    sf4T: "Your chats stay on your PC", sf4: "Your chats and what it remembers about you are stored on your own computer, and you can delete them anytime.",
+    sf5T: "A 30-day log, that's all", sf5: "We keep a log of your use for 30 days to fix and improve things, with no pictures or voice recordings, and it deletes itself.",
+    sf6T: "Your mouse comes first", sf6: "Move the mouse while it works and it waits until you're done. You're in control.",
     allT: "Everything Mared does.",
-    realT: "This is the real Mared.", realSub: "Screens from the app itself, not drawings.",
-    realNote: "Captured with a sample account. On your PC it appears over the apps you have open.",
-    m1T: "“Make me notes”", m1: "Everything you learned, written to a file you can come back to.",
-    m2T: "It remembers you", m2: "It knows your level and what you've learned, so you never start over.",
-    m3T: "A plan for any app", m3: "Tell it what you want to learn, and it builds a course that fits you.",
-    m4T: "Don't want to talk?", m4: 'Tap <kbd translate="no">Right Ctrl</kbd> twice and type.',
-    m5T: "Only looks when you ask", m5: "Your screen is sent only when you ask, and the mic is on only while you hold the key.",
-    m6T: "Updates itself", m6: "Every new version arrives on its own. You don't have to do anything.",
-    billT: "Plus: every AI in one subscription.",
+    billT: "Every AI in one subscription.",
     billSub: 'Mared uses models from <span translate="no">Claude</span>, <span translate="no">ChatGPT</span>, <span translate="no">Gemini</span>, <span translate="no">Higgsfield</span> and <span translate="no">ElevenLabs</span>. One subscription instead of five.',
     md1T: "Let Mared choose", md1: "It sends each request to the model that's strongest at it: explaining, writing, images, video or voice.",
     md2T: "Or choose yourself", md2: 'Want <span translate="no">Claude</span> specifically? Pick it and talk to it directly.',
     rcT: "Without Mared, every month", from: "lowest plan", total: "Total",
     billNote: "Prices are each service's lowest monthly paid plan as listed in October 2026. Mared gives you their models within your monthly credits, not their subscriptions.",
     plansT: "Start free. Pay when you love it.",
-    plansSub: "Every plan starts with a free trial: 3 questions, one \u201cdo it for me\u201d task and a full lesson, without paying anything. Every plan has every feature; only the credits differ (one credit is about one question), and you can cancel anytime.",
-    plansWallets: "Pay by card or with InstaPay, Vodafone Cash, Etisalat Cash or Orange Cash.", free4: "Cancel anytime",
-    buy: "Subscribe",
-    tag: "Recommended",
-    p1: "Ask about anything on your screen.", p2: "Enough for your whole month: it explains, teaches and does it for you.", p3: "For the heaviest work: lots of tasks, courses and lessons.",
-    endT: "Start for free today.",
+    plansSub: "Every plan starts with a free trial: 3 questions, one “do it for me” task and a full lesson, without paying anything. Cancel anytime.",
+    every: "Every plan has every feature. The only difference is how far it goes.",
+    w1: "For a few questions a week.", a1: "75 credits a month",
+    u1a: "Questions about anything on your screen", u1b: "Buttons and apps explained", u1c: "Free voice typing",
+    tag: "Most popular", w2: "For learning a new app, or using one every day.", a2: "335 credits a month · over 4× Mini",
+    u2a: "Full lessons and courses", u2b: "“Do it for me” tasks every day", u2c: "Enough for your whole month",
+    w3: "For people who work with Mared all day.", a3: "4,000 credits a month · 53× Mini",
+    u3a: "Hours of video editing, design and CAD", u3b: "AI images, video and voice-over", u3c: "Many courses and long tasks at once",
+    buy: "Start for free",
+    plansWallets: "Pay by card or with InstaPay, Vodafone Cash, Etisalat Cash or Orange Cash.", payCard: "Pay by card, and cancel anytime.",
+    faqT: "Questions people ask",
+    q1: "Is it really free?", r1: "Yes. The free trial gives you 3 questions, one “do it for me” task and a full lesson, with no card. If you love it, pick a plan and carry on.",
+    q2: "Does it watch my screen all the time?", r2: "No. It only looks at your screen when you ask it for something: a question, a lesson or a task. The mic is on while you hold the key, or when you turn on hands-free talking.",
+    q5: "Which dialect does it speak?", r5: 'Yours. Left on “match how I speak”, it answers in the dialect you asked in, and you can pick Egyptian, Gulf, Levantine, Modern Standard Arabic or <span translate="no">English</span> in Settings.',
+    q3: "Which apps does it work with?", r3: 'Any app or website on <span translate="no">Windows</span>: <span translate="no">Office</span>, <span translate="no">Photoshop</span>, <span translate="no">AutoCAD</span>, <span translate="no">Premiere</span>, your browser and more. No plugins needed.',
+    q4: "Will it click things without me knowing?", r4: "No. It only acts when you say “do it for me”, asks before anything risky like deleting or paying, and anything it deletes goes to the Recycle Bin. Move the mouse and it waits; Esc stops it.",
+    q11: "What's the difference between the plans?", r11: "Every plan has every feature. Only the credits differ: a normal question takes about one credit, while lessons, long tasks, images and video take more. If you work with Mared for hours every day, Max is the one that will last.",
+    q6: "Is there a Mac version?", r6: 'Not yet. Mared runs on <span translate="no">Windows&nbsp;10</span> and&nbsp;11 for now.',
+    q7: "When can I cancel?", r7: "Anytime, in one click from the Account page in Mared, and your plan keeps working until the end of the month you paid for.",
+    q9: "Can I pay with Vodafone Cash or InstaPay?", r9: "Yes: InstaPay, Vodafone Cash, Etisalat Cash and Orange Cash. You send it from your phone, and we turn on your plan as soon as we confirm the transfer.",
+    q10: "What do you keep about me?", r10: "We keep a log of your use for 30 days only: the screens you opened, your questions and Mared's answers, the text shown on your screen when you asked, task steps, errors and your PC's specs. It never has pictures, voice recordings or passwords, and it deletes itself after 30 days. Only the Mared team can see it, and we use it to fix problems and improve Mared. Your chats themselves stay on your PC.",
+    q8: "Do I need internet?", r8: "Yes, Mared needs the internet to think and talk.",
+    endT: "Try it today, for free.", endSub: "Two minutes, and it's sitting by your mouse.",
+    cta3: 'Download for <span translate="no">Windows</span>',
     s1: "Open the file you downloaded.",
     s2: 'If you see “<span translate="no">Windows protected your PC</span>”, click <b translate="no">More info</b>, then <b translate="no">Run anyway</b>.',
     s3: "Sign in with your email, and Mared shows you the rest step by step.",
-    legal: 'Mared is not affiliated with <span translate="no">OpenAI</span>, <span translate="no">Anthropic</span>, <span translate="no">Google</span>, <span translate="no">Higgsfield</span> or <span translate="no">ElevenLabs</span>. Their names belong to their owners.'
+    mbarB: "Start your free trial", shareL: "Send yourself the link",
+    legal: 'Mared is not affiliated with <span translate="no">OpenAI</span>, <span translate="no">Anthropic</span>, <span translate="no">Google</span>, <span translate="no">Higgsfield</span> or <span translate="no">ElevenLabs</span>. Their names belong to their owners.',
+    owner: 'Mared is a product of <span translate="no">Felicity Capital Limited Liability Company</span>, which owns all rights to it. © 2026',
+    privacyL: "Privacy", termsL: "Terms"
   };
 
   const root = document.documentElement;
-  const T = (ar, en) => (root.lang === "en" ? en : ar);
+  const isEn = () => root.lang === "en";
+  const T = (a, e) => (isEn() ? e : a);
   const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const STOP = {};
-  const NS = "http://www.w3.org/2000/svg";
-  const STATE = ["hit", "sel", "in", "gone", "show", "done", "on", "ins", "swap", "styled", "working", "cur-page"];
+  const $ = (id) => document.getElementById(id);
+  const wait = (ms) => new Promise((r) => setTimeout(r, still ? 0 : ms));
 
-  // One stage = one demo. Scripts drive it with these helpers; every wait checks the stage is still meant to run.
-  const makeStage = (el) => {
-    el.append(document.getElementById("cursor").content.cloneNode(true));
-    const cur = el.querySelector(".cur"), pill = el.querySelector(".pill"), txt = pill.querySelector(".txt");
-    const tag = el.querySelector(".tagl"), ov = el.querySelector(".ov"), rip = el.querySelector(".rip");
-    const firstPage = el.querySelector(".cur-page");
-    const s = { el, run: 0, live: false, paused: false, cx: 0, cy: 0, vis: false };
+  // The app Mared circles in the headline.
+  const WORDS = { ar: ["الإكسل", "الفوتوشوب", "الأوتوكاد", "البريمير", "الوورد", "البلندر", "الكمبيوتر"], en: ["Excel", "Photoshop", "AutoCAD", "Premiere", "Word", "Blender", "computers"] };
+  let wi = WORDS.ar.length - 1;
+  const word = $("word");
+  if (!still) setInterval(() => {
+    word.classList.add("out");
+    setTimeout(() => { const w = WORDS[isEn() ? "en" : "ar"]; wi = (wi + 1) % w.length; word.textContent = w[wi]; word.classList.remove("out"); }, 350);
+  }, 2200);
 
-    // Box of one or more elements (a selector may match several), relative to the stage.
-    const rel = (sel, ax = 0.5, ay = 0.5) => {
-      const box = el.getBoundingClientRect();
-      let l = Infinity, t = Infinity, r = -Infinity, b = -Infinity;
-      el.querySelectorAll(sel).forEach((e) => { const q = e.getBoundingClientRect(); l = Math.min(l, q.left); t = Math.min(t, q.top); r = Math.max(r, q.right); b = Math.max(b, q.bottom); });
-      l -= box.left; r -= box.left; t -= box.top; b -= box.top;
-      return { l, t, r, b, w: r - l, h: b - t, x: l + (r - l) * ax, y: t + (b - t) * ay };
-    };
-    s.wait = (ms) => {
-      const id = s.run;
-      return new Promise((res, rej) => {
-        const check = () => (id !== s.run ? rej(STOP) : s.paused ? setTimeout(check, 150) : res());
-        setTimeout(check, still ? 0 : ms);
-      });
-    };
-    s.move = (sel, ax, ay) => {
-      const p = typeof sel === "string" ? rel(sel, ax, ay) : sel;
-      s.cx = p.x; s.cy = p.y;
-      cur.style.transform = `translate(${p.x}px, ${p.y}px)`;
-      cur.classList.toggle("flip", p.x > el.clientWidth * 0.5);
-      cur.classList.toggle("up", p.y > el.clientHeight * 0.68);
-    };
-    s.jump = (sel, ax, ay) => { cur.classList.add("jump"); s.move(sel, ax, ay); void cur.offsetWidth; cur.classList.remove("jump"); };
-    s.say = (mode, text = "") => { pill.className = "pill " + mode; txt.textContent = text; };
-    s.type = async (text) => { s.say("listen"); for (let n = 1; n <= text.length; n++) { txt.textContent = text.slice(0, n); await s.wait(30); } };
-    s.on = (sel, c = "hit") => el.querySelectorAll(sel).forEach((e) => e.classList.add(c));
-    s.off = (sel, c = "hit") => el.querySelectorAll(sel).forEach((e) => e.classList.remove(c));
-    s.tag = (sel, text) => { const p = rel(sel, 0.5, 0); tag.textContent = text; tag.style.left = p.x + "px"; tag.style.top = p.t + "px"; tag.classList.add("show"); };
-    s.untag = () => tag.classList.remove("show");
-    s.click = () => { rip.classList.remove("go"); void rip.offsetWidth; rip.classList.add("go"); };
-    s.clear = () => { ov.replaceChildren(); };
-    const draw = (node) => { ov.setAttribute("viewBox", `0 0 ${el.clientWidth} ${el.clientHeight}`); node.setAttribute("pathLength", "1"); node.classList.add("draw"); ov.append(node); void node.getBoundingClientRect(); node.classList.add("go"); };
-    // A curved arrow from the pointer to just short of the target, like the app draws.
-    s.arrow = (sel) => {
-      const a = { x: s.cx + 6, y: s.cy + 6 }, t = rel(sel);
-      const dx = t.x - a.x, dy = t.y - a.y;
-      const c = { x: (a.x + t.x) / 2 - dy * 0.25, y: (a.y + t.y) / 2 + dx * 0.25 };
-      const ux = t.x - c.x, uy = t.y - c.y, ul = Math.hypot(ux, uy) || 1, back = Math.min(t.w, t.h) / 2 + 6;
-      const e = { x: t.x - (ux / ul) * back, y: t.y - (uy / ul) * back };
-      const path = document.createElementNS(NS, "path");
-      path.setAttribute("d", `M${a.x} ${a.y} Q${c.x} ${c.y} ${e.x} ${e.y}`);
-      draw(path);
-      const ang = Math.atan2(e.y - c.y, e.x - c.x), k = 9;
-      const pt = (d, o) => `${e.x + Math.cos(ang + o) * d} ${e.y + Math.sin(ang + o) * d}`;
-      const head = document.createElementNS(NS, "path");
-      head.setAttribute("d", `M${pt(2, 0)} L${pt(k, Math.PI - 0.5)} L${pt(k, Math.PI + 0.5)}Z`);
-      head.setAttribute("class", "head");
-      ov.append(head); void head.getBoundingClientRect(); head.classList.add("go");
-    };
-    // A rounded box around an area, drawn on, then dashed (the app's "highlight").
-    s.box = (sel, pad = 7) => {
-      const t = rel(sel), r = document.createElementNS(NS, "rect");
-      Object.entries({ x: t.l - pad, y: t.t - pad, width: t.w + pad * 2, height: t.h + pad * 2, rx: 10 }).forEach(([k, v]) => r.setAttribute(k, v));
-      draw(r);
-      setTimeout(() => r.classList.add("dashed"), still ? 0 : 800);
-      return t;
-    };
-    s.reset = () => {
-      el.querySelectorAll("." + STATE.join(",.")).forEach((e) => e.classList.remove(...STATE));
-      el.classList.remove(...STATE);
-      el.querySelectorAll("[data-reset]").forEach((e) => { e.textContent = e.dataset.reset; });
-      if (firstPage) firstPage.classList.add("cur-page");
-      s.clear(); s.untag(); s.say("hide");
-    };
-    s.start = () => {
-      if (s.live) return;
-      s.live = true;
-      const id = ++s.run;
-      (async () => {
-        try {
-          do { s.reset(); await scripts[el.dataset.demo](s); } while (!still && id === s.run);
-        } catch (e) { if (e !== STOP) console.error(e); }
-        finally { if (id === s.run) s.live = false; }
-      })();
-    };
-    s.stop = () => { s.run++; s.live = false; };
-    // Hover or focus pauses the demo (it keeps its place); leaving resumes.
-    el.addEventListener("pointerenter", () => { s.paused = true; });
-    el.addEventListener("pointerleave", () => { s.paused = false; });
-    el.addEventListener("focusin", () => { s.paused = true; });
-    el.addEventListener("focusout", () => { s.paused = false; });
-    return s;
-  };
-
-  const HERO = [
-    { t: "bold", tag: "Bold", ar: "إزاي أخلّي الكلام ده تقيل؟", en: "How do I make this text bold?", sayAr: "دوس هنا، أو Ctrl + B.", sayEn: "Click here, or press Ctrl + B." },
-    { t: "chart", tag: "Chart", ar: "اعملهالي: رسم بياني للمصاريف", en: "Do it for me: chart these expenses", sayAr: "تمام، بعمل الرسم البياني دلوقتي…", sayEn: "On it, making the chart now…" },
-    { t: "sum", tag: "AutoSum", ar: "علّمني أجمع العمود ده", en: "Teach me to add up this column", sayAr: "اختار الخلية تحت الأرقام، وبعدين دوس Σ.", sayEn: "Select the cell under the numbers, then click Σ." },
-    { t: "filter", tag: "Filter", ar: "ده إيه الزرار ده؟", en: "What does this button do?", sayAr: "ده الفلتر: بيوريك الصفوف اللي إنت عايزها بس.", sayEn: "That's Filter: it shows only the rows you want." }
+  // App strip and request rows. [arabic, english, app]
+  const APPS = ["Excel", "Photoshop", "AutoCAD", "Premiere Pro", "Word", "Blender", "PowerPoint", "Revit", "Illustrator", "Chrome", "Canva", "After Effects", "Outlook", "SolidWorks", "Figma", "Teams", "CapCut", "Lightroom", "VS Code", "SketchUp"];
+  const ROWS = [
+    [["إزاي أعمل Pivot Table؟", "How do I make a pivot table?", "Excel"], ["شيل الخلفية من الصورة دي", "Remove the background from this photo", "Photoshop"], ["يعني إيه الكلمة دي؟", "What does this word mean?", ""], ["فين زرار الـ Export؟", "Where's the Export button?", "Premiere"], ["لخّصلي الـ PDF ده", "Sum up this PDF", ""], ["علّمني AutoCAD من الأول", "Teach me AutoCAD from scratch", ""], ["إزاي أعمل فهرس تلقائي؟", "How do I make a table of contents?", "Word"]],
+    [["اعملهالي: رتّب الفولدر ده بالتاريخ", "Do it for me: sort this folder by date", ""], ["ارسملي إزاي الكهربا بتوصل البيت", "Draw how electricity reaches my home", ""], ["الفورمولا دي غلط ليه؟", "Why is this formula wrong?", "Excel"], ["اكتب اللي بقوله في الإيميل", "Type what I say into the email", "Outlook"], ["إزاي أقص الفيديو هنا؟", "How do I cut the video here?", "CapCut"], ["اعملي صورة غلاف للبوست", "Make me a cover image for the post", ""], ["اشرحلي البرنامج ده", "Explain this app to me", ""]],
+    [["إزاي أعمل Extrude؟", "How do I extrude this?", "Blender"], ["اعملي ملاحظات باللي اتعلمته", "Make me notes on what I learned", ""], ["حوّل الجدول ده لرسم بياني", "Turn this table into a chart", "Excel"], ["ابحثلي عن فيديو بيشرح ده", "Find me a video that explains this", ""], ["الطبقة دي راحت فين؟", "Where did this layer go?", "Photoshop"], ["اعملي فويس أوفر للفيديو ده", "Make a voice-over for this video", ""], ["وريني إزاي أرسم حيطة", "Show me how to draw a wall", "Revit"]]
   ];
+  const doubled = (items, f) => [...items, ...items].map(f).join("");
+  $("apps").innerHTML = doubled(APPS, (a) => `<li>${a}</li>`);
+  const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  function renderRows() {
+    ROWS.forEach((items, i) => {
+      $("r" + (i + 1)).innerHTML = doubled(items, ([a, e, app]) => `<li dir="${isEn() ? "ltr" : "rtl"}"><q>${esc(isEn() ? e : a)}</q>${app ? `<small dir="ltr" translate="no">${app}</small>` : ""}</li>`);
+    });
+  }
 
-  const scripts = {
-    async hero(s) {
-      s.jump(".grid .home", 0.6, 0.2);
-      for (const d of HERO) {
-        await s.wait(500);
-        await s.type(T(d.ar, d.en));
-        await s.wait(350);
-        s.say("think", T("بفكّر…", "Thinking…"));
-        await s.wait(600);
-        s.move(`[data-t="${d.t}"]`, 0.5, 0.6);
-        await s.wait(850);
-        s.on(`[data-t="${d.t}"]`); s.tag(`[data-t="${d.t}"]`, d.tag);
-        s.say("say", T(d.sayAr, d.sayEn));
-        await s.wait(3000);
-        s.off(`[data-t="${d.t}"]`); s.untag(); s.say("hide");
-        s.move(".grid .home", 0.6, 0.2);
-      }
-    },
-    async voice(s) {
-      s.jump(".pane", 0.55, 0.65);
-      await s.wait(700);
-      s.on(".key", "on");
-      await s.type(T("عايز أغيّر خلفية الشاشة", "I want to change my wallpaper"));
-      await s.wait(400);
-      s.off(".key", "on");
-      s.say("think", T("بفكّر…", "Thinking…"));
-      await s.wait(700);
-      s.move('[data-k="pers"]', 0.6, 0.6);
-      await s.wait(900);
-      s.on('[data-k="pers"]'); s.tag('[data-k="pers"]', "Personalization");
-      s.say("say", T("من هنا: Personalization.", "Right here: Personalization."));
-      await s.wait(1800);
-      s.click(); s.untag(); s.off('[data-k="pers"]');
-      s.off(".cur-page", "cur-page"); s.on('[data-k="pers"]', "cur-page"); s.on(".set", "swap");
-      await s.wait(500);
-      s.move('[data-k="bg"]', 0.5, 0.6);
-      await s.wait(900);
-      s.on('[data-k="bg"]'); s.tag('[data-k="bg"]', "Background");
-      s.say("say", T("وبعدين Background، واختار الصورة اللي تعجبك.", "Then Background, and pick the picture you like."));
-      await s.wait(3200);
-    },
-    // Dictation: talk key, then Shift; the heard words show by the pointer, then are typed at the cursor (no answer).
-    async dictate(s) {
-      const box = s.el.querySelector(".compose"), out = box.querySelector(".typed");
-      const said = T("أنا في الطريق، هوصل كمان ربع ساعة", "On my way, I'll be there in 15 minutes");
-      box.dir = root.lang === "en" ? "ltr" : "rtl";
-      s.jump(".compose", 0.55, 0.5);
-      await s.wait(700);
-      s.on('[data-k="ctrl"]', "on");
-      await s.wait(450);
-      s.on('[data-k="shift"]', "on");
-      await s.type(said);
-      await s.wait(400);
-      s.off(".key", "on"); s.say("hide"); s.move(".compose", 0.5, 1.2);
-      for (let n = 1; n <= said.length; n++) { out.textContent = said.slice(0, n); await s.wait(22); }
-      await s.wait(3200);
-    },
-    // The board: the screen dims, each beat draws itself while its subtitle shows, then it's saved.
-    async board(s) {
-      const sub = s.el.querySelector(".subt"), lbl = s.el.querySelectorAll(".board text");
-      [T("الكهربا بتوصلك إزاي؟", "How does electricity reach you?"), T("محطة الكهربا", "Power plant"), T("سلوك عالية", "High wires"), T("بيتك", "Your home")]
-        .forEach((t, i) => { lbl[i].textContent = t; });
-      const beats = [
-        [".b1", T("الكهربا بتبدأ من محطة كبيرة بعيد عنك.", "It starts at a big power plant far away.")],
-        [".b2", T("بتمشي مسافات طويلة في سلوك عالية.", "It travels a long way on high wires.")],
-        [".b3", T("ولما توصل منطقتك، بتتوزّع على البيوت لحد الفيشة.", "Near you, it's split up to every home, all the way to your socket.")]
-      ];
-      s.jump(".page", 0.5, 0.55);
-      await s.wait(600);
-      await s.type(T("اشرحلي الكهربا بتوصل البيت إزاي", "Explain how electricity gets to my home"));
-      await s.wait(350);
-      s.say("think", T("بفكّر…", "Thinking…"));
-      await s.wait(800);
-      s.say("hide"); s.move(".page", 0.9, 0.9);
-      s.on(".board", "on"); s.on(".b0", "show");
-      await s.wait(700);
-      for (const [g, line] of beats) { s.on(g, "show"); sub.textContent = line; await s.wait(2800); }
-      sub.textContent = "";
-      s.say("say", T("اتحفظ في «شروحاتك»، تتفرّج عليه تاني وقت ما تحب.", "Saved, so you can watch it again anytime."));
-      await s.wait(3200);
-    },
-    async point(s) {
-      s.jump(".page", 0.45, 0.6);
-      await s.wait(600);
-      await s.type(T("إزاي أحط صورة هنا؟", "How do I put a picture here?"));
-      await s.wait(350);
-      s.say("think", T("بفكّر…", "Thinking…"));
-      await s.wait(600);
-      s.arrow('[data-k="insert"]'); s.on('[data-k="insert"]'); s.tag('[data-k="insert"]', "Insert");
-      s.say("say", T("الأول افتح Insert.", "First, open Insert."));
-      await s.wait(2000);
-      s.clear(); s.untag();
-      s.move('[data-k="insert"]', 0.5, 0.6);
-      await s.wait(900);
-      s.click(); s.off('[data-k="insert"]'); s.on(".win", "ins"); s.say("hide");
-      await s.wait(600);
-      s.arrow('[data-k="pic"]'); s.on('[data-k="pic"]'); s.tag('[data-k="pic"]', "Pictures");
-      s.say("say", T("وبعدين Pictures، واختار الصورة.", "Then Pictures, and choose your image."));
-      await s.wait(3400);
-    },
-    async circle(s) {
-      const t = (() => { const r = s.el.querySelector('[data-k="b5"]').getBoundingClientRect(), b = s.el.getBoundingClientRect(); return { x: r.left - b.left - 10, y: r.top - b.top - 10 }; })();
-      s.jump(".bars", 0.3, 0.3);
-      await s.wait(600);
-      s.move(t);
-      await s.wait(900);
-      s.on(".key", "on");
-      const area = s.box('[data-k="b5"], [data-k="b6"]');
-      s.move({ x: area.r + 7, y: area.b + 7 });
-      await s.wait(900);
-      await s.type(T("ليه الرقم ده وقع كده؟", "Why did this drop?"));
-      await s.wait(350);
-      s.off(".key", "on");
-      s.say("think", T("بفكّر…", "Thinking…"));
-      await s.wait(800);
-      s.say("say", T("مارس نزل حوالي 40% عن فبراير. عايز أعرف السبب من الجدول؟", "March fell about 40% from February. Want me to check the sheet for why?"));
-      await s.wait(3800);
-    },
-    async teach(s) {
-      const card = s.el.querySelector(".card"), cs = card.querySelector(".cs"), ct = card.querySelector(".ct"), dots = card.querySelectorAll(".dots i");
-      const step = (n, text) => { cs.textContent = T(`خطوة ${n} من 3`, `Step ${n} of 3`); ct.textContent = text; };
-      cs.textContent = ""; ct.textContent = T("قول «علّمني» في أي وقت.", "Say “teach me” anytime.");
-      s.jump(".grid", 0.85, 0.85);
-      await s.wait(600);
-      await s.type(T("علّمني أعمل جدول", "Teach me to make a table"));
-      await s.wait(350);
-      s.say("think", T("بفكّر…", "Thinking…"));
-      await s.wait(700);
-      s.say("hide");
-      step(1, T("حدّد البيانات من A1 لحد C5.", "Select the data from A1 to C5."));
-      s.box(".grid .t, .grid .d", 3);
-      await s.wait(1400);
-      s.move(".grid .t", 0.1, 0.5);
-      await s.wait(900);
-      s.clear();
-      s.on(".grid .t, .grid .d", "sel");
-      s.move('[data-k="c5"]', 0.8, 0.5);
-      await s.wait(1000);
-      dots[0].classList.add("done");
-      step(2, T("تمام! دلوقتي افتح Insert.", "Nice! Now open Insert."));
-      s.arrow('[data-k="insert"]'); s.tag('[data-k="insert"]', "Insert");
-      await s.wait(1500);
-      s.move('[data-k="insert"]', 0.5, 0.6);
-      await s.wait(900);
-      s.click(); s.clear(); s.untag(); s.on(".win", "ins");
-      dots[1].classList.add("done");
-      step(3, T("آخر خطوة: دوس Table.", "Last step: click Table."));
-      await s.wait(500);
-      s.arrow('[data-k="tbl"]'); s.tag('[data-k="tbl"]', "Table");
-      await s.wait(1500);
-      s.move('[data-k="tbl"]', 0.5, 0.6);
-      await s.wait(900);
-      s.click(); s.clear(); s.untag(); s.off(".grid .sel", "sel"); s.on(".grid", "styled");
-      dots[2].classList.add("done");
-      cs.textContent = T("خلصت ✓", "Done ✓"); ct.textContent = T("برافو! عملتها بإيدك.", "Well done! You made it yourself.");
-      await s.wait(3600);
-    },
-    async doit(s) {
-      const folds = s.el.querySelectorAll(".fold");
-      s.jump(".phs", 0.5, 0.7);
-      await s.wait(600);
-      await s.type(T("رتّبلي الصور دي في فولدرات بالشهر", "Sort these photos into folders by month"));
-      await s.wait(350);
-      s.say("think", T("بفكّر…", "Thinking…"));
-      await s.wait(700);
-      s.el.classList.add("working");
-      s.say("work", T("بعمل فولدر لكل شهر…", "Making a folder for each month…"));
-      for (let i = 1; i <= 3; i++) {
-        s.move(`.fold:nth-child(${i})`, 0.4, 0.6);
-        await s.wait(750);
-        s.click(); s.on(`.fold:nth-child(${i})`, "in");
-        await s.wait(250);
-      }
-      s.say("work", T("بنقل الصور…", "Moving the photos…"));
-      for (let g = 0; g < 3; g++) {
-        const group = `.phs i:nth-child(n+${g * 4 + 1}):nth-child(-n+${g * 4 + 4})`;
-        s.move(group, 0.2, 0.5);
-        await s.wait(800);
-        s.click();
-        s.move(`.fold:nth-child(${g + 1})`, 0.4, 0.6);
-        await s.wait(850);
-        s.on(group, "gone");
-        folds[g].querySelector(".n").textContent = "4";
-        await s.wait(300);
-      }
-      s.el.classList.remove("working");
-      s.say("say", T("خلصت: 12 صورة في 3 فولدرات.", "Done: 12 photos in 3 folders."));
-      await s.wait(3400);
-    }
+  // Dialect tile: the same question, in each dialect Mared answers in.
+  const DIALECTS = [["إزاي أعمل جدول؟", "مصري", "Egyptian"], ["كيف أسوي جدول؟", "خليجي", "Gulf"], ["كيف بعمل جدول؟", "شامي", "Levantine"], ["كيف أُنشئ جدولًا؟", "فصحى", "MSA"], ["How do I make a table?", "English", "English"]];
+  let di = 0;
+  const showDialect = () => { const [q, a, e] = DIALECTS[di]; $("dq").textContent = q; $("dq").dir = di === 4 ? "ltr" : "rtl"; $("dl").textContent = T(a, e); };
+  if (!still) setInterval(() => { $("dq").classList.add("out"); setTimeout(() => { di = (di + 1) % DIALECTS.length; showDialect(); $("dq").classList.remove("out"); }, 300); }, 2200);
+
+  // Dictation tile: words appear as if spoken.
+  const SPOKEN = { ar: "أهلًا يا أستاذ أحمد، ملف الميزانية جاهز وبعتهولك على الإيميل. لو فيه أي تعديل قولّي.", en: "Hi Ahmed, the budget file is ready and I've sent it to your email. Let me know if anything needs changing." };
+  let ci = 0;
+  (function type() {
+    const w = SPOKEN[isEn() ? "en" : "ar"].split(" ");
+    $("tt").textContent = w.slice(0, still ? w.length : ci).join(" ");
+    ci = ci > w.length + 6 ? 0 : ci + 1;
+    if (!still) setTimeout(type, 260);
+  })();
+
+  // The live Excel demo: ask, point at Insert, then Chart, and the chart appears.
+  const desk = $("demo"), mared = $("mared"), say = $("say"), ring = $("ring"), ask = $("ask"), chart = $("chart");
+  const HOME = [["B", "Bold"], ["≡", "Align"], ["%", "Number"], ["▦", "Format"]];
+  const INSERT = [["▦", "Table"], ["▣", "Pictures"], ["chart", "Chart"], ["⌁", "Shapes"]];
+  const icon = (s) => s === "chart" ? '<svg viewBox="0 0 24 24" fill="none" stroke="#1f6e43" stroke-width="2.2" stroke-linecap="round"><path d="M5 20V11M12 20V5M19 20v-6"/></svg>' : `<span style="font-size:20px;line-height:22px">${s}</span>`;
+  const tab = (n) => {
+    $("tHome").classList.toggle("on", n === "home"); $("tInsert").classList.toggle("on", n === "insert");
+    $("ribbon").innerHTML = (n === "home" ? HOME : INSERT).map(([i, l]) => `<span class="b" data-l="${l}">${icon(i)}${l}</span>`).join("");
   };
-
-  const stages = [...document.querySelectorAll("[data-demo]")].map(makeStage);
-
-  const ar = {};
-  document.querySelectorAll("[data-i]").forEach((el) => { ar[el.dataset.i] = el.innerHTML; });
-  const arLabel = {};
-  document.querySelectorAll("[data-i-label]").forEach((el) => { arLabel[el.dataset.iLabel] = el.getAttribute("aria-label"); });
-  const titles = { ar: document.title, en: "Mared · The first AI that lives in your mouse" };
-  const langBtn = document.getElementById("lang");
+  const rel = (el) => { const d = desk.getBoundingClientRect(), r = el.getBoundingClientRect(); return { x: r.left - d.left, y: r.top - d.top, w: r.width, h: r.height }; };
+  const move = (el) => { const r = rel(el), x = r.x + r.w * .55; mared.classList.toggle("flip", x > desk.clientWidth * .5); mared.style.transform = `translate(${x}px,${r.y + r.h * .6}px)`; };
+  const ringOn = (el) => { const r = rel(el); Object.assign(ring.style, { left: r.x - 4 + "px", top: r.y - 4 + "px", width: r.w + 8 + "px", height: r.h + 8 + "px" }); ring.classList.add("on"); };
+  const talk = (t) => { say.dir = isEn() ? "ltr" : "rtl"; say.innerHTML = `<b>${T("مارد", "Mared")}</b>${esc(t)}<span class="bars"><i></i><i></i><i></i><i></i></span>`; say.classList.add("on"); };
+  function reset() {
+    tab("home"); chart.classList.remove("show"); ring.classList.remove("on"); say.classList.remove("on"); ask.classList.remove("on");
+    desk.querySelectorAll(".sel").forEach((e) => e.classList.remove("sel"));
+    const d = desk.getBoundingClientRect(); mared.style.transform = `translate(${d.width * .62}px,${d.height * .62}px)`;
+  }
+  let run = 0, mode = "teach", visible = false;
+  async function play() {
+    const me = ++run, alive = () => me === run && visible, doIt = mode === "do";
+    reset(); await wait(900); if (!alive()) return;
+    ask.dir = isEn() ? "ltr" : "rtl";
+    $("askT").textContent = doIt ? T("اعملهالي: رسم بياني للمصاريف.", "Do it for me: chart these expenses.") : T("إزاي أعمل رسم بياني للمصاريف؟", "How do I make a chart of these expenses?");
+    ask.classList.add("on"); await wait(2000); if (!alive()) return; ask.classList.remove("on");
+    desk.querySelectorAll(".sheet .d").forEach((e) => e.classList.add("sel"));
+    talk(doIt ? T("ماشي، بعملها قدامك.", "On it, watch.") : T("أول حاجة، دوس على Insert فوق.", "First, click Insert up top."));
+    move($("tInsert")); await wait(1100); if (!alive()) return; ringOn($("tInsert")); await wait(1700); if (!alive()) return;
+    ring.classList.remove("on"); tab("insert");
+    const c = desk.querySelector('[data-l="Chart"]');
+    talk(doIt ? "Chart…" : T("حلو. دلوقتي اختار Chart.", "Nice. Now pick Chart.")); move(c); await wait(1100); if (!alive()) return; ringOn(c); await wait(1700); if (!alive()) return;
+    ring.classList.remove("on"); chart.classList.add("show");
+    talk(doIt ? T("خلصت. الرسم جاهز.", "Done. Your chart is ready.") : T("برافو، كده الرسم جاهز. عايز تغيّر ألوانه؟", "Well done, your chart is ready. Want to change its colours?"));
+    move(chart); await wait(3800); if (!alive()) return;
+    play();
+  }
+  $("try").addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    document.querySelectorAll("#try button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    mode = b.dataset.s; play();
+  });
+  // Plays only while on screen and the tab is visible.
+  new IntersectionObserver(([e]) => { const was = visible; visible = e.isIntersecting && !document.hidden; if (visible && !was) play(); }, { threshold: 0.25 }).observe(desk);
+  document.addEventListener("visibilitychange", () => { const r = desk.getBoundingClientRect(); const was = visible; visible = !document.hidden && r.bottom > 0 && r.top < innerHeight; if (visible && !was) play(); });
+  addEventListener("resize", () => { if (visible) play(); });
 
   // Everything Mared does today (checked against the app's code and build log, 22 Oct 2026). [group ar, group en, [title ar, text ar, title en, text en]...]
   const FEATURES = [
@@ -1303,98 +909,84 @@
     ["settings-explain", 960, 618, "إنت اللي تختار: يشرح وهو بيعمل ولا لأ.", "You choose whether it explains while it works."],
     ["account-plans", 960, 618, "الباقات والرصيد في صفحة الحساب.", "Plans and credits on the Account page."]
   ];
-  const shots = document.getElementById("shots");
   function renderShots() {
-    const isEn = root.lang === "en";
-    shots.replaceChildren(...SHOTS.map(([name, w, h, ar, en]) => {
+    $("shots").replaceChildren(...SHOTS.map(([name, w, h, ar, en]) => {
       const li = document.createElement("li"), fig = document.createElement("figure"), img = document.createElement("img"), cap = document.createElement("figcaption");
-      img.src = `media/app/${isEn ? "en/" : ""}${name}.webp`;
+      img.src = `media/app/${isEn() ? "en/" : ""}${name}.webp`;
       img.width = w; img.height = h; img.loading = "lazy"; img.decoding = "async";
-      img.alt = cap.textContent = isEn ? en : ar;
+      img.alt = cap.textContent = isEn() ? en : ar;
       fig.append(img, cap); li.append(fig);
       return li;
     }));
+    document.querySelectorAll("img.shot").forEach((img) => { img.src = `media/app/${isEn() ? "en/" : ""}${img.dataset.shot}.webp`; });
   }
-  // Plan prices and the receipt's local total, in the visitor's currency (region.js).
-  function renderPrices() {
-    const isEn = root.lang === "en";
-    document.querySelectorAll("[data-price]").forEach((el) => { el.innerHTML = MARED.amountHtml(el.dataset.price, isEn); });
-    const local = { egp: T("يعني حوالي 4,390 جنيه في الشهر", "About EGP 4,390 a month"), sar: T("يعني حوالي 304 ريال في الشهر", "About SAR 304 a month") }[MARED.cur];
-    const tl = document.getElementById("total-local");
-    tl.textContent = local || ""; tl.hidden = !local;
-  }
-  const catalog = document.getElementById("catalog");
+  const catalog = $("catalog");
   function renderCatalog() {
-    const isEn = root.lang === "en";
     const open = [...catalog.querySelectorAll("details")].map((d) => d.open);
-    const wide = matchMedia("(min-width: 761px)").matches;
     let total = 0;
     catalog.replaceChildren(...FEATURES.map(([ga, ge, items], gi) => {
       total += items.length;
       const d = document.createElement("details");
       d.className = "grp";
-      d.open = open.length ? open[gi] : wide || gi === 0;
-      const s = document.createElement("summary");
-      const name = document.createElement("span"), n = document.createElement("span");
-      name.textContent = isEn ? ge : ga;
+      d.open = open.length ? open[gi] : gi < 3 && matchMedia("(min-width: 761px)").matches;
+      const s = document.createElement("summary"), name = document.createElement("span"), n = document.createElement("span");
+      name.textContent = isEn() ? ge : ga;
       n.className = "n"; n.textContent = String(items.length);
       s.append(name, n);
       const dl = document.createElement("dl");
       items.forEach(([ta, da, te, de]) => {
         const row = document.createElement("div"), dt = document.createElement("dt"), dd = document.createElement("dd");
-        dt.textContent = isEn ? te : ta; dd.textContent = isEn ? de : da;
+        dt.textContent = isEn() ? te : ta; dd.textContent = isEn() ? de : da;
         row.append(dt, dd); dl.append(row);
       });
       d.append(s, dl);
       return d;
     }));
-    document.getElementById("all-sub").textContent = T(`${total} حاجة بيعملها مارد النهارده، ولسه بنزوّد.`, `${total} things Mared does today, and counting.`);
+    $("all-sub").textContent = T(`${total} حاجة بيعملها مارد النهارده، ولسه بنزوّد.`, `${total} things Mared does today, and counting.`);
+  }
+  // Plan prices and the receipt's local total, in the visitor's currency (region.js).
+  function renderPrices() {
+    document.querySelectorAll("[data-price]").forEach((el) => { el.innerHTML = MARED.amountHtml(el.dataset.price, isEn()); });
+    const local = { egp: T("يعني حوالي 4,390 جنيه في الشهر", "About EGP 4,390 a month"), sar: T("يعني حوالي 304 ريال في الشهر", "About SAR 304 a month") }[MARED.cur];
+    $("total-local").textContent = local || ""; $("total-local").hidden = !local;
   }
 
+  const ar = {}, arLabel = {}, arAlt = {};
+  document.querySelectorAll("[data-i]").forEach((el) => { ar[el.dataset.i] = el.innerHTML; });
+  document.querySelectorAll("[data-i-label]").forEach((el) => { arLabel[el.dataset.iLabel] = el.getAttribute("aria-label"); });
+  document.querySelectorAll("[data-i-alt]").forEach((el) => { arAlt[el.dataset.iAlt] = el.alt; });
+  const titles = { ar: document.title, en: "Mared · Your friend who knows computers" };
+  const langBtn = $("lang");
   const setLang = (lang) => {
-    const isEn = lang === "en";
-    root.lang = lang; root.dir = isEn ? "ltr" : "rtl";
+    const e = lang === "en";
+    root.lang = lang; root.dir = e ? "ltr" : "rtl";
     document.title = titles[lang];
-    document.querySelectorAll("[data-i]").forEach((el) => { el.innerHTML = isEn ? en[el.dataset.i] : ar[el.dataset.i]; });
-    document.querySelectorAll("[data-i-label]").forEach((el) => el.setAttribute("aria-label", isEn ? en[el.dataset.iLabel] : arLabel[el.dataset.iLabel]));
-    langBtn.lastChild.textContent = isEn ? "العربية" : "English";
-    langBtn.lang = isEn ? "ar" : "en";
-    renderCatalog();
-    renderPrices();
-    renderShots();
-    // Demos restart in the new language.
-    stages.forEach((s) => { if (s.live || still) { s.stop(); if (s.vis || still) s.start(); } });
+    document.querySelectorAll("[data-i]").forEach((el) => { el.innerHTML = e ? en[el.dataset.i] : ar[el.dataset.i]; });
+    document.querySelectorAll("[data-i-label]").forEach((el) => el.setAttribute("aria-label", e ? en[el.dataset.iLabel] : arLabel[el.dataset.iLabel]));
+    document.querySelectorAll("[data-i-alt]").forEach((el) => { el.alt = e ? en[el.dataset.iAlt] : arAlt[el.dataset.iAlt]; });
+    langBtn.lastChild.textContent = e ? "العربية" : "English";
+    langBtn.lang = e ? "ar" : "en";
+    const w = WORDS[e ? "en" : "ar"]; word.textContent = w[wi % w.length];
+    renderRows(); renderCatalog(); renderPrices(); renderShots(); showDialect();
+    if (visible) play();
   };
-
-  // Each demo plays only while it's on screen and the tab is visible.
-  if (still) stages.forEach((s) => s.start());
-  else {
-    const io = new IntersectionObserver((entries) => entries.forEach((e) => {
-      const s = stages.find((x) => x.el === e.target);
-      s.vis = e.isIntersecting;
-      if (s.vis && !document.hidden) s.start(); else s.stop();
-    }), { threshold: 0.3 });
-    stages.forEach((s) => io.observe(s.el));
-    document.addEventListener("visibilitychange", () => stages.forEach((s) => (document.hidden ? s.stop() : s.vis && s.start())));
-  }
 
   // Phones can't install Mared: send the address to themselves (WhatsApp, email...) to open it on the computer.
   const sendLink = async (btn, label) => {
     const done = (text) => { if (label) btn.textContent = text; };
     if (navigator.share) { try { await navigator.share({ title: T("مارد", "Mared"), text: T("نزّل مارد على الكمبيوتر", "Download Mared on your computer"), url: "https://yamared.com" }); } catch (e) {} return; }
-    if (!navigator.clipboard) return done("yamared.com"); // nothing to share or copy with: show the address to type
+    if (!navigator.clipboard) return done("yamared.com");
     navigator.clipboard.writeText("https://yamared.com").then(() => done(T("اتنسخ ✓", "Copied ✓")), () => done("yamared.com"));
   };
-  document.getElementById("copy").addEventListener("click", (e) => sendLink(e.currentTarget, true));
-  document.getElementById("share").addEventListener("click", (e) => sendLink(e.currentTarget, false));
+  $("copy").addEventListener("click", (e) => sendLink(e.currentTarget, true));
+  $("share").addEventListener("click", (e) => sendLink(e.currentTarget, false));
   // The bottom bar appears once the hero's own button is out of sight.
-  new IntersectionObserver(([e]) => document.getElementById("mbar").classList.toggle("on", !e.isIntersecting && e.boundingClientRect.top < 0))
-    .observe(document.querySelector(".hero .cta"));
+  new IntersectionObserver(([e]) => $("mbar").classList.toggle("on", !e.isIntersecting && e.boundingClientRect.top < 0)).observe(document.querySelector(".hero-cta"));
 
   let saved = null;
   try { saved = localStorage.getItem("mared-lang"); } catch (e) {}
   langBtn.addEventListener("click", () => {
-    const next = root.lang === "en" ? "ar" : "en";
+    const next = isEn() ? "ar" : "en";
     try { localStorage.setItem("mared-lang", next); } catch (e) {}
     history.replaceState(null, "", "#" + next); // the address is shareable in this language
     setLang(next);

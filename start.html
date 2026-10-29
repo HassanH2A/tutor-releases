@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>مارد · ابدأ ببلاش</title>
 <meta name="robots" content="noindex">
-<meta name="theme-color" content="#0a0f1e">
+<meta name="theme-color" content="#f7f3ea">
 <link rel="icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,17 +13,17 @@
 <style>
   /* Sign-up: one step on screen at a time, a narrow column on black, the gold button always the next thing to do. */
   :root {
-    --bg: #0a0f1e; --raised: #1e273f; --line: #2a3450; --field: #151c31;
-    --ink: #f3ead8; --muted: #a4acbd; --dim: #7d8699; --bad: #ff8a7a;
-    --action: #f3ead8; --action-hover: #ffffff; --gold: #d9a440;
+    --bg: #f7f3ea; --raised: #efe9dc; --line: #e2dacb; --field: #ffffff;
+    --ink: #0a0f1e; --muted: #566074; --dim: #5f6879; --bad: #b3261e;
+    --action: #0a0f1e; --action-hover: #1e273f; --gold: #9a6a17;
     --font: "Readex Pro", "Segoe UI", system-ui, sans-serif;
     --ease: cubic-bezier(0.16, 1, 0.3, 1);
-    color-scheme: dark;
+    color-scheme: light;
   }
   * { box-sizing: border-box; }
   html { background: var(--bg); }
   body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 1.0625rem; line-height: 1.7;
-         caret-color: var(--action); -webkit-tap-highlight-color: rgb(243 234 216 / 0.2);
+         caret-color: var(--action); -webkit-tap-highlight-color: rgb(10 15 30 / 0.2);
          padding: env(safe-area-inset-top, 0px) max(1.25rem, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px) max(1.25rem, env(safe-area-inset-left, 0px)); }
   ::selection { background: var(--action); color: var(--bg); }
   :focus-visible { outline: 2px solid var(--action-hover); outline-offset: 3px; border-radius: 6px; }
@@ -52,7 +52,7 @@
   .cta[disabled] { opacity: 0.55; cursor: progress; }
   .ghost { display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem; width: 100%; min-height: 52px; padding: 0 1.25rem; border: 0; border-radius: 999px;
            background: var(--raised); color: var(--ink); font: inherit; font-weight: 500; cursor: pointer; transition: background-color 0.2s; }
-  .ghost:hover { background: #24252a; }
+  .ghost:hover { background: #efe9dc; }
   .or { display: flex; align-items: center; gap: 1rem; margin: 1.5rem 0; color: var(--dim); font-size: 0.9rem; }
   .or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 
@@ -82,20 +82,20 @@
   .chips label { display: inline-flex; align-items: center; min-height: 44px; margin: 0; padding: 0 1rem; border-radius: 999px; background: var(--raised); color: var(--ink);
                  font-weight: 400; cursor: pointer; transition: background-color 0.2s, color 0.2s, box-shadow 0.2s; }
   .chips input { position: absolute; opacity: 0; pointer-events: none; }
-  .chips label:has(input:checked) { background: rgb(243 234 216 / 0.16); color: var(--action-hover); box-shadow: inset 0 0 0 1.5px var(--action); }
+  .chips label:has(input:checked) { background: rgb(10 15 30 / 0.16); color: var(--action-hover); box-shadow: inset 0 0 0 1.5px var(--action); }
   .chips label:has(input:focus-visible) { outline: 2px solid var(--action-hover); outline-offset: 2px; }
   #heard-other { margin-top: 0.75rem; }
 
   /* The two ways to continue */
   .ways { display: grid; gap: 1rem; }
   .way { padding: 1.4rem 1.4rem 1.5rem; border-radius: 20px; background: var(--raised); }
-  .way.main { box-shadow: inset 0 0 0 1px rgb(243 234 216 / 0.45); }
+  .way.main { box-shadow: inset 0 0 0 1px rgb(10 15 30 / 0.45); }
   .way h2 { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; margin: 0 0 0.4rem; font-size: 1.2rem; font-weight: 600; }
   .way p { margin: 0 0 1.1rem; color: var(--muted); }
-  .tag { padding: 0.1rem 0.6rem; border-radius: 999px; background: rgb(243 234 216 / 0.14); color: var(--action); font-size: 0.8rem; font-weight: 500; }
+  .tag { padding: 0.1rem 0.6rem; border-radius: 999px; background: rgb(10 15 30 / 0.14); color: var(--action); font-size: 0.8rem; font-weight: 500; }
   .wallets { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: -0.4rem 0 1.1rem; padding: 0; list-style: none; }
   .wallets li { padding: 0.15rem 0.7rem; border-radius: 999px; background: var(--field); color: var(--muted); font-size: 0.85rem; }
-  .flash { margin: 0 0 1.5rem; padding: 0.9rem 1.1rem; border-radius: 14px; background: rgb(243 234 216 / 0.1); color: var(--action-hover); }
+  .flash { margin: 0 0 1.5rem; padding: 0.9rem 1.1rem; border-radius: 14px; background: rgb(10 15 30 / 0.1); color: var(--action-hover); }
   .flash:empty { display: none; }
   .who { margin: -1rem 0 1.5rem; color: var(--dim); font-size: 0.9rem; overflow-wrap: anywhere; }
   .who button { min-height: 44px; padding: 0 0.25rem; border: 0; background: none; color: var(--action); font: inherit; text-decoration: underline; text-underline-offset: 0.25em; cursor: pointer; }
@@ -120,7 +120,7 @@
   .copy { flex: none; min-height: 40px; padding: 0 1rem; border: 0; border-radius: 999px; background: var(--raised); color: var(--action); font: inherit; font-weight: 600; cursor: pointer; }
   .mine { margin: 2rem 0 0; padding: 0; list-style: none; }
   .mine li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.75rem 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.95rem; }
-  .st-pending { color: var(--action); } .st-approved { color: #8fdc9a; } .st-rejected { color: var(--bad); }
+  .st-pending { color: var(--action); } .st-approved { color: #1e7a3a; } .st-rejected { color: var(--bad); }
 
   [hidden] { display: none !important; }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }

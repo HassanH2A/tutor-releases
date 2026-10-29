@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>مارد · تم تأكيد إيميلك</title>
 <meta name="robots" content="noindex">
-<meta name="theme-color" content="#0a0f1e">
+<meta name="theme-color" content="#f7f3ea">
 <link rel="icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,8 +13,8 @@
 <style>
   /* Where the sign-in link lands after the app has signed the learner in (the app redirects here), or when a link
      has expired. One message in the middle of the screen, the gold check glowing like the pointer when Mared works. */
-  :root { --bg: #0a0f1e; --raised: #1e273f; --line: #2a3450; --ink: #f3ead8; --muted: #a4acbd; --dim: #7d8699;
-          --action: #f3ead8; --action-hover: #ffffff; --gold: #d9a440; --bad: #ff8a7a; --ease: cubic-bezier(0.16, 1, 0.3, 1); color-scheme: dark; }
+  :root { --bg: #f7f3ea; --raised: #efe9dc; --line: #e2dacb; --ink: #0a0f1e; --muted: #566074; --dim: #5f6879;
+          --action: #0a0f1e; --action-hover: #1e273f; --gold: #9a6a17; --bad: #b3261e; --ease: cubic-bezier(0.16, 1, 0.3, 1); color-scheme: light; }
   * { box-sizing: border-box; }
   html, body { height: 100%; }
   body { margin: 0; display: grid; place-items: center; background: var(--bg);
@@ -38,7 +38,7 @@
   p { margin: 0 auto; max-width: 26rem; color: var(--muted); font-size: 1.1rem; text-wrap: pretty; }
   .next { display: grid; gap: 0.6rem; margin: 2rem auto 0; padding: 1rem 1.25rem; max-width: 24rem; border-radius: 16px; background: var(--raised); color: var(--muted); font-size: 0.98rem; text-align: start; }
   .next b { color: var(--ink); font-weight: 500; }
-  kbd { padding: 0.05rem 0.45rem; border-radius: 6px; background: #0b0b0d; color: var(--action); font: inherit; font-weight: 600; direction: ltr; unicode-bidi: isolate; }
+  kbd { padding: 0.05rem 0.45rem; border-radius: 6px; background: var(--raised); color: var(--action); font: inherit; font-weight: 600; direction: ltr; unicode-bidi: isolate; }
   .links { display: flex; justify-content: center; gap: 1.25rem; margin-top: 2rem; font-size: 0.95rem; }
   a { color: var(--action); text-underline-offset: 0.25em; }
   .lang { position: fixed; top: max(1rem, env(safe-area-inset-top, 0px)); inset-inline-end: max(1rem, env(safe-area-inset-right, 0px)); min-height: 44px; padding: 0 1rem;
