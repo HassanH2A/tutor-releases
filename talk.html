@@ -39,11 +39,12 @@
   header { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
   .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 1.15rem; }
   .brand img { width: 30px; height: 30px; border-radius: 8px; }
-  button, input { font: inherit; color: inherit; }
+  button, input, select { font: inherit; color: inherit; }
   .pill { min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--raised); cursor: pointer; }
   .primary { min-height: 52px; padding: 0 22px; border: 0; border-radius: 14px; background: var(--ink); color: var(--on-action); font-weight: 600; cursor: pointer; width: 100%; }
   .primary:disabled { opacity: 0.5; }
   input { width: 100%; min-height: 52px; padding: 0 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--field); }
+  select { width: 100%; min-height: 48px; padding: 0 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--field); margin-bottom: 14px; }
   input[aria-invalid] { border-color: var(--bad); }
   .err { color: var(--bad); font-size: 0.92rem; min-height: 1.4em; }
   .muted { color: var(--muted); }
@@ -89,13 +90,13 @@
 <body>
 <main>
   <header>
-    <div class="brand"><img src="icon.png" alt=""><span id="t-brand">مارد · إنجليزي</span></div>
+    <div class="brand"><img src="icon.png" alt=""><span id="t-brand">مارد · كلام</span></div>
     <button class="pill" id="lang" type="button">English</button>
   </header>
 
   <!-- Sign in: the 6-digit code from the email -->
   <section id="s-in" hidden>
-    <h1 id="t-in-h">اتكلم إنجليزي زي مكالمة</h1>
+    <h1 id="t-in-h">اتكلم أي لغة زي مكالمة</h1>
     <p class="muted" id="t-in-p">سجّل بنفس حساب مارد اللي على الكمبيوتر، وتقدّمك يبقى واحد هنا وهناك.</p>
     <button class="primary" type="button" id="google" hidden style="background:var(--field);color:var(--ink);border:1px solid var(--line);margin-bottom:12px">Google</button>
     <form id="email-form" class="stack" novalidate>
@@ -136,6 +137,8 @@
     </div>
     <div id="talk">
     <p class="streak" id="streak"></p>
+    <label class="muted" for="learn" id="t-learn" style="display:block;font-size:.85rem;margin-bottom:6px"></label>
+    <select id="learn"></select>
     <div class="call">
       <button class="orb" id="orb" type="button">ابدأ</button>
       <div class="status" id="status" role="status" aria-live="polite"></div>
@@ -170,10 +173,10 @@
   const T = (ar, en) => (LANG === "ar" ? ar : en);
   function paint() {
     document.documentElement.lang = LANG; document.documentElement.dir = LANG === "ar" ? "rtl" : "ltr";
-    document.title = T("مارد · إنجليزي", "Mared · English");
+    document.title = T("مارد · كلام", "Mared · Talk");
     $("lang").textContent = T("English", "عربي");
-    $("t-brand").textContent = T("مارد · إنجليزي", "Mared · English");
-    $("t-in-h").textContent = T("اتكلم إنجليزي زي مكالمة", "Talk English like a phone call");
+    $("t-brand").textContent = T("مارد · كلام", "Mared · Talk");
+    $("t-in-h").textContent = T("اتكلم أي لغة زي مكالمة", "Speak a language like a phone call");
     $("t-in-p").textContent = T("سجّل بنفس حساب مارد اللي على الكمبيوتر، وتقدّمك يبقى واحد هنا وهناك.", "Sign in with your Mared account, and your progress is the same here and on your computer.");
     $("t-send").textContent = T("ابعتلي كود", "Send me a code");
     $("google").textContent = T("ادخل بـ Google", "Continue with Google");
@@ -186,7 +189,8 @@
     $("barge").textContent = barge() ? T("✓ تقدر تقاطعني وأنا بتكلم", "✓ You can talk over me") : T("مش هتقدر تقاطعني (مناسب للسبيكر العالي)", "No talking over me (for loud speakers)");
     $("barge").setAttribute("aria-pressed", String(barge()));
     if ($("review").hidden) $("tab-review").textContent = T("مراجعة", "Review"); else if (session) nextCard();
-    chips();
+    $("t-learn").textContent = T("بتتعلم إيه؟", "What are you learning?");
+    chips(); languages();
   }
   $("lang").addEventListener("click", () => { LANG = LANG === "ar" ? "en" : "ar"; store.set("mared-talk-lang", LANG); paint(); if (session) progress(); });
 
@@ -224,6 +228,23 @@
     return r;
   }
 
+  // ---- The language learned (Hassan, 30 Oct 2026), as the app's Tutor.Core/Targets.cs: the practice function's code,
+  // the code for speech, the deck its words go to, and each English's native voice for the lines. ----
+  const TARGETS = [["en", "en", "English", "nPczCjzI2devNBz1zQrb", "إنجليزي أمريكي", "American English"],
+    ["en-gb", "en", "English", "JBFqnCBsd6RMkjVDRZzb", "إنجليزي بريطاني", "British English"],
+    ["en-au", "en", "English", "IKne3meq5aSn9XLyUdCD", "إنجليزي أسترالي", "Australian English"],
+    ["es", "es", "Spanish", null, "إسباني", "Spanish"], ["de", "de", "German", null, "ألماني", "German"], ["it", "it", "Italian", null, "إيطالي", "Italian"],
+    ["ru", "ru", "Russian", null, "روسي", "Russian"], ["zh", "zh", "Mandarin", null, "صيني (ماندرين)", "Mandarin Chinese"], ["he", "he", "Hebrew", null, "عبري", "Hebrew"]];
+  let LEARN = store.get("mared-talk-learn", "en");
+  const tg = (code = LEARN) => TARGETS.find((t) => t[0] === code) || TARGETS[0];
+  const ofDeck = (deck) => (tg()[2] === deck ? tg() : TARGETS.find((t) => t[2] === deck)); // an English word in their accent
+  function languages() {
+    const box = $("learn"); box.innerHTML = "";
+    for (const [code, , , , ar, en] of TARGETS) { const o = document.createElement("option"); o.value = code; o.textContent = T(ar, en); o.selected = code === tg()[0]; box.appendChild(o); }
+    box.disabled = live;
+  }
+  $("learn").addEventListener("change", (e) => { LEARN = e.target.value; store.set("mared-talk-learn", LEARN); });
+
   // ---- Topics ----
   const TOPICS = [["", "اختارلي", "Surprise me"], ["science", "علوم", "Science"], ["technology", "تكنولوجيا", "Technology"], ["films and series", "أفلام ومسلسلات", "Films and series"],
     ["football", "كورة", "Football"], ["history", "تاريخ", "History"], ["travel", "سفر", "Travel"], ["a job interview role-play: you are the interviewer", "مقابلة شغل", "Job interview"],
@@ -231,6 +252,7 @@
   let topic = "";
   function chips() {
     const box = $("chips"); box.innerHTML = "";
+    $("learn").disabled = live; // a call keeps its language
     if (live) return;
     for (const [value, ar, en] of TOPICS) {
       const b = document.createElement("button"); b.type = "button"; b.className = "pill"; b.textContent = T(ar, en);
@@ -355,7 +377,7 @@
     try {
       const t = await (await call("/functions/v1/practice", {
         mode: "talk", topic, course: "", lesson: "Talk", goal: "free conversation", notes: notes().join("\n").slice(-4000), learner: "",
-        event: ev, heard, line, expect, history: history.slice(-4000), review: "", audio, dialect: dialect(), learn: "en",
+        event: ev, heard, line, expect, history: history.slice(-4000), review: "", audio, dialect: dialect(), learn: tg()[0],
         day: new Date().toLocaleDateString("en-CA"),
       })).json();
       if (!live || my !== gen) return;
@@ -372,13 +394,13 @@
       orb("speaking"); status("");
       busy = false; // from here they may talk over Mared
       spokenNow = t.say + " " + (t.line || ""); cutNow = false;
-      const first = voice(t.say, dialect() === "en" ? "en" : "ar"), second = t.line ? voice(t.line, "en") : null; // the second is made while the first plays
+      const first = voice(t.say, dialect() === "en" ? "en" : "ar"), second = t.line ? voice(t.line, tg()[1], tg()[3]) : null; // the second is made while the first plays
       await play(first);
       if (live && !cutNow && my === gen) await play(second);
       if (!live || my !== gen) return;
       if (cutNow) { orb(); status(T("سامعك…", "Listening…")); return; } // already talking: the same connection hears the rest
       turnPcm = []; turnLen = 0; quietUntil = performance.now() + 300;
-      await listen(expect === "repeat" || expect === "answer" ? "en" : (dialect() === "en" ? "en" : null));
+      await listen(expect === "repeat" || expect === "answer" ? tg()[1] : (dialect() === "en" ? "en" : null));
       orb(); status(T("سامعك…", "Listening…"));
       lastHeardAt = Date.now();
       clearInterval(stuckTimer);
@@ -403,8 +425,8 @@
     return ctx;
   }
   let playingNow = null;
-  const voice = (text, language) => (text ? call("/functions/v1/voice", { mode: "tts", text, language }).then((r) => r.arrayBuffer()).catch(() => null) : null);
-  const speak = (text, language) => play(voice(text, language));
+  const voice = (text, language, v) => (text ? call("/functions/v1/voice", { mode: "tts", text, language, ...(v ? { voice: v } : {}) }).then((r) => r.arrayBuffer()).catch(() => null) : null);
+  const speak = (text, language, v) => play(voice(text, language, v));
   async function play(pending) {
     if (!pending) return;
     try {
@@ -453,7 +475,7 @@
       const list = document.createElement("div"); list.className = "words";
       for (const w of p.words.slice(0, 40)) {
         const b = document.createElement("button"); b.type = "button"; b.className = "pill"; b.textContent = w.gloss ? `${w.en} · ${w.gloss}` : w.en;
-        b.addEventListener("click", () => { if (!live) { sound(); speak(w.en, "en"); } });
+        b.addEventListener("click", () => { if (!live) { sound(); speak(w.en, tg()[1], tg()[3]); } });
         list.appendChild(b);
       }
       box.append(h, list);
@@ -495,7 +517,7 @@
     $("rv-deck").textContent = card.deck;
     $("rv-front").textContent = card.front; $("rv-front").dir = latin(card.front) ? "ltr" : "auto";
     $("rv-back").textContent = card.back; $("rv-back").dir = latin(card.back) ? "ltr" : "auto";
-    $("rv-hear").hidden = !(card.deck === "English" && latin(card.front));
+    $("rv-hear").hidden = !(ofDeck(card.deck) && card.kind === "word");
     $("rv-answer").hidden = true; $("rv-show").hidden = false; $("rv-show").textContent = T("وريني الإجابة", "Show answer");
     const names = [T("تاني", "Again"), T("صعب", "Hard"), T("تمام", "Good"), T("سهل", "Easy")];
     $("rv-grades").innerHTML = "";
@@ -514,7 +536,7 @@
   }
   $("barge").addEventListener("click", () => { store.set("mared-talk-barge", !barge()); paint(); });
   $("rv-show").addEventListener("click", () => { $("rv-answer").hidden = false; $("rv-show").hidden = true; });
-  $("rv-hear").addEventListener("click", () => { sound(); speak(card.front, "en"); });
+  $("rv-hear").addEventListener("click", () => { sound(); const t = ofDeck(card.deck) || tg(); speak(card.front, t[1], t[3]); });
   document.addEventListener("keydown", (e) => {
     if ($("review").hidden || !card || e.target.tagName === "INPUT") return;
     if ($("rv-answer").hidden) { if (e.key === " " || e.key === "Enter") { e.preventDefault(); $("rv-show").click(); } return; }
