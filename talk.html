@@ -234,18 +234,18 @@
   }
 
   // ---- The language learned (Hassan, 30 Oct 2026), as the app's Tutor.Core/Targets.cs: the practice function's code,
-  // the code for speech, the deck its words go to, and each English's native voice for the lines. ----
-  const TARGETS = [["en", "en", "English", "nPczCjzI2devNBz1zQrb", "إنجليزي أمريكي", "American English"],
-    ["en-gb", "en", "English", "JBFqnCBsd6RMkjVDRZzb", "إنجليزي بريطاني", "British English"],
-    ["en-au", "en", "English", "IKne3meq5aSn9XLyUdCD", "إنجليزي أسترالي", "Australian English"],
-    ["es", "es", "Spanish", null, "إسباني", "Spanish"], ["de", "de", "German", null, "ألماني", "German"], ["it", "it", "Italian", null, "إيطالي", "Italian"],
-    ["ru", "ru", "Russian", null, "روسي", "Russian"], ["zh", "zh", "Mandarin", null, "صيني (ماندرين)", "Mandarin Chinese"], ["he", "he", "Hebrew", null, "عبري", "Hebrew"]];
+  // the code for speech and the deck its words go to. Everything is said in one voice. ----
+  const TARGETS = [["en", "en", "English", "إنجليزي أمريكي", "American English"],
+    ["en-gb", "en", "English", "إنجليزي بريطاني", "British English"],
+    ["en-au", "en", "English", "إنجليزي أسترالي", "Australian English"],
+    ["es", "es", "Spanish", "إسباني", "Spanish"], ["de", "de", "German", "ألماني", "German"], ["it", "it", "Italian", "إيطالي", "Italian"],
+    ["ru", "ru", "Russian", "روسي", "Russian"], ["zh", "zh", "Mandarin", "صيني (ماندرين)", "Mandarin Chinese"], ["he", "he", "Hebrew", "عبري", "Hebrew"]];
   let LEARN = store.get("mared-talk-learn", "en");
   const tg = (code = LEARN) => TARGETS.find((t) => t[0] === code) || TARGETS[0];
-  const ofDeck = (deck) => (tg()[2] === deck ? tg() : TARGETS.find((t) => t[2] === deck)); // an English word in their accent
+  const ofDeck = (deck) => TARGETS.find((t) => t[2] === deck);
   function languages() {
     const box = $("learn"); box.innerHTML = "";
-    for (const [code, , , , ar, en] of TARGETS) { const o = document.createElement("option"); o.value = code; o.textContent = T(ar, en); o.selected = code === tg()[0]; box.appendChild(o); }
+    for (const [code, , , ar, en] of TARGETS) { const o = document.createElement("option"); o.value = code; o.textContent = T(ar, en); o.selected = code === tg()[0]; box.appendChild(o); }
     box.disabled = live;
   }
   $("learn").addEventListener("change", (e) => { LEARN = e.target.value; store.set("mared-talk-learn", LEARN); paintLevel(); });
@@ -339,7 +339,7 @@
 
   function end(say) {
     if (!live) return;
-    live = false; busy = false; clearInterval(stuckTimer);
+    live = false; busy = false; clearInterval(stuckTimer); clearTimeout(holdTimer); held = "";
     try { ws?.close(); } catch (e) {} ws = null; wsLang = undefined;
     stream?.getTracks().forEach((t) => t.stop()); stream = null;
     try { proc?.disconnect(); } catch (e) {} proc = null;
@@ -375,12 +375,12 @@
     return b64(bytes);
   }
 
-  // The live transcriber in the language the next answer comes in; it ends each turn after 1.2 s of silence.
+  // The live transcriber in the language the next answer comes in; it ends each turn after 2 s of silence.
   async function listen(lang) {
     if (ws && ws.readyState <= 1 && wsLang === lang) return;
     try { ws?.close(); } catch (e) {}
     const { token } = await (await call("/functions/v1/voice", { mode: "stt_token" })).json();
-    const q = new URLSearchParams({ model_id: "scribe_v2_realtime", audio_format: "pcm_16000", commit_strategy: "vad", vad_silence_threshold_secs: "1.2", token });
+    const q = new URLSearchParams({ model_id: "scribe_v2_realtime", audio_format: "pcm_16000", commit_strategy: "vad", vad_silence_threshold_secs: "2.0", token });
     if (lang) q.set("language_code", lang);
     ws = new WebSocket("wss://api.elevenlabs.io/v1/speech-to-text/realtime?" + q);
     wsLang = lang;
@@ -391,14 +391,42 @@
         if (playing && barge() && !echo(text)) { cutNow = true; try { playingNow?.stop(); } catch (e) {} }
         if (!playing || cutNow) { $("heard").textContent = text; lastHeardAt = Date.now(); }
       }
-      else if (msg.message_type === "committed_transcript" && text.replace(/[^\p{L}]/gu, "").length >= 2 && !busy && (!playing || cutNow)) answer(text);
+      else if (msg.message_type === "committed_transcript" && text.replace(/[^\p{L}]/gu, "").length >= 2 && !busy && (!playing || cutNow)) hold(text);
     };
+  }
+
+  // A turn that stopped mid-sentence ("because…", «عشان…»): they are thinking, so it waits 3 s more, longer while they
+  // talk on. As Speaking.Unfinished in the app.
+  const LEADS = new Set(("and but because cause cuz so or the a an to of with that which who when if um uh er erm like my your is was are were in on at " +
+    "for than then about from into just really very maybe actually think mean y pero porque que de el la los las un una en con para por o mi muy pues este " +
+    "und aber weil dass der die das ein eine mit zu von für oder ich sehr also äh ähm e ma perché perche che di il lo uno per mio molto quindi allora " +
+    "и но потому что в на с или а это очень ну чтобы אבל כי או עם של את גם אז אם כאילו و بس عشان لان لأن اللي يعني في من مع او أو ان إن انا أنا").split(" "));
+  const ZH_LEADS = ["因为", "但是", "可是", "所以", "然后", "如果", "和", "的", "就是", "那个"];
+  function unfinished(t) {
+    t = t.trim();
+    if (!t) return false;
+    if (/[,\-—،…]$/.test(t) || t.endsWith("...")) return true;
+    if (ZH_LEADS.some((z) => t.replace(/[。，.,]+$/, "").endsWith(z))) return true;
+    const last = (t.split(/\s+/).pop() || "").replace(/[^\p{L}]/gu, "").toLowerCase();
+    return LEADS.has(last);
+  }
+  let held = "", holdTimer = null;
+  function hold(text) {
+    held = held ? held + " " + text : text;
+    clearTimeout(holdTimer);
+    if (!unfinished(held)) { const all = held; held = ""; return answer(all); }
+    $("heard").textContent = held + " …";
+    holdTimer = setTimeout(function wait() {
+      if (Date.now() - lastHeardAt < 1000) { holdTimer = setTimeout(wait, 500); return; } // still talking
+      const all = held; held = "";
+      if (all && live && !busy) answer(all);
+    }, 3000);
   }
 
   const STOP = /^(stop|end|bye|خلاص|كفايه|كفاية|وقف|وقّف|بطل|بطّل)([\s.!]|$)/i;
   function answer(text) {
     try { playingNow?.stop(); } catch (e) {} // they talked over Mared: it stops
-    if (STOP.test(text.trim()) && text.trim().split(/\s+/).length <= 3) return end(T("تمام، وقفنا. برافو عليك!", "OK, we stopped. Well done!"));
+    if (STOP.test(text.trim()) && text.trim().split(/\s+/).length <= 3) return end(T("تمام، وقفنا.", "OK, we stopped."));
     $("heard").textContent = text;
     turn("answer", text, wav());
   }
@@ -443,7 +471,7 @@
       orb("speaking"); status("");
       busy = false; // from here they may talk over Mared
       spokenNow = t.say + " " + (t.line || ""); cutNow = false;
-      const first = voice(t.say, dialect() === "en" ? "en" : "ar"), second = t.line ? voice(t.line, tg()[1], tg()[3]) : null; // the second is made while the first plays
+      const first = voice(t.say, dialect() === "en" ? "en" : "ar"), second = t.line ? voice(t.line, tg()[1]) : null; // the second is made while the first plays
       await play(first);
       if (live && !cutNow && my === gen) await play(second);
       if (!live || my !== gen) return;
@@ -524,7 +552,7 @@
       const list = document.createElement("div"); list.className = "words";
       for (const w of p.words.slice(0, 40)) {
         const b = document.createElement("button"); b.type = "button"; b.className = "pill"; b.textContent = w.gloss ? `${w.en} · ${w.gloss}` : w.en;
-        b.addEventListener("click", () => { if (!live) { sound(); speak(w.en, tg()[1], tg()[3]); } });
+        b.addEventListener("click", () => { if (!live) { sound(); speak(w.en, tg()[1]); } });
         list.appendChild(b);
       }
       box.append(h, list);
@@ -585,7 +613,7 @@
   }
   $("barge").addEventListener("click", () => { store.set("mared-talk-barge", !barge()); paint(); });
   $("rv-show").addEventListener("click", () => { $("rv-answer").hidden = false; $("rv-show").hidden = true; });
-  $("rv-hear").addEventListener("click", () => { sound(); const t = ofDeck(card.deck) || tg(); speak(card.front, t[1], t[3]); });
+  $("rv-hear").addEventListener("click", () => { sound(); speak(card.front, (ofDeck(card.deck) || tg())[1]); });
   document.addEventListener("keydown", (e) => {
     if ($("review").hidden || !card || e.target.tagName === "INPUT") return;
     if ($("rv-answer").hidden) { if (e.key === " " || e.key === "Enter") { e.preventDefault(); $("rv-show").click(); } return; }
