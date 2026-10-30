@@ -846,7 +846,9 @@
       if (!live) return;
       const f = e.inputBuffer.getChannelData(0);
       const pcm = down(f, ctx.sampleRate);
-      const quiet = busy || muted || (!barge() && (playing || performance.now() < quietUntil));
+      // Heard while Mared thinks too: a learner who pauses mid-thought goes on talking (Farah, 30 Oct 2026: "it doesn't
+      // take everything I say"); the rest joins the answer below.
+      const quiet = muted || (!barge() && (playing || performance.now() < quietUntil));
       let sq = 0; for (let i = 0; i < f.length; i += 16) sq += f[i] * f[i];
       $("call").style.setProperty("--lvl", quiet ? "0" : Math.min(1, Math.sqrt(sq / (f.length / 16)) * 8).toFixed(2)); // the orb follows their voice
       if (!quiet) { turnPcm.push(pcm); turnLen += pcm.length; while (turnLen - turnPcm[0].length > TURN_MAX) turnLen -= turnPcm.shift().length; }
@@ -908,7 +910,9 @@
     ws.onmessage = (m) => {
       let msg; try { msg = JSON.parse(m.data); } catch (e) { return; }
       const text = (msg.text || "").trim();
-      if (msg.message_type === "partial_transcript" && text && !busy) {
+      if (msg.message_type === "partial_transcript" && text && busy && said) { $("heard").textContent = said + " " + text; lastHeardAt = Date.now(); }
+      else if (msg.message_type === "committed_transcript" && text.replace(/[^\p{L}]/gu, "").length >= 2 && busy && said) { held = said; said = ""; hold(text); } // more after a pause: the reply being written is dropped, the whole answer sent
+      else if (msg.message_type === "partial_transcript" && text && !busy) {
         if (playing && barge() && !echo(text)) { cutNow = true; try { playingNow?.stop(); } catch (e) {} }
         if (!playing || cutNow) { $("heard").textContent = text; lastHeardAt = Date.now(); }
       }
@@ -940,7 +944,7 @@
     holdTimer = setTimeout(function wait() {
       if (Date.now() - lastHeardAt < 1000) { holdTimer = setTimeout(wait, 500); return; } // still talking
       const all = held; held = "";
-      if (all && live && !busy) answer(all);
+      if (all && live) answer(all); // even while a reply is being written: the longer answer replaces it
     }, 3000);
   }
 
@@ -949,8 +953,10 @@
     try { playingNow?.stop(); } catch (e) {} // they talked over Mared: it stops
     if (STOP.test(text.trim()) && text.trim().split(/\s+/).length <= 3) return end(T("تمام، وقفنا.", "OK, we stopped."));
     $("heard").textContent = text;
+    said = text;
     turn("answer", text, wav());
   }
+  let said = ""; // the answer whose reply is being written, so words after a pause can join it
 
   // Talking over Mared (a phone's echo cancellation keeps its own voice out): on unless turned off. A partial transcript
   // that is mostly Mared's own words is its echo, not the learner.
@@ -966,6 +972,7 @@
   let prev = ""; // how their last answer sounded: scored while the reply was written, sent with the next turn
   async function turn(ev, heard, audio) {
     const my = ++gen;
+    if (ev !== "answer") said = "";
     busy = true; if (callAt) status(""); orb("thinking");
     let firstP = null, secondP = null, saying = null, t = null;
     // What is said, the moment it comes: voiced and played while the rest of the turn is still being written.
@@ -1040,6 +1047,7 @@
         else turn("stuck", "", null);
       }, 2000);
     } catch (e) {
+      if (my !== gen) return; // a reply dropped for a longer answer never ends the call
       if (e.status === 404 && who) { end(T(`${who.name} مش موجود دلوقتي.`, `${who.name} isn't there any more.`)); loadPeople(); }
       else if (e.status === 402) end(T("اللي متاحلك خلص. اشترك من yamared.com/start ونكمّل.", "You've used what you had. Subscribe at yamared.com/start and we'll carry on."));
       else if (e.status === 401) { end(); await db.auth.signOut(); }
