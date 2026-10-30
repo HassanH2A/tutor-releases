@@ -228,6 +228,24 @@
   .field textarea { min-height: 96px; resize: vertical; line-height: 1.6; }
   .field small { display: block; font-size: 12px; color: var(--muted); margin: 4px 2px 0; }
 
+  /* Putting Mared on the home screen: the steps for this phone's browser first, the others folded below */
+  .homerow { width: 100%; border: 0; background: none; text-align: start; }
+  .homerow img { width: 40px; height: 40px; border-radius: 10px; flex: none; }
+  .how { max-width: 560px; margin: 0 auto; }
+  .how h2 { font-size: 22px; font-weight: 600; line-height: 30px; margin: 8px 0 4px; }
+  .how .panel { margin-top: 12px; }
+  .how h3 { font-size: 16px; font-weight: 600; margin: 0; padding: 14px 16px 0; }
+  .how details > summary { list-style: none; display: flex; align-items: center; justify-content: space-between; min-height: 52px; padding: 6px 16px; font-weight: 500; cursor: pointer; }
+  .how details > summary::-webkit-details-marker { display: none; }
+  .how details[open] > summary .chev { transform: rotate(180deg); }
+  .how .note { font-size: 13px; color: var(--muted); padding: 0 16px 14px; margin: 0; }
+  .steps { list-style: none; counter-reset: s; margin: 0; padding: 6px 16px 10px; }
+  .steps li { counter-increment: s; display: flex; gap: 12px; padding: 8px 0; line-height: 1.7; }
+  .steps li::before { content: counter(s); flex: none; width: 26px; height: 26px; margin-top: 1px; border-radius: 50%; background: var(--raised); display: grid; place-items: center; font-size: 13px; font-weight: 600; }
+  .steps b { font-weight: 600; }
+  .ic { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; background: var(--raised); vertical-align: middle; margin: 0 2px; }
+  .ic svg { width: 17px; height: 17px; }
+
   /* The tab bar */
   .tabbar { position: fixed; inset-inline: 0; bottom: 0; z-index: 10; display: flex; justify-content: space-around; background: var(--panel); border-top: 1px solid var(--line);
     padding: 6px 0 calc(env(safe-area-inset-bottom) + 4px); }
@@ -262,7 +280,8 @@
     <button class="btn" type="submit" id="t-verify">ادخل</button>
     <button class="btn ghost" type="button" id="again">إيميل تاني</button>
   </form>
-  <p style="text-align:center;margin-top:26px"><button class="rowbtn" id="lang" type="button">English</button></p>
+  <p class="home-entry" style="text-align:center;margin-top:26px"><button class="rowbtn" type="button" data-home id="t-home-in"></button></p>
+  <p style="text-align:center;margin-top:18px"><button class="rowbtn" id="lang" type="button">English</button></p>
 </section>
 
 <div id="s-talk" hidden>
@@ -287,7 +306,9 @@
     <div class="topics" id="chips"></div>
     <div class="label" id="t-people">كلّم حد تاني</div>
     <div class="panel" id="people"></div>
-    <p class="muted hint" id="t-home" style="margin-top:26px">اعمل الصفحة دي اختصار على الشاشة الرئيسية: من قايمة المتصفح، «إضافة للشاشة الرئيسية».</p>
+    <div class="panel home-entry" style="margin-top:26px">
+      <button class="row homerow" type="button" data-home><img src="talk-icon-192.png" alt=""><span class="grow"><span id="t-home"></span><small id="t-home-sub"></small></span><span class="chev" aria-hidden="true">›</span></button>
+    </div>
   </section>
 
   <!-- Review: the deck, as Anki (027) -->
@@ -380,6 +401,18 @@
   </nav>
 </div>
 
+<!-- Putting Mared on the home screen, step by step for each phone and browser (Hassan, 30 Oct 2026); outside the
+     signed-in screens, as the sign-in screen opens it too -->
+<div class="sheet" id="home" hidden role="dialog" aria-labelledby="home-h">
+  <div class="bar"><span style="width:48px"></span><span></span><button class="rowbtn" type="button" id="home-done"></button></div>
+  <div class="how">
+    <h2 id="home-h"></h2>
+    <p class="muted" id="home-p" style="margin:0"></p>
+    <button class="btn" type="button" id="home-install" hidden style="margin-top:14px"></button>
+    <div id="home-guides"></div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o" crossorigin="anonymous"></script>
 <script>
 (() => {
@@ -410,8 +443,10 @@
     $("t-code-p").textContent = T("بعتنالك كود من 6 أرقام على الإيميل. اكتبه هنا.", "We emailed you a 6-digit code. Type it here.");
     $("t-verify").textContent = T("ادخل", "Sign in");
     $("again").textContent = T("إيميل تاني", "Another email");
-    $("t-home").textContent = T("اعمل الصفحة دي اختصار على الشاشة الرئيسية: من قايمة المتصفح، «إضافة للشاشة الرئيسية».", "Add this page to your home screen: in the browser's menu, “Add to Home Screen”.");
-    $("t-home").hidden = standalone; // already opened from the home screen
+    $("t-home").textContent = $("t-home-in").textContent = T("حط مارد على الشاشة الرئيسية", "Put Mared on your home screen");
+    $("t-home-sub").textContent = T("يفتح زي أي تطبيق، بلمسة واحدة", "Opens like any app, in one tap");
+    document.querySelectorAll(".home-entry").forEach((e) => (e.hidden = standalone)); // already opened from the home screen
+    paintHome();
     $("t-name").textContent = $("t-bubble-name").textContent = T("مارد", "Mared");
     $("t-talk-h").textContent = T("يلا نتكلم", "Let's talk");
     $("t-tab-talk").textContent = T("كلام", "Talk");
@@ -602,6 +637,96 @@
   }
   function closeEditor() { $("editor").hidden = true; document.body.style.overflow = ""; editing = null; }
   $("ed-cancel").addEventListener("click", closeEditor);
+
+  // Putting Mared on the home screen (Hassan, 30 Oct 2026: "proper instructions... whether it's Safari, Chrome, or an
+  // iPhone or not"): the steps for the browser this page is open in come first, every other one folded below, with the
+  // browsers' own icons drawn in so the learner can find the button.
+  const ua = navigator.userAgent;
+  const ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  const inApp = /FBAN|FBAV|FB_IAB|Instagram|Line\/|Snapchat|musical_ly|TikTok|LinkedInApp|Twitter|GSA\//.test(ua);
+  const here = inApp ? "inapp" : ios ? (/CriOS|EdgiOS|FxiOS|OPiOS/.test(ua) ? "ios-other" : "ios-safari")
+    : /Android/.test(ua) ? (/SamsungBrowser/.test(ua) ? "samsung" : /Firefox/.test(ua) ? "firefox" : "android-chrome") : "computer";
+  const svg = (d) => `<span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg></span>`;
+  const IC = {
+    share: svg('<path d="M12 14V3M8 7l4-4 4 4"/><path d="M8.5 10H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-1.5"/>'),
+    more: svg('<circle cx="5" cy="12" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="19" cy="12" r="1.3" fill="currentColor"/>'),
+    kebab: svg('<circle cx="12" cy="5" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="12" cy="19" r="1.3" fill="currentColor"/>'),
+    menu: svg('<path d="M4 7h16M4 12h16M4 17h16"/>'),
+    add: svg('<rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8v8M8 12h8"/>'),
+  };
+  // A button's name as the phone shows it: in Arabic, the English name too, as many phones here are set to English.
+  const b = (ar, en) => (LANG === "ar" ? `<b>${ar}</b>${en ? ` <span class="muted" dir="ltr">(${en})</span>` : ""}` : `<b>${en}</b>`);
+  const openIt = () => T("افتح مارد من الأيقونة اللي ظهرت على الشاشة الرئيسية.", "Open Mared from its new icon on your home screen.");
+  const GUIDES = () => [
+    { id: "ios-safari", title: T("آيفون · Safari", "iPhone · Safari"), steps: [
+      T(`دوس على زرار المشاركة ${IC.share} تحت. (في iOS 26 دوس الأول على ${IC.more} وبعدين «مشاركة».)`, `Tap the Share button ${IC.share} at the bottom. (On iOS 26, tap ${IC.more} first, then Share.)`),
+      T(`انزل لتحت ودوس ${b("إضافة إلى الشاشة الرئيسية", "Add to Home Screen")} ${IC.add}.`, `Scroll down and tap ${b("", "Add to Home Screen")} ${IC.add}.`),
+      T(`سيب ${b("فتح كتطبيق ويب", "Open as Web App")} شغّال، ودوس ${b("إضافة", "Add")} فوق.`, `Leave “Open as Web App” on, and tap ${b("", "Add")} at the top.`),
+      openIt(),
+      T("سجّل دخول مرة كمان جوّه: الآيفون بيفصل التطبيق عن Safari.", "Sign in once more inside it: the iPhone keeps it separate from Safari."),
+    ] },
+    { id: "ios-other", title: T("آيفون · Chrome أو Edge أو Firefox", "iPhone · Chrome, Edge or Firefox"), steps: [
+      T(`دوس على زرار المشاركة ${IC.share} جنب العنوان فوق. (لو مش لاقيه: ${IC.more} وبعدين «مشاركة».)`, `Tap the Share button ${IC.share} next to the address at the top. (Can't see it? ${IC.more}, then Share.)`),
+      T(`دوس ${b("إضافة إلى الشاشة الرئيسية", "Add to Home Screen")} ${IC.add}. لو مش ظاهر، دوس «المزيد» أو انزل لتحت.`, `Tap ${b("", "Add to Home Screen")} ${IC.add}. Not there? Tap More or scroll down.`),
+      T(`دوس ${b("إضافة", "Add")}.`, `Tap ${b("", "Add")}.`),
+      openIt(),
+      T("سجّل دخول مرة كمان جوّه: الآيفون بيفصل التطبيق عن المتصفح.", "Sign in once more inside it: the iPhone keeps it separate from the browser."),
+    ] },
+    { id: "android-chrome", title: T("أندرويد · Chrome", "Android · Chrome"), steps: [
+      T(`دوس ${IC.kebab} فوق في الجنب.`, `Tap ${IC.kebab} at the top corner.`),
+      T(`دوس ${b("إضافة إلى الشاشة الرئيسية", "Add to Home screen")} أو ${b("تثبيت التطبيق", "Install app")}.`, `Tap ${b("", "Add to Home screen")} or ${b("", "Install app")}.`),
+      T(`دوس ${b("تثبيت", "Install")}.`, `Tap ${b("", "Install")}.`),
+      openIt(),
+    ] },
+    { id: "samsung", title: T("أندرويد · Samsung Internet", "Android · Samsung Internet"), steps: [
+      T(`دوس ${IC.menu} تحت في الجنب.`, `Tap ${IC.menu} at the bottom corner.`),
+      T(`دوس ${b("إضافة صفحة إلى", "Add page to")}، وبعدين ${b("الشاشة الرئيسية", "Home screen")}.`, `Tap ${b("", "Add page to")}, then ${b("", "Home screen")}.`),
+      T(`دوس ${b("إضافة", "Add")}.`, `Tap ${b("", "Add")}.`),
+      openIt(),
+    ] },
+    { id: "firefox", title: T("أندرويد · Firefox", "Android · Firefox"), steps: [
+      T(`دوس ${IC.kebab}.`, `Tap ${IC.kebab}.`),
+      T(`دوس ${b("تثبيت", "Install")} أو ${b("إضافة إلى الشاشة الرئيسية", "Add to Home screen")}.`, `Tap ${b("", "Install")} or ${b("", "Add to Home screen")}.`),
+      T(`دوس ${b("إضافة", "Add")}.`, `Tap ${b("", "Add")}.`),
+      openIt(),
+    ] },
+    { id: "inapp", title: T("فاتح الصفحة من جوّه إنستجرام أو واتساب أو فيسبوك", "Opened inside Instagram, WhatsApp or Facebook"), steps: [
+      T("التطبيقات دي مبتعرفش تحط اختصار. انسخ اللينك بالزرار اللي تحت.", "These apps can't add a shortcut. Copy the link with the button below."),
+      T("افتح Safari على الآيفون، أو Chrome على الأندرويد، والصق اللينك فوق.", "Open Safari on an iPhone, or Chrome on Android, and paste the link at the top."),
+      T("كمّل بالخطوات بتاعة المتصفح ده من القايمة دي.", "Then follow that browser's steps in this list."),
+    ], copy: true },
+    { id: "computer", title: T("على الكمبيوتر", "On a computer"), steps: [
+      T(`افتح <b dir="ltr">yamared.com/talk</b> على موبايلك، وكمّل بالخطوات بتاعة موبايلك.`, `Open ${b("", "yamared.com/talk")} on your phone, then follow your phone's steps.`),
+      T("على الكمبيوتر، تطبيق مارد للويندوز فيه نفس المكالمات.", "On a computer, the Mared app for Windows has the same calls."),
+    ] },
+  ];
+  function guideHtml(g) {
+    return `<ol class="steps">${g.steps.map((s) => `<li><span>${s}</span></li>`).join("")}</ol>` +
+      (g.copy ? `<div style="padding:0 16px 16px"><button class="btn ghost" type="button" data-copy>${T("انسخ اللينك", "Copy the link")}</button></div>` : "");
+  }
+  function paintHome() {
+    $("home-done").textContent = T("تمام", "Done");
+    $("home-h").textContent = T("حط مارد على الشاشة الرئيسية", "Put Mared on your home screen");
+    $("home-p").textContent = T("بعدها يفتح زي أي تطبيق: من غير متصفح ولا عنوان، بلمسة واحدة.", "Then it opens like any app: no browser bar, no address, one tap.");
+    $("home-install").textContent = T("ثبّت مارد", "Install Mared");
+    const all = GUIDES(), mine = all.find((g) => g.id === here);
+    const first = here === "computer" ? "" : `<div class="panel"><h3>${mine.title}</h3>${guideHtml(mine)}</div>`;
+    const label = here === "computer" ? T("اختار موبايلك", "Pick your phone") : T("موبايل أو متصفح تاني؟", "Another phone or browser?");
+    $("home-guides").innerHTML = first + `<div class="label">${label}</div><div class="panel">` +
+      all.filter((g) => g.id !== here || here === "computer").map((g) => `<details class="row" style="display:block;padding:0"><summary>${g.title}<span class="chev" aria-hidden="true">⌄</span></summary>${guideHtml(g)}</details>`).join("") + "</div>";
+  }
+  // Chrome on Android (and Edge) can install in one tap: the button shows only when the browser offers it.
+  let installer = null;
+  addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); installer = e; $("home-install").hidden = false; });
+  addEventListener("appinstalled", () => { installer = null; $("home-install").hidden = true; });
+  $("home-install").addEventListener("click", async () => { if (!installer) return; installer.prompt(); await installer.userChoice; installer = null; $("home-install").hidden = true; });
+  document.querySelectorAll("[data-home]").forEach((x) => x.addEventListener("click", () => { $("home").hidden = false; document.body.style.overflow = "hidden"; }));
+  $("home-done").addEventListener("click", () => { $("home").hidden = true; document.body.style.overflow = ""; });
+  $("home-guides").addEventListener("click", async (e) => {
+    const c = e.target.closest("[data-copy]"); if (!c) return;
+    const url = location.origin + location.pathname;
+    try { await navigator.clipboard.writeText(url); c.textContent = T("اتنسخ ✓", "Copied ✓"); } catch (err) { prompt(T("انسخ اللينك ده:", "Copy this link:"), url); }
+  });
   $("ed-hear").addEventListener("click", () => { sound(); speak(`Hi, I'm ${$("ed-name").value.trim() || "your new friend"}. What shall we talk about?`, "en", $("ed-voice").value || undefined); });
   $("ed-form").addEventListener("submit", async (e) => {
     e.preventDefault();
