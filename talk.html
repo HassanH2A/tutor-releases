@@ -193,6 +193,7 @@
   .ladder span { flex: 1; text-align: center; padding: 7px 0; border-radius: 6px; background: var(--raised); font-size: 13px; font-weight: 600; color: var(--muted); }
   .ladder .on { background: var(--ink); color: var(--bg); }
   .ladder .aim { box-shadow: inset 0 0 0 2px var(--ink); color: var(--ink); }
+  .level .pace { font-size: 13px; margin: 8px 0 0; }
   .level select { width: 100%; min-height: 44px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); padding: 0 12px; margin: 4px 0 6px; }
   .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .tile { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
@@ -578,6 +579,31 @@
     ["C2", "متمكّن", "Proficient", "بتفهم وتقول كل حاجة تقريبًا زي أهل اللغة.", "You understand and say almost anything, like a native speaker."]];
   const rank = (l) => CEFR.findIndex((c) => c[0] === l);
   let levels = {};
+  // How fast they move toward their goal (Hassan, 31 Oct 2026), as Tutor.Core/Targets.cs Cefr.Pace: hours of guided
+  // learning to reach each level (Cambridge English's estimates, the middle of each range), against their hours of calls
+  // a week over the last 28 days (032), or half an hour a day while they have talked too little to tell.
+  const HOURS = [90, 190, 375, 550, 750, 1100], STEADY = 3.5;
+  let calls = { now: 0, before: 0 }; // seconds of calls, the last 28 days and the 28 before (speaking_stats)
+  function span(weeks) {
+    const m = Math.max(1, Math.round(weeks / 4.35));
+    if (m < 24) return m === 1 ? T("حوالي شهر", "about a month") : m === 2 ? T("حوالي شهرين", "about 2 months") : T(m <= 10 ? `حوالي ${m} شهور` : `حوالي ${m} شهر`, `about ${m} months`);
+    const y = Math.round(m / 12);
+    return y === 2 ? T("حوالي سنتين", "about 2 years") : T(y <= 10 ? `حوالي ${y} سنين` : `حوالي ${y} سنة`, `about ${y} years`);
+  }
+  function pace(level, aim, now, before) {
+    const at = rank(level);
+    if (at < 0 || at === CEFR.length - 1) return [];
+    const next = CEFR[at + 1][0], goal = rank(aim) > at ? aim : next, mine = now / 3600 / 4;
+    const weeks = (to, perWeek) => (HOURS[rank(to)] - HOURS[at]) / perWeek;
+    const lines = [];
+    if (mine * 60 >= 10) {
+      const min = Math.round(mine * 60);
+      lines.push(T(`على سرعتك (${min} دقيقة مكالمات في الأسبوع): توصل ${next} بعد ${span(weeks(next, mine))}.`, `At your pace (${min} min of calls a week): ${next} in ${span(weeks(next, mine))}.`));
+      if (goal !== next) lines.push(T(`وهدفك ${goal} بعد ${span(weeks(goal, mine))}.`, `Your goal, ${goal}, in ${span(weeks(goal, mine))}.`));
+    } else lines.push(T(`لو اتكلمت نص ساعة كل يوم: توصل ${goal} بعد ${span(weeks(goal, STEADY))}.`, `At half an hour a day: ${goal} in ${span(weeks(goal, STEADY))}.`));
+    if (before > 0 && now !== before) lines.push(now > before ? T("الشهر ده اتكلمت أكتر من اللي قبله ↑", "You talked more this month than the month before ↑") : T("الشهر ده اتكلمت أقل من اللي قبله ↓", "You talked less this month than the month before ↓"));
+    return lines;
+  }
   async function loadLevels() {
     try { levels = Object.fromEntries((await (await call("/rest/v1/rpc/speaking_levels", {})).json()).map((x) => [x.lang, x])); } catch (e) {}
     paintLevel();
@@ -606,6 +632,9 @@
       : at >= goal ? T("وصلت لهدفك! 🎉 اختار هدف أعلى.", "You reached your goal! 🎉 Pick a higher one.")
       : at < 0 ? T(`هدفك ${mine.aim}: هعرف مستواك من أول كلام بينا.`, `Your goal is ${mine.aim}: I'll find your level from our first talk.`)
       : T(`فاضلك ${goal - at} مستوى وتوصل ${mine.aim}.`, `${goal - at} level(s) to go to reach ${mine.aim}.`);
+    for (const l of pace(mine.level, mine.aim, calls.now, calls.before)) {
+      const p = document.createElement("p"); p.className = "muted pace"; p.textContent = l; box.appendChild(p);
+    }
   }
 
   // ---- Characters (030): built-in and their own, called like contacts ----
@@ -894,7 +923,7 @@
     try { proc?.disconnect(); } catch (e) {} proc = null;
     try { wake?.release(); } catch (e) {}
     try { playingNow?.stop(); } catch (e) {} playing = false;
-    orb(); chips(); status(say || ""); progress();
+    orb(); chips(); status([say, placed].filter(Boolean).join(" ")); placed = ""; progress();
   }
   document.addEventListener("visibilitychange", () => { if (document.hidden && live) end(T("وقفنا لما قفلت الشاشة. دوس «ابدأ» نكمّل.", "Paused when the screen closed. Tap Start to carry on.")); });
 
@@ -997,6 +1026,8 @@
   }
 
   let prev = ""; // how their last answer sounded: scored while the reply was written, sent with the next turn
+  let lastTurnAt = 0; // when the last turn was sent: the time between turns is the call's time (032)
+  let placed = ""; // their first level, found in this call: said when it ends
   async function turn(ev, heard, audio) {
     const my = ++gen;
     if (ev !== "answer") said = "";
@@ -1021,7 +1052,9 @@
         mode: "talk", topic: who ? "" : topic, course: "", lesson: who ? who.name : "Talk", character: who ? who.id : "", fixes: fixes(), goal: "free conversation", notes: notes().join("\n").slice(-4000), learner: "",
         event: ev, heard, line, expect, history: history.slice(-4000), review: "", audio, dialect: dialect(), learn: tg()[0],
         day: new Date().toLocaleDateString("en-CA"), level: (levels[tg()[0]] || {}).level || "", aim: (levels[tg()[0]] || {}).aim || "", prev, stream: true,
+        elapsed: ev === "start" ? 0 : Math.min(180, (Date.now() - lastTurnAt) / 1000),
       });
+      lastTurnAt = Date.now();
       const reader = r.body.getReader(), dec = new TextDecoder();
       let buf = "";
       for (;;) {
@@ -1051,6 +1084,8 @@
         const before = rank((levels[tg()[0]] || {}).level);
         levels[tg()[0]] = { ...(levels[tg()[0]] || {}), level: t.level }; paintLevel();
         if (rank(t.level) > before) up = before < 0 ? T(`مستواك: ${t.level}`, `Your level: ${t.level}`) : T(`🎉 مستواك بقى ${t.level}!`, `🎉 You're now ${t.level}!`);
+        // The first one, said again when the call ends, with how soon the next level or their aim is at half an hour a day.
+        if (before < 0) placed = [T(`مستواك ${t.level} (${CEFR[rank(t.level)][1]}).`, `Your level: ${t.level} (${CEFR[rank(t.level)][2]}).`), ...pace(t.level, (levels[tg()[0]] || {}).aim, 0, 0)].join(" ");
       }
       $("fix").textContent = [up, t.fix ? "✓ " + t.fix : "", t.better ? T("أحلى: ", "Better: ") + t.better : ""].filter(Boolean).join(" · ");
       line = t.line || ""; expect = t.expect || "reply";
@@ -1111,6 +1146,7 @@
     const { data: p } = await db.rpc("speaking_stats", { p_days: 30 });
     const box = $("progress"); box.innerHTML = "";
     if (!p) return;
+    calls = { now: p.call_28 || 0, before: p.call_prev_28 || 0 }; paintLevel();
     const day = (d) => d.toLocaleDateString("en-CA");
     const today = new Date(), active = new Set(p.active_days || []);
     let streak = 0, d = new Date(today);
