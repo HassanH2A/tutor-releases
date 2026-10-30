@@ -228,12 +228,24 @@
   .field textarea { min-height: 96px; resize: vertical; line-height: 1.6; }
   .field small { display: block; font-size: 12px; color: var(--muted); margin: 4px 2px 0; }
 
-  /* Putting Mared on the home screen: the steps for this phone's browser first, the others folded below */
-  .homerow { width: 100%; border: 0; background: none; text-align: start; }
-  .homerow img { width: 40px; height: 40px; border-radius: 10px; flex: none; }
-  .how { max-width: 560px; margin: 0 auto; }
-  .how h2 { font-size: 22px; font-weight: 600; line-height: 30px; margin: 8px 0 4px; }
+  /* Putting Mared on the home screen: one key in the top bar; where the browser allows it, one tap installs; else a
+     sheet from the bottom with the steps for this phone's browser first, the others folded below */
+  .top-end { display: flex; align-items: center; gap: 8px; }
+  .getapp { display: flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 12px 0 10px; border: 0; border-radius: 999px; background: none; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line); font-size: 13px; font-weight: 500; }
+  .getapp svg { width: 18px; height: 18px; flex: none; }
+  .drawer { position: fixed; inset: 0; z-index: 30; display: flex; align-items: flex-end; justify-content: center; background: rgba(10, 15, 30, 0.6); }
+  .drawer .how { width: 100%; max-width: 560px; max-height: 88dvh; overflow-y: auto; background: var(--bg); border-radius: 20px 20px 0 0; border-top: 1px solid var(--line);
+    padding: 8px 20px calc(env(safe-area-inset-bottom) + 24px); animation: up 0.22s ease-out; }
+  @keyframes up { from { transform: translateY(40px); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .drawer .how { animation: none; } }
+  .grab { width: 40px; height: 5px; border-radius: 3px; background: var(--line); margin: 0 auto 6px; }
+  .how .bar { display: flex; justify-content: flex-end; min-height: 36px; align-items: center; }
+  .how .lead { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+  .how .lead img { width: 56px; height: 56px; border-radius: 14px; flex: none; }
+  .how h2 { font-size: 20px; font-weight: 600; line-height: 28px; margin: 0 0 2px; }
+  .how .lead p { margin: 0; font-size: 14px; }
   .how .panel { margin-top: 12px; }
+  .how .label { margin-top: 28px; }
   .how h3 { font-size: 16px; font-weight: 600; margin: 0; padding: 14px 16px 0; }
   .how details > summary { list-style: none; display: flex; align-items: center; justify-content: space-between; min-height: 52px; padding: 6px 16px; font-weight: 500; cursor: pointer; }
   .how details > summary::-webkit-details-marker { display: none; }
@@ -289,7 +301,10 @@
   <section id="talk" class="screen">
     <div class="top">
       <div class="brand" translate="no"><svg class="mark" aria-hidden="true"><use href="#m"/></svg><span class="name" id="t-name">مارد</span></div>
-      <span class="streak" id="streak"></span>
+      <div class="top-end">
+        <button class="getapp home-entry" type="button" data-home><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M12 8.5v6M9 11.5h6"/></svg><span id="t-home"></span></button>
+        <span class="streak" id="streak"></span>
+      </div>
     </div>
     <h1 class="hero" id="t-talk-h">يلا نتكلم</h1>
     <div class="genie">
@@ -306,9 +321,6 @@
     <div class="topics" id="chips"></div>
     <div class="label" id="t-people">كلّم حد تاني</div>
     <div class="panel" id="people"></div>
-    <div class="panel home-entry" style="margin-top:26px">
-      <button class="row homerow" type="button" data-home><img src="talk-icon-192.png" alt=""><span class="grow"><span id="t-home"></span><small id="t-home-sub"></small></span><span class="chev" aria-hidden="true">›</span></button>
-    </div>
   </section>
 
   <!-- Review: the deck, as Anki (027) -->
@@ -403,12 +415,12 @@
 
 <!-- Putting Mared on the home screen, step by step for each phone and browser (Hassan, 30 Oct 2026); outside the
      signed-in screens, as the sign-in screen opens it too -->
-<div class="sheet" id="home" hidden role="dialog" aria-labelledby="home-h">
-  <div class="bar"><span style="width:48px"></span><span></span><button class="rowbtn" type="button" id="home-done"></button></div>
+<div class="drawer" id="home" hidden role="dialog" aria-modal="true" aria-labelledby="home-h">
   <div class="how">
-    <h2 id="home-h"></h2>
-    <p class="muted" id="home-p" style="margin:0"></p>
-    <button class="btn" type="button" id="home-install" hidden style="margin-top:14px"></button>
+    <div class="grab" aria-hidden="true"></div>
+    <div class="bar"><button class="rowbtn" type="button" id="home-done"></button></div>
+    <div class="lead"><img src="talk-icon-192.png" alt=""><div><h2 id="home-h"></h2><p class="muted" id="home-p"></p></div></div>
+    <button class="btn" type="button" id="home-install" hidden></button>
     <div id="home-guides"></div>
   </div>
 </div>
@@ -443,8 +455,8 @@
     $("t-code-p").textContent = T("بعتنالك كود من 6 أرقام على الإيميل. اكتبه هنا.", "We emailed you a 6-digit code. Type it here.");
     $("t-verify").textContent = T("ادخل", "Sign in");
     $("again").textContent = T("إيميل تاني", "Another email");
-    $("t-home").textContent = $("t-home-in").textContent = T("حط مارد على الشاشة الرئيسية", "Put Mared on your home screen");
-    $("t-home-sub").textContent = T("يفتح زي أي تطبيق، بلمسة واحدة", "Opens like any app, in one tap");
+    $("t-home").textContent = T("ضيفه للموبايل", "Add to phone");
+    $("t-home-in").textContent = T("حط مارد على الشاشة الرئيسية", "Put Mared on your home screen");
     document.querySelectorAll(".home-entry").forEach((e) => (e.hidden = standalone)); // already opened from the home screen
     paintHome();
     $("t-name").textContent = $("t-bubble-name").textContent = T("مارد", "Mared");
@@ -726,13 +738,28 @@
     $("home-guides").innerHTML = first + `<div class="label">${label}</div><div class="panel">` +
       all.filter((g) => g.id !== here || here === "computer").map((g) => `<details class="row" style="display:block;padding:0"><summary>${g.title}<span class="chev" aria-hidden="true">⌄</span></summary>${guideHtml(g)}</details>`).join("") + "</div>";
   }
-  // Chrome on Android (and Edge) can install in one tap: the button shows only when the browser offers it.
+  // Chrome, Edge and Samsung Internet on Android install in one tap (Hassan, 31 Oct 2026: "people could just click on it
+  // and automatically the website would be added"): the key asks the browser straight away, and only where it can't
+  // (every iPhone browser: Apple allows no page to add itself; Firefox; inside other apps) are the steps shown.
   let installer = null;
+  const closeHome = () => { $("home").hidden = true; document.body.style.overflow = ""; };
+  async function install() {
+    if (!installer) return false;
+    const e = installer; installer = null; $("home-install").hidden = true; // a prompt can be shown once
+    e.prompt();
+    if ((await e.userChoice).outcome === "accepted") { closeHome(); document.querySelectorAll(".home-entry").forEach((x) => (x.hidden = true)); }
+    return true;
+  }
   addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); installer = e; $("home-install").hidden = false; });
-  addEventListener("appinstalled", () => { installer = null; $("home-install").hidden = true; });
-  $("home-install").addEventListener("click", async () => { if (!installer) return; installer.prompt(); await installer.userChoice; installer = null; $("home-install").hidden = true; });
-  document.querySelectorAll("[data-home]").forEach((x) => x.addEventListener("click", () => { $("home").hidden = false; document.body.style.overflow = "hidden"; }));
-  $("home-done").addEventListener("click", () => { $("home").hidden = true; document.body.style.overflow = ""; });
+  addEventListener("appinstalled", () => { installer = null; $("home-install").hidden = true; document.querySelectorAll(".home-entry").forEach((x) => (x.hidden = true)); });
+  $("home-install").addEventListener("click", install);
+  document.querySelectorAll("[data-home]").forEach((x) => x.addEventListener("click", async () => {
+    if (await install()) return;
+    $("home").hidden = false; document.body.style.overflow = "hidden"; $("home-done").focus();
+  }));
+  $("home-done").addEventListener("click", closeHome);
+  $("home").addEventListener("click", (e) => { if (e.target === $("home")) closeHome(); }); // a tap outside the sheet
+  addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("home").hidden) closeHome(); });
   $("home-guides").addEventListener("click", async (e) => {
     const c = e.target.closest("[data-copy]"); if (!c) return;
     const url = location.origin + location.pathname;
