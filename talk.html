@@ -76,6 +76,13 @@
   .words { display: flex; flex-wrap: wrap; gap: 8px; }
   .words button { direction: ltr; }
   .streak { color: var(--gold); font-weight: 600; text-align: center; }
+  .tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 6px; }
+  .tabs .pill[aria-selected="true"] { background: var(--ink); color: var(--on-action); }
+  .counts { text-align: center; font-weight: 500; }
+  .grades { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .grades button { min-height: 58px; border: 1px solid var(--line); border-radius: 12px; background: var(--field); cursor: pointer; line-height: 1.3; }
+  .grades button:nth-child(3) { background: var(--ink); color: var(--on-action); }
+  .grades small { display: block; color: inherit; opacity: 0.75; }
   [hidden] { display: none !important; }
 </style>
 </head>
@@ -90,6 +97,7 @@
   <section id="s-in" hidden>
     <h1 id="t-in-h">اتكلم إنجليزي زي مكالمة</h1>
     <p class="muted" id="t-in-p">سجّل بنفس حساب مارد اللي على الكمبيوتر، وتقدّمك يبقى واحد هنا وهناك.</p>
+    <button class="primary" type="button" id="google" hidden style="background:var(--field);color:var(--ink);border:1px solid var(--line);margin-bottom:12px">Google</button>
     <form id="email-form" class="stack" novalidate>
       <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="name@gmail.com" dir="ltr" aria-label="Email">
       <div class="err" id="email-err" role="alert"></div>
@@ -106,10 +114,32 @@
 
   <!-- The talk -->
   <section id="s-talk" hidden>
+    <div class="tabs" role="tablist">
+      <button class="pill" type="button" role="tab" id="tab-talk" aria-selected="true">كلام</button>
+      <button class="pill" type="button" role="tab" id="tab-review" aria-selected="false">مراجعة</button>
+    </div>
+    <!-- Review: the deck, as Anki (027) -->
+    <div id="review" hidden>
+      <p class="counts" id="counts"></p>
+      <div class="card" id="rv-card">
+        <div class="muted" id="rv-deck" style="font-size:.85rem"></div>
+        <div id="rv-front" style="font-size:1.7rem;font-weight:600;margin:8px 0"></div>
+        <button class="pill" type="button" id="rv-hear" hidden>🔊</button>
+        <div id="rv-answer" hidden>
+          <hr style="border:0;border-top:1px solid var(--line);margin:14px 0">
+          <div id="rv-back" style="font-size:1.25rem;margin-bottom:14px"></div>
+          <div class="grades" id="rv-grades"></div>
+        </div>
+        <button class="primary" type="button" id="rv-show" style="margin-top:14px"></button>
+      </div>
+      <p class="muted" id="rv-done" hidden style="text-align:center"></p>
+    </div>
+    <div id="talk">
     <p class="streak" id="streak"></p>
     <div class="call">
       <button class="orb" id="orb" type="button">ابدأ</button>
       <div class="status" id="status" role="status" aria-live="polite"></div>
+      <button class="pill" type="button" id="barge" style="font-size:.85rem;min-height:36px"></button>
     </div>
     <div class="chips" id="chips"></div>
     <div class="card" id="turn" hidden aria-live="polite">
@@ -120,6 +150,7 @@
       <div class="heard" id="heard" lang="en"></div>
     </div>
     <div id="progress"></div>
+    </div>
     <p class="muted" id="t-home" style="font-size:.92rem;text-align:center">اعمل الصفحة دي اختصار على الشاشة الرئيسية: من قايمة المتصفح، «إضافة للشاشة الرئيسية».</p>
   </section>
 </main>
@@ -129,7 +160,8 @@
 (() => {
   const SUPABASE_URL = "https://btyuidhqihwxnynivbgz.supabase.co";
   const SUPABASE_KEY = "sb_publishable_RV4AVtTxZp3CZzkKzKXRnA_q13Rxi4E";
-  const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: true, detectSessionInUrl: false } });
+  // Implicit, as start.html: a Google sign-in that Supabase sends back to another yamared.com page still signs in here.
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { flowType: "implicit", persistSession: true, detectSessionInUrl: true } });
   const $ = (id) => document.getElementById(id);
   const store = { get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} } };
 
@@ -144,17 +176,26 @@
     $("t-in-h").textContent = T("اتكلم إنجليزي زي مكالمة", "Talk English like a phone call");
     $("t-in-p").textContent = T("سجّل بنفس حساب مارد اللي على الكمبيوتر، وتقدّمك يبقى واحد هنا وهناك.", "Sign in with your Mared account, and your progress is the same here and on your computer.");
     $("t-send").textContent = T("ابعتلي كود", "Send me a code");
+    $("google").textContent = T("ادخل بـ Google", "Continue with Google");
     $("t-code-p").textContent = T("بعتنالك كود من 6 أرقام على الإيميل. اكتبه هنا.", "We emailed you a 6-digit code. Type it here.");
     $("t-verify").textContent = T("ادخل", "Sign in");
     $("again").textContent = T("إيميل تاني", "Another email");
     $("t-home").textContent = T("اعمل الصفحة دي اختصار على الشاشة الرئيسية: من قايمة المتصفح، «إضافة للشاشة الرئيسية».", "Add this page to your home screen: in the browser's menu, “Add to Home Screen”.");
     if (!live) $("orb").textContent = T("ابدأ", "Start");
+    $("tab-talk").textContent = T("كلام", "Talk");
+    $("barge").textContent = barge() ? T("✓ تقدر تقاطعني وأنا بتكلم", "✓ You can talk over me") : T("مش هتقدر تقاطعني (مناسب للسبيكر العالي)", "No talking over me (for loud speakers)");
+    $("barge").setAttribute("aria-pressed", String(barge()));
+    if ($("review").hidden) $("tab-review").textContent = T("مراجعة", "Review"); else if (session) nextCard();
     chips();
   }
   $("lang").addEventListener("click", () => { LANG = LANG === "ar" ? "en" : "ar"; store.set("mared-talk-lang", LANG); paint(); if (session) progress(); });
 
   // ---- Sign in ----
   let session = null;
+  // Google only when it is switched on (as start.html), back to this page.
+  fetch(`${SUPABASE_URL}/auth/v1/settings`, { headers: { apikey: SUPABASE_KEY } })
+    .then((r) => r.json()).then((s) => { if (s?.external?.google) $("google").hidden = false; }).catch(() => {});
+  $("google").addEventListener("click", () => db.auth.signInWithOAuth({ provider: "google", options: { redirectTo: location.origin + location.pathname } }));
   $("email-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = $("email").value.trim();
@@ -173,7 +214,7 @@
   $("code-form").addEventListener("submit", (e) => { e.preventDefault(); verify(); });
   $("code").addEventListener("input", (e) => { e.target.value = e.target.value.replace(/\D/g, "").slice(0, 6); if (e.target.value.length === 6) verify(); });
   $("again").addEventListener("click", () => { $("email-form").hidden = false; $("code-form").hidden = true; });
-  db.auth.onAuthStateChange((_, s) => { session = s; $("s-in").hidden = !!s; $("s-talk").hidden = !s; if (s) progress(); });
+  db.auth.onAuthStateChange((_, s) => { session = s; $("s-in").hidden = !!s; $("s-talk").hidden = !s; if (s) { progress(); nextCard(); } });
 
   async function call(path, body) {
     const { data } = await db.auth.getSession();
@@ -223,7 +264,7 @@
     proc.onaudioprocess = (e) => {
       if (!live) return;
       const pcm = down(e.inputBuffer.getChannelData(0), ctx.sampleRate);
-      const quiet = playing || busy || performance.now() < quietUntil;
+      const quiet = busy || (!barge() && (playing || performance.now() < quietUntil));
       if (!quiet) { turnPcm.push(pcm); turnLen += pcm.length; while (turnLen - turnPcm[0].length > TURN_MAX) turnLen -= turnPcm.shift().length; }
       send(quiet ? new Int16Array(pcm.length) : pcm); // silence while Mared talks: it never hears itself
     };
@@ -281,27 +322,43 @@
     ws.onmessage = (m) => {
       let msg; try { msg = JSON.parse(m.data); } catch (e) { return; }
       const text = (msg.text || "").trim();
-      if (msg.message_type === "partial_transcript" && text && !busy && !playing) { $("heard").textContent = text; lastHeardAt = Date.now(); }
-      else if (msg.message_type === "committed_transcript" && text.replace(/[^\p{L}]/gu, "").length >= 2 && !busy && !playing) answer(text);
+      if (msg.message_type === "partial_transcript" && text && !busy) {
+        if (playing && barge() && !echo(text)) { cutNow = true; try { playingNow?.stop(); } catch (e) {} }
+        if (!playing || cutNow) { $("heard").textContent = text; lastHeardAt = Date.now(); }
+      }
+      else if (msg.message_type === "committed_transcript" && text.replace(/[^\p{L}]/gu, "").length >= 2 && !busy && (!playing || cutNow)) answer(text);
     };
   }
 
   const STOP = /^(stop|end|bye|خلاص|كفايه|كفاية|وقف|وقّف|بطل|بطّل)([\s.!]|$)/i;
   function answer(text) {
+    try { playingNow?.stop(); } catch (e) {} // they talked over Mared: it stops
     if (STOP.test(text.trim()) && text.trim().split(/\s+/).length <= 3) return end(T("تمام، وقفنا. برافو عليك!", "OK, we stopped. Well done!"));
     $("heard").textContent = text;
     turn("answer", text, wav());
   }
 
-  async function turn(ev, heard, voice) {
+  // Talking over Mared (a phone's echo cancellation keeps its own voice out): on unless turned off. A partial transcript
+  // that is mostly Mared's own words is its echo, not the learner.
+  const barge = () => store.get("mared-talk-barge", true);
+  let spokenNow = "", cutNow = false, gen = 0;
+  function echo(text) {
+    const words = text.toLowerCase().match(/\p{L}+/gu) || [];
+    if (words.length < 3) return true; // too little to cut Mared off for
+    const said = new Set(spokenNow.toLowerCase().match(/\p{L}+/gu) || []);
+    return words.filter((w) => said.has(w)).length >= words.length * 0.6;
+  }
+
+  async function turn(ev, heard, audio) {
+    const my = ++gen;
     busy = true; status(T("بفكّر…", "Thinking…"));
     try {
       const t = await (await call("/functions/v1/practice", {
         mode: "talk", topic, course: "", lesson: "Talk", goal: "free conversation", notes: notes().join("\n").slice(-4000), learner: "",
-        event: ev, heard, line, expect, history: history.slice(-4000), review: "", audio: voice, dialect: dialect(), learn: "en",
+        event: ev, heard, line, expect, history: history.slice(-4000), review: "", audio, dialect: dialect(), learn: "en",
         day: new Date().toLocaleDateString("en-CA"),
       })).json();
-      if (!live) return;
+      if (!live || my !== gen) return;
       if (ev === "answer") history += "Learner: " + heard + "\n";
       history += "Mared: " + t.say + (t.line ? " [line: " + t.line + "]" : "") + "\n";
       if (t.note) store.set("mared-talk-notes", [...notes(), t.note].slice(-40));
@@ -313,10 +370,13 @@
       line = t.line || ""; expect = t.expect || "reply";
       stucks = ev === "stuck" ? stucks : 0;
       orb("speaking"); status("");
+      busy = false; // from here they may talk over Mared
+      spokenNow = t.say + " " + (t.line || ""); cutNow = false;
       const first = voice(t.say, dialect() === "en" ? "en" : "ar"), second = t.line ? voice(t.line, "en") : null; // the second is made while the first plays
       await play(first);
-      if (live) await play(second);
-      if (!live) return;
+      if (live && !cutNow && my === gen) await play(second);
+      if (!live || my !== gen) return;
+      if (cutNow) { orb(); status(T("سامعك…", "Listening…")); return; } // already talking: the same connection hears the rest
       turnPcm = []; turnLen = 0; quietUntil = performance.now() + 300;
       await listen(expect === "repeat" || expect === "answer" ? "en" : (dialect() === "en" ? "en" : null));
       orb(); status(T("سامعك…", "Listening…"));
@@ -382,6 +442,12 @@
     box.innerHTML = `<h2 style="font-size:1.15rem">${T("تقدّمك", "Your progress")}</h2><div class="tiles">` +
       tile(p.words_total, T("كلمة اتعلمتها", "words learned"), learned) + tile(p.words_spoken, T("كلمة قلتها", "words spoken"), per((x) => x.words_spoken)) +
       tile(p.talks, T("محادثة", "talks"), per((x) => x.talks)) + tile(Math.floor(p.seconds / 60), T("دقيقة بصوتك", "minutes of your voice"), per((x) => x.seconds / 60)) + `</div>`;
+    // This week: the last 7 days, as the Windows app's weekly message.
+    const week = days.slice(-7), sum = (f) => week.reduce((a, x) => a + (by[x] ? f(by[x]) : 0), 0);
+    const newWords = (p.words || []).filter((w) => week.includes(w.day)).length;
+    if (sum((x) => x.words_spoken) > 0) box.insertAdjacentHTML("beforeend", `<p class="muted" style="text-align:center">${T(
+      `الأسبوع ده: قلت ${sum((x) => x.words_spoken)} كلمة في ${sum((x) => x.talks)} محادثة، واتعلمت ${newWords} كلمة جديدة.`,
+      `This week: ${sum((x) => x.words_spoken)} words in ${sum((x) => x.talks)} talks, and ${newWords} new words.`)}</p>`);
     if ((p.words || []).length) {
       const h = document.createElement("h2"); h.style.fontSize = "1.15rem"; h.textContent = T("كلماتك: دوس تسمعها", "Your words: tap to hear");
       const list = document.createElement("div"); list.className = "words";
@@ -394,8 +460,70 @@
     }
   }
 
+  // ---- Review: the deck, scheduled as Anki does on the server (027); the same cards as the Windows app ----
+  const wait = (s) => {
+    const n = (x, d = 0) => Math.round(x * 10 ** d) / 10 ** d;
+    if (s < 3600) return T(`${Math.max(1, n(s / 60))} دقيقة`, `${Math.max(1, n(s / 60))}m`);
+    if (s < 86400) return T(`${n(s / 3600)} ساعة`, `${n(s / 3600)}h`);
+    if (s < 30 * 86400) return T(`${n(s / 86400)} يوم`, `${n(s / 86400)}d`);
+    if (s < 365 * 86400) return T(`${n(s / 2592000, 1)} شهر`, `${n(s / 2592000, 1)}mo`);
+    return T(`${n(s / 31536000, 1)} سنة`, `${n(s / 31536000, 1)}y`);
+  };
+  const latin = (t) => (t.match(/[A-Za-z]/g) || []).length * 2 > (t.match(/\p{L}/gu) || []).length;
+  let card = null, grading = false;
+  function tab(name) {
+    $("tab-talk").setAttribute("aria-selected", String(name === "talk")); $("tab-review").setAttribute("aria-selected", String(name === "review"));
+    $("talk").hidden = name !== "talk"; $("review").hidden = name !== "review";
+    if (name === "review") { if (live) end(); nextCard(); }
+  }
+  $("tab-talk").addEventListener("click", () => tab("talk"));
+  $("tab-review").addEventListener("click", () => tab("review"));
+  async function nextCard() {
+    let due = null;
+    try { due = await (await call("/rest/v1/rpc/due_cards", { p_day: new Date().toLocaleDateString("en-CA"), p_limit: 20 })).json(); } catch (e) {}
+    grading = false;
+    $("tab-review").textContent = T("مراجعة", "Review") + (due && due.new + due.learning + due.review ? ` (${due.new + due.learning + due.review})` : "");
+    card = due?.cards?.[0] || null;
+    $("rv-card").hidden = !card; $("rv-done").hidden = !!card;
+    if (!due) { $("rv-done").textContent = T("مقدرتش أجيب الكروت. اتأكد من النت.", "Couldn't load your cards. Check the connection."); $("counts").textContent = ""; return; }
+    $("counts").innerHTML = `<span style="color:var(--gold)">${due.new} ${T("جديد", "new")}</span> · ${due.learning} ${T("بتتعلمه", "learning")} · <span class="muted">${due.review} ${T("مراجعة", "to review")}</span>`;
+    if (!card) {
+      $("rv-done").textContent = due.total ? T(`خلّصت مراجعة النهارده 🎉 راجعت ${due.reviewed_today} كارت.`, `Done for today 🎉 You reviewed ${due.reviewed_today} cards.`)
+        : T("لسه مفيش كروت. الكلمات اللي بتتعلمها في الكلام بتبقى كروت هنا لوحدها.", "No cards yet. Words you learn while talking become cards here by themselves.");
+      return;
+    }
+    $("rv-deck").textContent = card.deck;
+    $("rv-front").textContent = card.front; $("rv-front").dir = latin(card.front) ? "ltr" : "auto";
+    $("rv-back").textContent = card.back; $("rv-back").dir = latin(card.back) ? "ltr" : "auto";
+    $("rv-hear").hidden = !(card.deck === "English" && latin(card.front));
+    $("rv-answer").hidden = true; $("rv-show").hidden = false; $("rv-show").textContent = T("وريني الإجابة", "Show answer");
+    const names = [T("تاني", "Again"), T("صعب", "Hard"), T("تمام", "Good"), T("سهل", "Easy")];
+    $("rv-grades").innerHTML = "";
+    names.forEach((name, i) => {
+      const b = document.createElement("button"); b.type = "button";
+      b.innerHTML = `${name}<small>${wait(card.next[i] || 0)}</small>`;
+      b.addEventListener("click", () => grade(i + 1));
+      $("rv-grades").appendChild(b);
+    });
+  }
+  async function grade(g) {
+    if (!card || grading) return;
+    grading = true;
+    try { await call("/rest/v1/rpc/review_card", { p_id: card.id, p_grade: g, p_day: new Date().toLocaleDateString("en-CA") }); } catch (e) {}
+    nextCard();
+  }
+  $("barge").addEventListener("click", () => { store.set("mared-talk-barge", !barge()); paint(); });
+  $("rv-show").addEventListener("click", () => { $("rv-answer").hidden = false; $("rv-show").hidden = true; });
+  $("rv-hear").addEventListener("click", () => { sound(); speak(card.front, "en"); });
+  document.addEventListener("keydown", (e) => {
+    if ($("review").hidden || !card || e.target.tagName === "INPUT") return;
+    if ($("rv-answer").hidden) { if (e.key === " " || e.key === "Enter") { e.preventDefault(); $("rv-show").click(); } return; }
+    const g = { "1": 1, "2": 2, "3": 3, "4": 4, " ": 3, Enter: 3 }[e.key];
+    if (g) { e.preventDefault(); grade(g); }
+  });
+
   paint();
-  db.auth.getSession().then(({ data }) => { session = data.session; $("s-in").hidden = !!session; $("s-talk").hidden = !session; if (session) progress(); });
+  db.auth.getSession().then(({ data }) => { session = data.session; $("s-in").hidden = !!session; $("s-talk").hidden = !session; if (session) { progress(); nextCard(); } });
 })();
 </script>
 </body>
