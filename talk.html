@@ -539,6 +539,17 @@
   let LEARN = store.get("mared-talk-learn", "en");
   const tg = (code = LEARN) => TARGETS.find((t) => t[0] === code) || TARGETS[0];
   const ofDeck = (deck) => TARGETS.find((t) => t[2] === deck);
+  // Mared's voice in a call follows the accent learned (Farah, 30 Oct 2026: "American English sounds British"; the stock
+  // voice is George, British): ElevenLabs stock Chris (American), Charlie (Australian); else the stock voice.
+  const ACCENT = { en: "iP95p4xoKVk53GoZ742B", "en-au": "IKne3meq5aSn9XLyUdCD" };
+  const maredVoice = (code = LEARN) => ACCENT[code];
+  // Learning the language the page speaks, a line that only says again what say just asked is dropped (Farah, 30 Oct
+  // 2026: "no need to repeat the question twice").
+  const repeats = (line, said) => {
+    if (dialect() !== tg()[1]) return false;
+    const words = line.toLowerCase().match(/\p{L}+/gu) || [], heard = new Set(said.toLowerCase().match(/\p{L}+/gu) || []);
+    return words.length > 0 && words.filter((w) => heard.has(w)).length >= words.length * 0.6;
+  };
   function languages() {
     const box = $("learn"); box.innerHTML = "";
     for (const [code, , , ar, en] of TARGETS) { const o = document.createElement("option"); o.value = code; o.textContent = T(ar, en); o.selected = code === tg()[0]; box.appendChild(o); }
@@ -958,7 +969,7 @@
     // What is said, the moment it comes: voiced and played while the rest of the turn is still being written.
     const sayNow = (say) => {
       if (firstP || !live || my !== gen) return;
-      firstP = who ? voice(say, tg()[1], who.voice) : voice(say, dialect() === "en" ? "en" : "ar");
+      firstP = who ? voice(say, tg()[1], who.voice) : voice(say, dialect() === "en" ? "en" : "ar", maredVoice());
       $("say").textContent = say; $("bubble").hidden = !say; $("line").textContent = ""; $("gloss").textContent = ""; $("fix").textContent = ""; $("heard").textContent = "";
       spokenNow = say; cutNow = false;
       saying = (async () => {
@@ -986,12 +997,13 @@
           if (msg.error) throw Object.assign(new Error(msg.error), { status: 502 });
           if (msg.status !== undefined) t = msg; // the whole turn
           else if (msg.say !== undefined) sayNow(msg.say);
-          else if (msg.line && !secondP) secondP = voice(msg.line, tg()[1], who?.voice); // made while the first plays
+          else if (msg.line && !secondP && !repeats(msg.line, spokenNow)) secondP = voice(msg.line, tg()[1], who?.voice || maredVoice()); // made while the first plays
         }
       }
       if (!t) throw Object.assign(new Error("no turn"), { status: 502 });
       if (!live || my !== gen) return;
       sayNow(t.say); // an older server sends no early words
+      if (t.line && repeats(t.line, t.say)) { t.line = ""; t.gloss = ""; }
       prev = t.prev || "";
       if (ev === "answer") history += "Learner: " + heard + "\n";
       history += (who ? who.name : "Mared") + ": " + t.say + (t.line ? " [line: " + t.line + "]" : "") + "\n";
@@ -1008,7 +1020,8 @@
       line = t.line || ""; expect = t.expect || "reply";
       stucks = ev === "stuck" ? stucks : 0;
       spokenNow = t.say + " " + (t.line || "");
-      if (t.line && !secondP) secondP = voice(t.line, tg()[1], who?.voice);
+      if (t.line && !secondP) secondP = voice(t.line, tg()[1], who?.voice || maredVoice());
+      if (!t.line) secondP = null; // a dropped repeat is never played
       await saying;
       if (live && !cutNow && my === gen && secondP) { orb("speaking"); await play(secondP); }
       if (!live || my !== gen) return;
@@ -1090,7 +1103,7 @@
       const list = document.createElement("div"); list.className = "words";
       for (const w of p.words.slice(0, 40)) {
         const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = w.gloss ? `${w.en} · ${w.gloss}` : w.en;
-        b.addEventListener("click", () => { if (!live) { sound(); speak(w.en, tg()[1]); } });
+        b.addEventListener("click", () => { if (!live) { sound(); speak(w.en, tg()[1], maredVoice()); } });
         list.appendChild(b);
       }
       box.append(h, list);
@@ -1153,7 +1166,7 @@
   $("barge").addEventListener("change", (e) => { store.set("mared-talk-barge", e.target.checked); paint(); });
   $("over").addEventListener("click", () => { store.set("mared-talk-barge", !barge()); paint(); });
   $("rv-show").addEventListener("click", () => { $("rv-answer").hidden = false; $("rv-show").hidden = true; });
-  $("rv-hear").addEventListener("click", () => { sound(); speak(card.front, (ofDeck(card.deck) || tg())[1]); });
+  $("rv-hear").addEventListener("click", () => { sound(); speak(card.front, (ofDeck(card.deck) || tg())[1], maredVoice((ofDeck(card.deck) || tg())[0])); });
   document.addEventListener("keydown", (e) => {
     if ($("review").hidden || !card || e.target.tagName === "INPUT") return;
     if ($("rv-answer").hidden) { if (e.key === " " || e.key === "Enter") { e.preventDefault(); $("rv-show").click(); } return; }
