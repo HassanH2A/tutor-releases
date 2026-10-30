@@ -117,16 +117,18 @@
   .start-btn { max-width: 260px; margin: 18px auto 0; }
   .hint { text-align: center; font-size: 13px; margin: 10px 24px 0; }
 
-  /* The call: Mared's moods, as the brand book draws them */
+  /* The call, as a phone's call screen (Hassan, 30 Oct 2026: "a proper phone call experience"): who is on it, large;
+     Calling, Ringing, then the time; the brand's moods under them; the words as captions; call keys; hang up. */
   .call { position: fixed; inset: 0; z-index: 20; display: flex; flex-direction: column; background: var(--bg); color: var(--ink);
-    padding: calc(env(safe-area-inset-top) + 12px) 18px calc(env(safe-area-inset-bottom) + 20px); }
-  .call-top { text-align: center; font-size: 13px; color: var(--muted); }
-  .call-top b { display: block; color: var(--ink); font-size: 15px; font-weight: 600; }
-  .presence { display: grid; place-items: center; gap: 14px; margin: 3vh 0 1vh; }
-  .presence .mark { width: 92px; height: 102px; }
-  .mood { height: 28px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+    padding: calc(env(safe-area-inset-top) + 18px) 20px calc(env(safe-area-inset-bottom) + 22px); }
+  .caller { display: grid; justify-items: center; gap: 4px; text-align: center; margin-top: 3vh; }
+  .caller .mark { width: 84px; height: 94px; }
+  .caller-name { font-size: 30px; font-weight: 600; line-height: 1.2; margin: 14px 0 0; }
+  .caller-sub { font-size: 15px; color: var(--muted); font-variant-numeric: tabular-nums; min-height: 1.5em; }
+  .mood { height: 28px; display: flex; align-items: center; justify-content: center; gap: 5px; margin-top: 10px; }
   .mood > * { display: none; }
   .call[data-state="listening"] .listen, .call[data-state="thinking"] .think, .call[data-state="speaking"] .speak { display: flex; align-items: center; gap: 5px; }
+  .call[data-muted="true"] .listen { display: none; }
   .listen i { width: 14px; height: 14px; border-radius: 50%; background: var(--gold); transform: scale(calc(1 + var(--lvl, 0) * 0.9)); transition: transform 0.08s linear; }
   .think i { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); animation: hop 1s ease-in-out infinite; }
   .think i:nth-child(2) { animation-delay: 0.15s; } .think i:nth-child(3) { animation-delay: 0.3s; }
@@ -136,22 +138,24 @@
   @keyframes bar { 0%, 100% { transform: scaleY(0.3); } 50% { transform: scaleY(1); } }
   @media (prefers-reduced-motion: reduce) { .genie .mark, .think i, .speak i { animation: none !important; } .listen i { transition: none; } }
   .status { text-align: center; font-size: 13px; color: var(--muted); min-height: 1.4em; }
-  .words-now { flex: 1; overflow-y: auto; margin: 2vh 0; }
+  .words-now { flex: 1; overflow-y: auto; margin: 2vh 0 1vh; }
+  .call[data-captions="false"] .words-now { visibility: hidden; }
   .bubble { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 14px 16px; }
   .bubble .name { font-size: 18px; display: block; margin-bottom: 4px; }
   .say { font-size: 16px; }
-  .practice { text-align: center; margin-top: 22px; }
-  .line { direction: ltr; font-size: 27px; font-weight: 600; line-height: 1.3; }
+  .practice { text-align: center; margin-top: 20px; }
+  .line { direction: ltr; font-size: 26px; font-weight: 600; line-height: 1.3; }
   .gloss { color: var(--muted); margin-top: 4px; }
   .fix { margin-top: 14px; font-weight: 500; }
   .heard { color: var(--muted); font-style: italic; margin-top: 14px; min-height: 1.4em; text-align: center; }
-  .call-bottom { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; }
-  .hangup { width: 68px; height: 68px; border-radius: 50%; border: 0; background: var(--ink); color: var(--bg); display: grid; place-items: center; }
-  .hangup svg { width: 30px; height: 30px; }
-  .over { justify-self: center; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); border: 0; background: none; }
-  .over span:first-child { width: 48px; height: 48px; border-radius: 50%; border: 1.5px solid var(--line); display: grid; place-items: center; color: var(--ink); }
-  .over span:first-child svg { width: 22px; height: 22px; }
-  .over[aria-pressed="true"] span:first-child { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .keys { display: flex; justify-content: center; gap: 30px; margin-bottom: 26px; }
+  .key { display: flex; flex-direction: column; align-items: center; gap: 7px; border: 0; background: none; color: var(--ink); font-size: 12px; min-width: 64px; }
+  .key > span:first-child { width: 64px; height: 64px; border-radius: 50%; background: var(--raised); display: grid; place-items: center; transition: background 0.15s; }
+  .key svg { width: 26px; height: 26px; }
+  .key[aria-pressed="true"] > span:first-child { background: var(--ink); color: var(--bg); }
+  #mute .slash { display: none; } #mute[aria-pressed="true"] .slash { display: inline; }
+  .hangup { width: 74px; height: 74px; border-radius: 50%; border: 0; background: var(--ink); color: var(--bg); display: grid; place-items: center; margin: 0 auto; }
+  .hangup svg { width: 32px; height: 32px; }
 
   /* Review */
   .counts { display: flex; gap: 8px; margin-bottom: 14px; }
@@ -201,8 +205,8 @@
   .round.ghost { background: none; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line); }
   .round svg { width: 20px; height: 20px; }
   .add { flex: 1; border: 0; background: none; color: var(--ink); text-align: start; padding: 10px 0; text-decoration: underline; text-underline-offset: 3px; }
-  .call .avatar.big { width: 96px; height: 96px; font-size: 40px; }
-  .call[data-who="char"] .presence .mark, .call:not([data-who="char"]) .avatar.big { display: none; }
+  .call .avatar.big { width: 112px; height: 112px; font-size: 46px; }
+  .call[data-who="char"] .caller .mark, .call:not([data-who="char"]) .avatar.big { display: none; }
   .call[data-who="char"] .listen i, .call[data-who="char"] .speak i { background: var(--ink); }
   .call[data-who="char"] .bubble .name { color: var(--ink); font: 600 15px var(--font); }
   .sheet { position: fixed; inset: 0; z-index: 30; background: var(--bg); overflow-y: auto; padding: calc(env(safe-area-inset-top) + 10px) 16px calc(env(safe-area-inset-bottom) + 24px); }
@@ -310,12 +314,13 @@
     </div>
   </section>
 
-  <!-- The call -->
-  <div class="call" id="call" hidden data-state="thinking" aria-live="polite">
-    <div class="call-top"><b id="call-lang"></b><span id="call-topic"></span></div>
-    <div class="presence">
+  <!-- The call: a phone's call screen -->
+  <div class="call" id="call" hidden data-state="thinking" data-captions="true" aria-live="polite">
+    <div class="caller">
       <svg class="mark" aria-hidden="true"><use href="#m"/></svg>
       <span class="avatar big" id="call-avatar" aria-hidden="true"></span>
+      <h2 class="caller-name" id="call-name"></h2>
+      <div class="caller-sub" id="call-sub" role="timer"></div>
       <div class="mood" aria-hidden="true">
         <span class="listen"><i></i></span>
         <span class="think"><i></i><i></i><i></i></span>
@@ -332,11 +337,12 @@
       </div>
       <div class="heard" id="heard" dir="auto"></div>
     </div>
-    <div class="call-bottom">
-      <span></span>
-      <button class="hangup" type="button" id="hangup" aria-label="إنهاء"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85a.99.99 0 0 1-1.4-.01L.29 13.08a1 1 0 0 1 0-1.41C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67a1 1 0 0 1 0 1.41l-2.48 2.48a.99.99 0 0 1-1.4.01 11.3 11.3 0 0 0-2.67-1.85.99.99 0 0 1-.56-.9v-3.1A15.3 15.3 0 0 0 12 9Z"/></svg></button>
-      <button class="over" type="button" id="over" aria-pressed="true"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 12h3l2-5 3 10 2-6 2 3h4"/></svg></span><span id="t-over">قاطعني</span></button>
+    <div class="keys">
+      <button class="key" type="button" id="mute" aria-pressed="false"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/><path class="slash" d="M4 4l16 16"/></svg></span><span id="t-mute">كتم</span></button>
+      <button class="key" type="button" id="cc" aria-pressed="true"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10.5 10.2a2 2 0 1 0 0 3.6M17 10.2a2 2 0 1 0 0 3.6"/></svg></span><span id="t-cc">الكلام مكتوب</span></button>
+      <button class="key" type="button" id="over" aria-pressed="true"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 12h3l2-5 3 10 2-6 2 3h4"/></svg></span><span id="t-over">قاطعني</span></button>
     </div>
+    <button class="hangup" type="button" id="hangup" aria-label="إنهاء"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85a.99.99 0 0 1-1.4-.01L.29 13.08a1 1 0 0 1 0-1.41C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67a1 1 0 0 1 0 1.41l-2.48 2.48a.99.99 0 0 1-1.4.01 11.3 11.3 0 0 0-2.67-1.85.99.99 0 0 1-.56-.9v-3.1A15.3 15.3 0 0 0 12 9Z"/></svg></button>
   </div>
 
   <!-- A character of their own: who it is, what it talks about and knows, its voice -->
@@ -411,6 +417,8 @@
     $("t-barge-sub").textContent = T("اقفلها لو السبيكر عالي", "Turn off on a loud speaker");
     $("barge").checked = barge();
     $("over").setAttribute("aria-pressed", String(barge())); $("t-over").textContent = T("قاطعني", "Talk over");
+    $("t-mute").textContent = muted ? T("مكتوم", "Muted") : T("كتم", "Mute"); $("mute").setAttribute("aria-pressed", String(muted));
+    $("t-cc").textContent = T("الكلام مكتوب", "Captions"); $("cc").setAttribute("aria-pressed", String(captions())); $("call").dataset.captions = String(captions());
     $("t-look").textContent = T("الشكل", "Look");
     $("look").innerHTML = "";
     for (const [v, ar, en] of [["dark", "غامق", "Dark"], ["light", "فاتح", "Light"]]) { const o = document.createElement("option"); o.value = v; o.textContent = T(ar, en); o.selected = v === look(); $("look").appendChild(o); }
@@ -630,24 +638,56 @@
     $("call").hidden = !live;
     document.body.style.overflow = live ? "hidden" : "";
     $("call").dataset.state = state || "listening";
-    const t = TOPICS.find((x) => x[0] === topic);
     $("call").dataset.who = who ? "char" : "mared";
     $("call-avatar").textContent = who ? initial(who.name) : "";
-    $("t-bubble-name").textContent = who ? who.name : T("مارد", "Mared");
-    $("call-lang").textContent = who ? who.name : T(tg()[3], tg()[4]);
-    $("call-topic").textContent = who ? T(tg()[3], tg()[4]) : t ? T(t[1], t[2]) : topic;
+    $("t-bubble-name").textContent = $("call-name").textContent = who ? who.name : T("مارد", "Mared");
+    clock();
   }
+
+  // The line under the name, as a phone shows it: Calling…, Ringing…, then the call's time and the language.
+  let callAt = 0, dialAt = 0, clockTimer = null;
+  function clock() {
+    const s = Math.floor((Date.now() - callAt) / 1000);
+    $("call-sub").textContent = !callAt ? (Date.now() - dialAt < 1200 ? T("بيتصل…", "Calling…") : T("بيرن…", "Ringing…"))
+      : `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")} · ${T(tg()[3], tg()[4])}`;
+  }
+  // The ringback while the other side picks up (it covers the connecting time, as on a real call), and the hang-up tone.
+  let ringing = null;
+  function ring(on) {
+    if (!on) { ringing?.(); ringing = null; return; }
+    if (ringing || !ctx) return;
+    const g = ctx.createGain(); g.gain.value = 0; g.connect(ctx.destination);
+    const tones = [440, 480].map((f) => { const o = ctx.createOscillator(); o.frequency.value = f; o.connect(g); o.start(); return o; });
+    const beat = () => { const t = ctx.currentTime; g.gain.setValueAtTime(0.05, t); g.gain.setValueAtTime(0, t + 1.6); };
+    beat(); const every = setInterval(beat, 3600);
+    ringing = () => { clearInterval(every); tones.forEach((o) => o.stop()); g.disconnect(); };
+  }
+  function hangTone() {
+    if (!ctx) return;
+    const g = ctx.createGain(); g.connect(ctx.destination);
+    const o = ctx.createOscillator(); o.frequency.value = 480; o.connect(g); o.start();
+    const t = ctx.currentTime; g.gain.setValueAtTime(0, t);
+    for (let i = 0; i < 3; i++) { g.gain.setValueAtTime(0.05, t + i * 0.25); g.gain.setValueAtTime(0, t + i * 0.25 + 0.15); }
+    o.stop(t + 0.8);
+  }
+  let muted = false;
+  const captions = () => store.get("mared-talk-captions", true);
+  $("mute").addEventListener("click", () => { muted = !muted; $("call").dataset.muted = String(muted); paint(); });
+  $("cc").addEventListener("click", () => { store.set("mared-talk-captions", !captions()); paint(); });
 
   $("orb").addEventListener("click", () => { if (!live) { who = null; start(); } });
   $("t-start").addEventListener("click", () => { if (!live) { who = null; start(); } });
-  $("hangup").addEventListener("click", () => end(T("خلصنا.", "Done.")));
+  $("hangup").addEventListener("click", () => { hangTone(); end(T("خلصنا.", "Done.")); });
 
   async function start() {
     sound(); // made from the tap itself: iPhones only allow sound that a tap started
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, channelCount: 1 } });
     } catch (e) { status(T("محتاج إذن الميكروفون عشان نتكلم.", "I need the microphone to talk.")); return; }
-    live = true; history = ""; line = ""; expect = "none"; stucks = 0; chips(); orb("thinking"); $("after").textContent = "";
+    live = true; history = ""; line = ""; expect = "none"; stucks = 0; prev = ""; muted = false; callAt = 0; dialAt = Date.now();
+    $("call").dataset.muted = "false"; chips(); orb("thinking"); paint(); $("after").textContent = "";
+    clearInterval(clockTimer); clockTimer = setInterval(clock, 500);
+    ring(true);
     for (const id of ["say", "line", "gloss", "fix", "heard"]) $(id).textContent = "";
     $("bubble").hidden = true;
     try { wake = await navigator.wakeLock?.request("screen"); } catch (e) {} // the screen stays on, so the mic does
@@ -657,19 +697,20 @@
       if (!live) return;
       const f = e.inputBuffer.getChannelData(0);
       const pcm = down(f, ctx.sampleRate);
-      const quiet = busy || (!barge() && (playing || performance.now() < quietUntil));
+      const quiet = busy || muted || (!barge() && (playing || performance.now() < quietUntil));
       let sq = 0; for (let i = 0; i < f.length; i += 16) sq += f[i] * f[i];
       $("call").style.setProperty("--lvl", quiet ? "0" : Math.min(1, Math.sqrt(sq / (f.length / 16)) * 8).toFixed(2)); // the orb follows their voice
       if (!quiet) { turnPcm.push(pcm); turnLen += pcm.length; while (turnLen - turnPcm[0].length > TURN_MAX) turnLen -= turnPcm.shift().length; }
       send(quiet ? new Int16Array(pcm.length) : pcm); // silence while Mared talks: it never hears itself
     };
     src.connect(proc); proc.connect(ctx.destination);
+    listen(who ? tg()[1] : (dialect() === "en" ? "en" : null)).catch(() => {}); // connected while it rings, not after the first words
     await turn("start", "", null);
   }
 
   function end(say) {
     if (!live) return;
-    live = false; busy = false; clearInterval(stuckTimer); clearTimeout(holdTimer); held = "";
+    live = false; busy = false; clearInterval(stuckTimer); clearTimeout(holdTimer); held = ""; ring(false); clearInterval(clockTimer);
     try { ws?.close(); } catch (e) {} ws = null; wsLang = undefined;
     stream?.getTracks().forEach((t) => t.stop()); stream = null;
     try { proc?.disconnect(); } catch (e) {} proc = null;
@@ -705,12 +746,13 @@
     return b64(bytes);
   }
 
-  // The live transcriber in the language the next answer comes in; it ends each turn after 2 s of silence.
+  // The live transcriber in the language the next answer comes in; it ends each turn after 1.5 s of silence (2 s felt
+  // slow, 30 Oct 2026; a sentence that stopped midway waits longer, below).
   async function listen(lang) {
     if (ws && ws.readyState <= 1 && wsLang === lang) return;
     try { ws?.close(); } catch (e) {}
     const { token } = await (await call("/functions/v1/voice", { mode: "stt_token" })).json();
-    const q = new URLSearchParams({ model_id: "scribe_v2_realtime", audio_format: "pcm_16000", commit_strategy: "vad", vad_silence_threshold_secs: "2.0", token });
+    const q = new URLSearchParams({ model_id: "scribe_v2_realtime", audio_format: "pcm_16000", commit_strategy: "vad", vad_silence_threshold_secs: "1.5", token });
     if (lang) q.set("language_code", lang);
     ws = new WebSocket("wss://api.elevenlabs.io/v1/speech-to-text/realtime?" + q);
     wsLang = lang;
@@ -772,21 +814,54 @@
     return words.filter((w) => said.has(w)).length >= words.length * 0.6;
   }
 
+  let prev = ""; // how their last answer sounded: scored while the reply was written, sent with the next turn
   async function turn(ev, heard, audio) {
     const my = ++gen;
-    busy = true; status(T("بفكّر…", "Thinking…")); orb("thinking");
+    busy = true; if (callAt) status(""); orb("thinking");
+    let firstP = null, secondP = null, saying = null, t = null;
+    // What is said, the moment it comes: voiced and played while the rest of the turn is still being written.
+    const sayNow = (say) => {
+      if (firstP || !live || my !== gen) return;
+      firstP = who ? voice(say, tg()[1], who.voice) : voice(say, dialect() === "en" ? "en" : "ar");
+      $("say").textContent = say; $("bubble").hidden = !say; $("line").textContent = ""; $("gloss").textContent = ""; $("fix").textContent = ""; $("heard").textContent = "";
+      spokenNow = say; cutNow = false;
+      saying = (async () => {
+        const mp3 = await firstP;
+        if (!live || my !== gen) return;
+        ring(false); if (!callAt) callAt = Date.now(); // they picked up
+        orb("speaking"); busy = false; // from here they may talk over
+        await play(Promise.resolve(mp3));
+      })();
+    };
     try {
-      const t = await (await call("/functions/v1/practice", {
+      const r = await call("/functions/v1/practice", {
         mode: "talk", topic: who ? "" : topic, course: "", lesson: who ? who.name : "Talk", character: who ? who.id : "", fixes: fixes(), goal: "free conversation", notes: notes().join("\n").slice(-4000), learner: "",
         event: ev, heard, line, expect, history: history.slice(-4000), review: "", audio, dialect: dialect(), learn: tg()[0],
-        day: new Date().toLocaleDateString("en-CA"), level: (levels[tg()[0]] || {}).level || "", aim: (levels[tg()[0]] || {}).aim || "",
-      })).json();
+        day: new Date().toLocaleDateString("en-CA"), level: (levels[tg()[0]] || {}).level || "", aim: (levels[tg()[0]] || {}).aim || "", prev, stream: true,
+      });
+      const reader = r.body.getReader(), dec = new TextDecoder();
+      let buf = "";
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buf += dec.decode(value, { stream: true });
+        for (let nl; (nl = buf.indexOf("\n")) >= 0;) {
+          const msg = JSON.parse(buf.slice(0, nl)); buf = buf.slice(nl + 1);
+          if (msg.error) throw Object.assign(new Error(msg.error), { status: 502 });
+          if (msg.status !== undefined) t = msg; // the whole turn
+          else if (msg.say !== undefined) sayNow(msg.say);
+          else if (msg.line && !secondP) secondP = voice(msg.line, tg()[1], who?.voice); // made while the first plays
+        }
+      }
+      if (!t) throw Object.assign(new Error("no turn"), { status: 502 });
       if (!live || my !== gen) return;
+      sayNow(t.say); // an older server sends no early words
+      prev = t.prev || "";
       if (ev === "answer") history += "Learner: " + heard + "\n";
       history += (who ? who.name : "Mared") + ": " + t.say + (t.line ? " [line: " + t.line + "]" : "") + "\n";
       if (t.note) store.set("mared-talk-notes", [...notes(), t.note].slice(-40));
       if (t.topic && !who) topic = t.topic;
-      $("say").textContent = t.say; $("bubble").hidden = !t.say; $("line").textContent = t.line || ""; $("gloss").textContent = t.gloss || "";
+      $("line").textContent = t.line || ""; $("gloss").textContent = t.gloss || "";
       let up = "";
       if (t.level) { // Mared judged a new level: kept by the server already
         const before = rank((levels[tg()[0]] || {}).level);
@@ -794,36 +869,32 @@
         if (rank(t.level) > before) up = before < 0 ? T(`مستواك: ${t.level}`, `Your level: ${t.level}`) : T(`🎉 مستواك بقى ${t.level}!`, `🎉 You're now ${t.level}!`);
       }
       $("fix").textContent = [up, t.fix ? "✓ " + t.fix : "", t.better ? T("أحلى: ", "Better: ") + t.better : ""].filter(Boolean).join(" · ");
-      $("heard").textContent = "";
       line = t.line || ""; expect = t.expect || "reply";
       stucks = ev === "stuck" ? stucks : 0;
-      orb("speaking"); status("");
-      busy = false; // from here they may talk over Mared
-      spokenNow = t.say + " " + (t.line || ""); cutNow = false;
-      // A character speaks the language learned in its own voice; Mared explains in theirs, then says the line.
-      const first = who ? voice(t.say, tg()[1], who.voice) : voice(t.say, dialect() === "en" ? "en" : "ar"), second = t.line ? voice(t.line, tg()[1], who?.voice) : null; // the second is made while the first plays
-      await play(first);
-      if (live && !cutNow && my === gen) await play(second);
+      spokenNow = t.say + " " + (t.line || "");
+      if (t.line && !secondP) secondP = voice(t.line, tg()[1], who?.voice);
+      await saying;
+      if (live && !cutNow && my === gen && secondP) { orb("speaking"); await play(secondP); }
       if (!live || my !== gen) return;
-      if (cutNow) { orb(); status(T("سامعك…", "Listening…")); return; } // already talking: the same connection hears the rest
+      if (cutNow) { orb(); status(""); return; } // already talking: the same connection hears the rest
       turnPcm = []; turnLen = 0; quietUntil = performance.now() + 300;
       await listen(expect === "repeat" || expect === "answer" ? tg()[1] : (dialect() === "en" ? "en" : null));
-      orb(); status(T("سامعك…", "Listening…"));
+      orb(); status("");
       lastHeardAt = Date.now();
       clearInterval(stuckTimer);
       stuckTimer = setInterval(() => {
-        if (!live || busy || playing || Date.now() - lastHeardAt < STUCK_MS) return;
+        if (!live || busy || playing || muted || Date.now() - lastHeardAt < STUCK_MS) return;
         clearInterval(stuckTimer);
-        if (++stucks >= 3) end(T("هقفل المايك دلوقتي. دوس «ابدأ» لما تحب نكمّل.", "I'll close the mic now. Tap Start when you want to carry on."));
+        if (++stucks >= 3) end(T("قفلت المكالمة عشان مفيش كلام. اتصل تاني وقت ما تحب.", "The call ended after a long silence. Call again whenever you like."));
         else turn("stuck", "", null);
       }, 2000);
     } catch (e) {
       if (e.status === 404 && who) { end(T(`${who.name} مش موجود دلوقتي.`, `${who.name} isn't there any more.`)); loadPeople(); }
       else if (e.status === 402) end(T("اللي متاحلك خلص. اشترك من yamared.com/start ونكمّل.", "You've used what you had. Subscribe at yamared.com/start and we'll carry on."));
       else if (e.status === 401) { end(); await db.auth.signOut(); }
-      else end(T("حصلت مشكلة في النت. دوس «ابدأ» نجرّب تاني.", "Something went wrong with the connection. Tap Start to try again."));
+      else end(T("المكالمة وقعت. اتصل تاني.", "The call dropped. Call again."));
       return;
-    } finally { busy = false; }
+    } finally { if (my === gen && !saying) busy = false; }
   }
 
   // One audio engine for the mic and Mared's voice, made (or woken) from a tap.
