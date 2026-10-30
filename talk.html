@@ -117,45 +117,56 @@
   .start-btn { max-width: 260px; margin: 18px auto 0; }
   .hint { text-align: center; font-size: 13px; margin: 10px 24px 0; }
 
-  /* The call, as a phone's call screen (Hassan, 30 Oct 2026: "a proper phone call experience"): who is on it, large;
-     Calling, Ringing, then the time; the brand's moods under them; the words as captions; call keys; hang up. */
-  .call { position: fixed; inset: 0; z-index: 20; display: flex; flex-direction: column; background: var(--bg); color: var(--ink);
-    padding: calc(env(safe-area-inset-top) + 18px) 20px calc(env(safe-area-inset-bottom) + 22px); }
-  .caller { display: grid; justify-items: center; gap: 4px; text-align: center; margin-top: 3vh; }
-  .caller .mark { width: 84px; height: 94px; }
-  .caller-name { font-size: 30px; font-weight: 600; line-height: 1.2; margin: 14px 0 0; }
-  .caller-sub { font-size: 15px; color: var(--muted); font-variant-numeric: tabular-nums; min-height: 1.5em; }
-  .mood { height: 28px; display: flex; align-items: center; justify-content: center; gap: 5px; margin-top: 10px; }
+  /* The call, laid out as a phone's call screen (Hassan, 30 Oct 2026: "still not a proper call ui"): the name and the
+     time at the top, the person large in the middle (rings while they speak), live captions as subtitles near the
+     bottom, and one row of round call keys ending in the red hang-up. Red is the one colour outside the brand: it is
+     what every phone's hang-up is. */
+  .call { position: fixed; inset: 0; z-index: 20; display: flex; flex-direction: column; align-items: center; background: #0a0f1e; color: #f3ead8;
+    padding: calc(env(safe-area-inset-top) + 28px) 18px calc(env(safe-area-inset-bottom) + 18px); }
+  .caller { text-align: center; }
+  .caller-name { font-size: 32px; font-weight: 600; line-height: 1.2; margin: 0; }
+  .caller-sub { font-size: 16px; color: #a4acbd; font-variant-numeric: tabular-nums; min-height: 1.5em; margin-top: 4px; }
+  .portrait { flex: 1; display: grid; place-items: center; align-content: center; gap: 18px; min-height: 0; }
+  .face { position: relative; width: 172px; height: 172px; border-radius: 50%; display: grid; place-items: center; background: #1e273f; }
+  .face .mark { width: 104px; height: 116px; }
+  .face .avatar.big { width: 100%; height: 100%; font-size: 68px; background: none; }
+  .face::before, .face::after { content: ""; position: absolute; inset: -10px; border-radius: 50%; border: 2px solid rgba(243, 234, 216, 0.35); opacity: 0; }
+  .call[data-who="mared"] .face::before, .call[data-who="mared"] .face::after { border-color: rgba(217, 164, 64, 0.55); }
+  .call[data-state="speaking"] .face::before, .call[data-state="speaking"] .face::after { animation: ring 1.6s ease-out infinite; }
+  .call[data-state="speaking"] .face::after { animation-delay: 0.8s; }
+  .call[data-state="listening"] .face { box-shadow: 0 0 0 calc(var(--lvl, 0) * 14px) rgba(243, 234, 216, 0.12); transition: box-shadow 0.08s linear; }
+  @keyframes ring { from { transform: scale(1); opacity: 0.9; } to { transform: scale(1.32); opacity: 0; } }
+  .mood { height: 24px; display: flex; align-items: center; justify-content: center; }
   .mood > * { display: none; }
-  .call[data-state="listening"] .listen, .call[data-state="thinking"] .think, .call[data-state="speaking"] .speak { display: flex; align-items: center; gap: 5px; }
+  .call[data-state="listening"] .listen, .call[data-state="thinking"] .think { display: flex; align-items: center; gap: 5px; }
   .call[data-muted="true"] .listen { display: none; }
-  .listen i { width: 14px; height: 14px; border-radius: 50%; background: var(--gold); transform: scale(calc(1 + var(--lvl, 0) * 0.9)); transition: transform 0.08s linear; }
-  .think i { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); animation: hop 1s ease-in-out infinite; }
+  .listen { font-size: 13px; color: #a4acbd; }
+  .listen i { width: 8px; height: 8px; border-radius: 50%; background: #d9a440; }
+  .call[data-who="char"] .listen i { background: #f3ead8; }
+  .think i { width: 7px; height: 7px; border-radius: 50%; background: #a4acbd; animation: hop 1s ease-in-out infinite; }
   .think i:nth-child(2) { animation-delay: 0.15s; } .think i:nth-child(3) { animation-delay: 0.3s; }
-  .speak i { width: 4px; height: 24px; border-radius: 2px; background: var(--gold); animation: bar 0.9s ease-in-out infinite; transform-origin: center; }
-  .speak i:nth-child(2) { animation-delay: 0.12s; } .speak i:nth-child(3) { animation-delay: 0.24s; } .speak i:nth-child(4) { animation-delay: 0.36s; } .speak i:nth-child(5) { animation-delay: 0.48s; }
-  @keyframes hop { 50% { transform: translateY(-5px); } }
-  @keyframes bar { 0%, 100% { transform: scaleY(0.3); } 50% { transform: scaleY(1); } }
-  @media (prefers-reduced-motion: reduce) { .genie .mark, .think i, .speak i { animation: none !important; } .listen i { transition: none; } }
-  .status { text-align: center; font-size: 13px; color: var(--muted); min-height: 1.4em; }
-  .words-now { flex: 1; overflow-y: auto; margin: 2vh 0 1vh; }
-  .call[data-captions="false"] .words-now { visibility: hidden; }
-  .bubble { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 14px 16px; }
-  .bubble .name { font-size: 18px; display: block; margin-bottom: 4px; }
-  .say { font-size: 16px; }
-  .practice { text-align: center; margin-top: 20px; }
-  .line { direction: ltr; font-size: 26px; font-weight: 600; line-height: 1.3; }
-  .gloss { color: var(--muted); margin-top: 4px; }
-  .fix { margin-top: 14px; font-weight: 500; }
-  .heard { color: var(--muted); font-style: italic; margin-top: 14px; min-height: 1.4em; text-align: center; }
-  .keys { display: flex; justify-content: center; gap: 30px; margin-bottom: 26px; }
-  .key { display: flex; flex-direction: column; align-items: center; gap: 7px; border: 0; background: none; color: var(--ink); font-size: 12px; min-width: 64px; }
-  .key > span:first-child { width: 64px; height: 64px; border-radius: 50%; background: var(--raised); display: grid; place-items: center; transition: background 0.15s; }
+  @keyframes hop { 50% { transform: translateY(-4px); } }
+  @media (prefers-reduced-motion: reduce) { .genie .mark, .think i, .face::before, .face::after { animation: none !important; } }
+  .status { text-align: center; font-size: 13px; color: #a4acbd; min-height: 1.2em; }
+  /* Live captions: what is being said now, as subtitles */
+  .captions { width: 100%; max-width: 520px; max-height: 34vh; overflow-y: auto; text-align: center; margin-bottom: 18px; }
+  .call[data-captions="false"] .captions { visibility: hidden; }
+  .cap { font-size: 18px; line-height: 1.45; }
+  .cap .name { display: block; font: 500 12px var(--font); color: #a4acbd; margin-bottom: 2px; }
+  .say { display: inline; }
+  .line { direction: ltr; font-size: 22px; font-weight: 600; line-height: 1.3; margin-top: 10px; }
+  .gloss { color: #a4acbd; font-size: 14px; margin-top: 4px; }
+  .fix { display: inline-block; margin-bottom: 10px; padding: 4px 12px; border-radius: 999px; background: #1e273f; font-size: 13px; font-weight: 500; }
+  .fix:empty { display: none; }
+  .heard { color: #a4acbd; font-style: italic; margin-top: 10px; font-size: 15px; }
+  /* The call keys, in one row, as a phone's */
+  .controls { display: flex; justify-content: center; align-items: flex-start; gap: 22px; width: 100%; max-width: 420px; }
+  .key { display: flex; flex-direction: column; align-items: center; gap: 7px; border: 0; background: none; color: #f3ead8; font-size: 12px; width: 66px; padding: 0; }
+  .key > span:first-child { width: 62px; height: 62px; border-radius: 50%; background: rgba(243, 234, 216, 0.14); display: grid; place-items: center; transition: background 0.15s; }
   .key svg { width: 26px; height: 26px; }
-  .key[aria-pressed="true"] > span:first-child { background: var(--ink); color: var(--bg); }
+  .key[aria-pressed="true"] > span:first-child { background: #f3ead8; color: #0a0f1e; }
+  .key.end > span:first-child { background: #e5484d; color: #fff; }
   #mute .slash { display: none; } #mute[aria-pressed="true"] .slash { display: inline; }
-  .hangup { width: 74px; height: 74px; border-radius: 50%; border: 0; background: var(--ink); color: var(--bg); display: grid; place-items: center; margin: 0 auto; }
-  .hangup svg { width: 32px; height: 32px; }
 
   /* Review */
   .counts { display: flex; gap: 8px; margin-bottom: 14px; }
@@ -205,10 +216,9 @@
   .round.ghost { background: none; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line); }
   .round svg { width: 20px; height: 20px; }
   .add { flex: 1; border: 0; background: none; color: var(--ink); text-align: start; padding: 10px 0; text-decoration: underline; text-underline-offset: 3px; }
-  .call .avatar.big { width: 112px; height: 112px; font-size: 46px; }
-  .call[data-who="char"] .caller .mark, .call:not([data-who="char"]) .avatar.big { display: none; }
-  .call[data-who="char"] .listen i, .call[data-who="char"] .speak i { background: var(--ink); }
-  .call[data-who="char"] .bubble .name { color: var(--ink); font: 600 15px var(--font); }
+
+  .call[data-who="char"] .face .mark, .call:not([data-who="char"]) .avatar.big { display: none; }
+
   .sheet { position: fixed; inset: 0; z-index: 30; background: var(--bg); overflow-y: auto; padding: calc(env(safe-area-inset-top) + 10px) 16px calc(env(safe-area-inset-bottom) + 24px); }
   .sheet .bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 44px; max-width: 560px; margin: 0 auto; }
   .sheet form { max-width: 560px; margin: 0 auto; }
@@ -317,32 +327,33 @@
   <!-- The call: a phone's call screen -->
   <div class="call" id="call" hidden data-state="thinking" data-captions="true" aria-live="polite">
     <div class="caller">
-      <svg class="mark" aria-hidden="true"><use href="#m"/></svg>
-      <span class="avatar big" id="call-avatar" aria-hidden="true"></span>
       <h2 class="caller-name" id="call-name"></h2>
       <div class="caller-sub" id="call-sub" role="timer"></div>
+    </div>
+    <div class="portrait">
+      <div class="face">
+        <svg class="mark" aria-hidden="true"><use href="#m"/></svg>
+        <span class="avatar big" id="call-avatar" aria-hidden="true"></span>
+      </div>
       <div class="mood" aria-hidden="true">
-        <span class="listen"><i></i></span>
+        <span class="listen"><i></i><span id="t-listen">سامعك</span></span>
         <span class="think"><i></i><i></i><i></i></span>
-        <span class="speak"><i></i><i></i><i></i><i></i><i></i></span>
       </div>
       <div class="status" id="status" role="status"></div>
     </div>
-    <div class="words-now" id="turn">
-      <div class="bubble" id="bubble" hidden><span class="name" id="t-bubble-name">مارد</span><div class="say" id="say" dir="auto"></div></div>
-      <div class="practice">
-        <div class="line" id="line" lang="en"></div>
-        <div class="gloss" id="gloss" dir="auto"></div>
-        <div class="fix" id="fix" dir="auto"></div>
-      </div>
+    <div class="captions" id="turn">
+      <div class="fix" id="fix" dir="auto"></div>
+      <div class="cap" id="bubble" hidden><span class="name" id="t-bubble-name"></span><span class="say" id="say" dir="auto"></span></div>
+      <div class="line" id="line" lang="en"></div>
+      <div class="gloss" id="gloss" dir="auto"></div>
       <div class="heard" id="heard" dir="auto"></div>
     </div>
-    <div class="keys">
+    <div class="controls">
       <button class="key" type="button" id="mute" aria-pressed="false"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/><path class="slash" d="M4 4l16 16"/></svg></span><span id="t-mute">كتم</span></button>
       <button class="key" type="button" id="cc" aria-pressed="true"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10.5 10.2a2 2 0 1 0 0 3.6M17 10.2a2 2 0 1 0 0 3.6"/></svg></span><span id="t-cc">الكلام مكتوب</span></button>
       <button class="key" type="button" id="over" aria-pressed="true"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 12h3l2-5 3 10 2-6 2 3h4"/></svg></span><span id="t-over">قاطعني</span></button>
+      <button class="key end" type="button" id="hangup"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85a.99.99 0 0 1-1.4-.01L.29 13.08a1 1 0 0 1 0-1.41C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67a1 1 0 0 1 0 1.41l-2.48 2.48a.99.99 0 0 1-1.4.01 11.3 11.3 0 0 0-2.67-1.85.99.99 0 0 1-.56-.9v-3.1A15.3 15.3 0 0 0 12 9Z"/></svg></span><span id="t-end">إنهاء</span></button>
     </div>
-    <button class="hangup" type="button" id="hangup" aria-label="إنهاء"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85a.99.99 0 0 1-1.4-.01L.29 13.08a1 1 0 0 1 0-1.41C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67a1 1 0 0 1 0 1.41l-2.48 2.48a.99.99 0 0 1-1.4.01 11.3 11.3 0 0 0-2.67-1.85.99.99 0 0 1-.56-.9v-3.1A15.3 15.3 0 0 0 12 9Z"/></svg></button>
   </div>
 
   <!-- A character of their own: who it is, what it talks about and knows, its voice -->
@@ -411,7 +422,7 @@
     $("t-topic").textContent = T("موضوع", "Topic");
     $("t-start").textContent = T("ابدأ الكلام", "Start talking");
     $("orb").setAttribute("aria-label", T("ابدأ الكلام", "Start talking"));
-    $("hangup").setAttribute("aria-label", T("إنهاء", "End"));
+    $("t-end").textContent = T("إنهاء", "End"); $("t-listen").textContent = T("سامعك", "Listening");
     $("t-settings").textContent = T("الإعدادات", "Settings");
     $("t-barge").textContent = T("تقدر تقاطعني وأنا بتكلم", "Talk over me");
     $("t-barge-sub").textContent = T("اقفلها لو السبيكر عالي", "Turn off on a loud speaker");
