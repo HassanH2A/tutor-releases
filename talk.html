@@ -44,7 +44,7 @@
   * { box-sizing: border-box; }
   html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.6; -webkit-text-size-adjust: 100%; }
   body { min-height: 100dvh; -webkit-tap-highlight-color: transparent; }
-  button, input, select { font: inherit; color: inherit; }
+  button, input, select, textarea { font: inherit; color: inherit; }
   button { cursor: pointer; }
   [hidden] { display: none !important; }
   .muted { color: var(--muted); }
@@ -190,6 +190,30 @@
   .words { display: flex; flex-wrap: wrap; gap: 8px; }
   .words button { direction: ltr; }
 
+  /* Characters to call (030): a contacts list; a character is ink, gold stays Mared's */
+  .person { display: flex; align-items: center; gap: 12px; padding: 10px 14px; min-height: 64px; }
+  .person + .person { border-top: 1px solid var(--line); }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--raised); color: var(--ink); display: grid; place-items: center; font-weight: 600; font-size: 18px; flex: none; }
+  .person .who { flex: 1; min-width: 0; }
+  .person .who b { display: block; font-weight: 600; }
+  .person .who span { display: block; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .round { width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--ink); color: var(--bg); display: grid; place-items: center; flex: none; }
+  .round.ghost { background: none; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line); }
+  .round svg { width: 20px; height: 20px; }
+  .add { flex: 1; border: 0; background: none; color: var(--ink); text-align: start; padding: 10px 0; text-decoration: underline; text-underline-offset: 3px; }
+  .call .avatar.big { width: 96px; height: 96px; font-size: 40px; }
+  .call[data-who="char"] .presence .mark, .call:not([data-who="char"]) .avatar.big { display: none; }
+  .call[data-who="char"] .listen i, .call[data-who="char"] .speak i { background: var(--ink); }
+  .call[data-who="char"] .bubble .name { color: var(--ink); font: 600 15px var(--font); }
+  .sheet { position: fixed; inset: 0; z-index: 30; background: var(--bg); overflow-y: auto; padding: calc(env(safe-area-inset-top) + 10px) 16px calc(env(safe-area-inset-bottom) + 24px); }
+  .sheet .bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 44px; max-width: 560px; margin: 0 auto; }
+  .sheet form { max-width: 560px; margin: 0 auto; }
+  .field { display: block; margin-top: 14px; }
+  .field > span { display: block; font-size: 13px; font-weight: 500; color: var(--muted); margin: 0 2px 6px; }
+  .field input, .field textarea, .field select { width: 100%; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); padding: 12px 14px; }
+  .field textarea { min-height: 96px; resize: vertical; line-height: 1.6; }
+  .field small { display: block; font-size: 12px; color: var(--muted); margin: 4px 2px 0; }
+
   /* The tab bar */
   .tabbar { position: fixed; inset-inline: 0; bottom: 0; z-index: 10; display: flex; justify-content: space-around; background: var(--panel); border-top: 1px solid var(--line);
     padding: 6px 0 calc(env(safe-area-inset-bottom) + 4px); }
@@ -247,6 +271,8 @@
     </div>
     <div class="label" id="t-topic">موضوع</div>
     <div class="topics" id="chips"></div>
+    <div class="label" id="t-people">كلّم حد تاني</div>
+    <div class="panel" id="people"></div>
     <p class="muted hint" id="t-home" style="margin-top:26px">اعمل الصفحة دي اختصار على الشاشة الرئيسية: من قايمة المتصفح، «إضافة للشاشة الرئيسية».</p>
   </section>
 
@@ -276,6 +302,7 @@
     <div id="progress"></div>
     <div class="label" id="t-settings">الإعدادات</div>
     <div class="panel">
+      <label class="row"><span class="grow"><span id="t-fixes">التصحيح</span><small id="t-fixes-sub"></small></span><select id="fixes"></select><span class="chev" aria-hidden="true">⌄</span></label>
       <label class="row"><span class="grow"><span id="t-barge">تقدر تقاطعني</span><small id="t-barge-sub"></small></span><input type="checkbox" class="switch" id="barge"></label>
       <label class="row"><span class="grow" id="t-look">الشكل</span><select id="look"></select><span class="chev" aria-hidden="true">⌄</span></label>
       <div class="row"><button class="rowbtn" type="button" id="lang2"></button></div>
@@ -288,6 +315,7 @@
     <div class="call-top"><b id="call-lang"></b><span id="call-topic"></span></div>
     <div class="presence">
       <svg class="mark" aria-hidden="true"><use href="#m"/></svg>
+      <span class="avatar big" id="call-avatar" aria-hidden="true"></span>
       <div class="mood" aria-hidden="true">
         <span class="listen"><i></i></span>
         <span class="think"><i></i><i></i><i></i></span>
@@ -309,6 +337,23 @@
       <button class="hangup" type="button" id="hangup" aria-label="إنهاء"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85a.99.99 0 0 1-1.4-.01L.29 13.08a1 1 0 0 1 0-1.41C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67a1 1 0 0 1 0 1.41l-2.48 2.48a.99.99 0 0 1-1.4.01 11.3 11.3 0 0 0-2.67-1.85.99.99 0 0 1-.56-.9v-3.1A15.3 15.3 0 0 0 12 9Z"/></svg></button>
       <button class="over" type="button" id="over" aria-pressed="true"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 12h3l2-5 3 10 2-6 2 3h4"/></svg></span><span id="t-over">قاطعني</span></button>
     </div>
+  </div>
+
+  <!-- A character of their own: who it is, what it talks about and knows, its voice -->
+  <div class="sheet" id="editor" hidden role="dialog" aria-labelledby="ed-title">
+    <div class="bar"><button class="rowbtn" type="button" id="ed-cancel"></button><b id="ed-title"></b><span style="width:48px"></span></div>
+    <form id="ed-form" novalidate>
+      <label class="field"><span id="ed-l-name"></span><input id="ed-name" maxlength="40" autocomplete="off"></label>
+      <label class="field"><span id="ed-l-tag"></span><input id="ed-tag" maxlength="120" autocomplete="off"></label>
+      <label class="field"><span id="ed-l-persona"></span><textarea id="ed-persona" maxlength="1500"></textarea></label>
+      <label class="field"><span id="ed-l-topics"></span><input id="ed-topics" maxlength="400" autocomplete="off"></label>
+      <label class="field"><span id="ed-l-context"></span><textarea id="ed-context" maxlength="12000" style="min-height:170px"></textarea><small id="ed-count"></small></label>
+      <label class="field"><span id="ed-l-voice"></span><select id="ed-voice"></select></label>
+      <button class="btn ghost" type="button" id="ed-hear" style="margin-top:10px"></button>
+      <div class="err" id="ed-err" role="alert"></div>
+      <button class="btn" type="submit" id="ed-save"></button>
+      <button class="btn ghost" type="button" id="ed-delete" style="margin-top:10px" hidden></button>
+    </form>
   </div>
 
   <nav class="tabbar" role="tablist">
@@ -371,8 +416,25 @@
     for (const [v, ar, en] of [["dark", "غامق", "Dark"], ["light", "فاتح", "Light"]]) { const o = document.createElement("option"); o.value = v; o.textContent = T(ar, en); o.selected = v === look(); $("look").appendChild(o); }
     $("signout").textContent = T("خروج", "Sign out");
     $("rv-hear").setAttribute("aria-label", T("اسمعها", "Hear it"));
+    $("t-people").textContent = T("كلّم حد تاني", "Call someone");
+    $("t-fixes").textContent = T("التصحيح", "Corrections");
+    $("t-fixes-sub").textContent = T("قد إيه أصحّحلك وإنت بتتكلم", "How often your slips are corrected");
+    $("fixes").innerHTML = "";
+    for (const [v, ar, en] of [["light", "قليل", "Light"], ["normal", "عادي", "Normal"], ["every", "كل جملة", "Every sentence"]]) { const o = document.createElement("option"); o.value = v; o.textContent = T(ar, en); o.selected = v === fixes(); $("fixes").appendChild(o); }
+    $("ed-cancel").textContent = T("إلغاء", "Cancel");
+    $("ed-l-name").textContent = T("الاسم", "Name"); $("ed-name").placeholder = "Sara";
+    $("ed-l-tag").textContent = T("في سطر", "In one line"); $("ed-tag").placeholder = T("شيف إيطالية من نابولي", "Italian chef from Naples");
+    $("ed-l-persona").textContent = T("هي مين وبتتكلم إزاي", "Who they are and how they talk");
+    $("ed-persona").placeholder = T("شيف عندها مطعم صغير، بتهزر كتير، وبتحب تسأل الناس عن أكلهم المفضل.", "Runs a small restaurant, jokes a lot, loves asking people about their favourite food.");
+    $("ed-l-topics").textContent = T("بيتكلم عن إيه", "What they talk about"); $("ed-topics").placeholder = T("الأكل، الطبخ، إيطاليا", "food, cooking, Italy");
+    $("ed-l-context").textContent = T("يعرف إيه (اختياري)", "What they know (optional)");
+    $("ed-context").placeholder = T("الزق أي حاجة: ملاحظاتك، مقالة، الـCV بتاعك، الكتاب اللي بتقراه… هيتكلم منها.", "Paste anything: your notes, an article, your CV, the book you're reading… they'll talk from it.");
+    $("ed-l-voice").textContent = T("الصوت", "Voice");
+    $("ed-hear").textContent = T("اسمع الصوت", "Hear the voice");
+    $("ed-save").textContent = T("احفظ", "Save");
+    $("ed-delete").textContent = T("امسح الشخصية", "Delete character");
     if (!$("review").hidden && session) nextCard();
-    chips(); languages(); paintLevel();
+    chips(); languages(); paintLevel(); paintPeople();
   }
   const flip = () => { LANG = LANG === "ar" ? "en" : "ar"; store.set("mared-talk-lang", LANG); paint(); if (session) progress(); };
   $("lang").addEventListener("click", flip); $("lang2").addEventListener("click", flip);
@@ -403,7 +465,7 @@
   $("code-form").addEventListener("submit", (e) => { e.preventDefault(); verify(); });
   $("code").addEventListener("input", (e) => { e.target.value = e.target.value.replace(/\D/g, "").slice(0, 6); if (e.target.value.length === 6) verify(); });
   $("again").addEventListener("click", () => { $("email-form").hidden = false; $("code-form").hidden = true; });
-  db.auth.onAuthStateChange((_, s) => { session = s; $("s-in").hidden = !!s; $("s-talk").hidden = !s; if (s) { progress(); nextCard(); loadLevels(); } });
+  db.auth.onAuthStateChange((_, s) => { session = s; $("s-in").hidden = !!s; $("s-talk").hidden = !s; if (s) { progress(); nextCard(); loadLevels(); loadPeople(); } });
 
   async function call(path, body) {
     const { data } = await db.auth.getSession();
@@ -469,6 +531,76 @@
       : T(`فاضلك ${goal - at} مستوى وتوصل ${mine.aim}.`, `${goal - at} level(s) to go to reach ${mine.aim}.`);
   }
 
+  // ---- Characters (030): built-in and their own, called like contacts ----
+  const fixes = () => store.get("mared-talk-fixes", "light");
+  $("fixes").addEventListener("change", (e) => store.set("mared-talk-fixes", e.target.value));
+  let people = [], who = null; // who: the character on this call; null: Mared
+  const PHONE = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2Z"/></svg>';
+  const PEN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/></svg>';
+  const initial = (name) => [...name.trim()][0] || "?";
+  async function loadPeople() {
+    const { data } = await db.from("characters").select("id,user_id,name,tagline,tagline_ar,persona,topics,context,voice").order("sort").order("created_at");
+    people = data || []; paintPeople();
+  }
+  function paintPeople() {
+    const box = $("people"); box.innerHTML = "";
+    for (const p of people) {
+      const row = document.createElement("div"); row.className = "person";
+      row.innerHTML = '<span class="avatar" aria-hidden="true"></span><span class="who"><b></b><span></span></span>';
+      row.querySelector(".avatar").textContent = initial(p.name);
+      row.querySelector("b").textContent = p.name;
+      row.querySelector(".who span").textContent = (LANG === "ar" && p.tagline_ar) || p.tagline;
+      if (p.user_id) {
+        const e = document.createElement("button"); e.type = "button"; e.className = "round ghost"; e.innerHTML = PEN;
+        e.setAttribute("aria-label", T(`عدّل ${p.name}`, `Edit ${p.name}`)); e.addEventListener("click", () => editor(p)); row.appendChild(e);
+      }
+      const c = document.createElement("button"); c.type = "button"; c.className = "round"; c.innerHTML = PHONE;
+      c.setAttribute("aria-label", T(`كلّم ${p.name}`, `Call ${p.name}`)); c.addEventListener("click", () => { if (!live) { who = p; start(); } }); row.appendChild(c);
+      box.appendChild(row);
+    }
+    const add = document.createElement("div"); add.className = "person";
+    add.innerHTML = '<span class="avatar" aria-hidden="true">+</span><button type="button" class="add"></button>';
+    add.querySelector("button").textContent = T("اعمل شخصية بنفسك", "Create your own character");
+    add.querySelector("button").addEventListener("click", () => editor(null));
+    box.appendChild(add);
+  }
+
+  // The editor: a character of their own, fed with what they want it to know.
+  let editing = null, voiceList = null;
+  function count() { $("ed-count").textContent = `${$("ed-context").value.length.toLocaleString()} / 12,000`; }
+  $("ed-context").addEventListener("input", count);
+  async function editor(p) {
+    editing = p;
+    $("editor").hidden = false; document.body.style.overflow = "hidden";
+    $("ed-title").textContent = p ? p.name : T("شخصية جديدة", "New character");
+    $("ed-name").value = p?.name || ""; $("ed-tag").value = p?.tagline || ""; $("ed-persona").value = p?.persona || "";
+    $("ed-topics").value = p?.topics || ""; $("ed-context").value = p?.context || "";
+    $("ed-delete").hidden = !p; $("ed-err").textContent = ""; count();
+    if (!voiceList) { try { voiceList = (await (await call("/functions/v1/voice", { mode: "voices" })).json()).filter((v) => !v.mine); } catch (e) { voiceList = []; } }
+    const box = $("ed-voice"); box.innerHTML = "";
+    for (const v of [{ id: "", name: T("صوت مارد", "Mared's voice") }, ...voiceList]) { const o = document.createElement("option"); o.value = v.id; o.textContent = v.name; o.selected = v.id === (p?.voice || ""); box.appendChild(o); }
+    $("ed-name").focus();
+  }
+  function closeEditor() { $("editor").hidden = true; document.body.style.overflow = ""; editing = null; }
+  $("ed-cancel").addEventListener("click", closeEditor);
+  $("ed-hear").addEventListener("click", () => { sound(); speak(`Hi, I'm ${$("ed-name").value.trim() || "your new friend"}. What shall we talk about?`, "en", $("ed-voice").value || undefined); });
+  $("ed-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const row = { name: $("ed-name").value.trim(), tagline: $("ed-tag").value.trim(), persona: $("ed-persona").value.trim(), topics: $("ed-topics").value.trim(), context: $("ed-context").value.trim(), voice: $("ed-voice").value || null };
+    if (!row.name) { $("ed-err").textContent = T("اكتب اسم.", "Give it a name."); $("ed-name").focus(); return; }
+    $("ed-save").disabled = true;
+    const { error } = editing ? await db.from("characters").update(row).eq("id", editing.id) : await db.from("characters").insert(row);
+    $("ed-save").disabled = false;
+    if (error) { $("ed-err").textContent = /row-level/i.test(error.message) ? T("وصلت لأقصى عدد شخصيات (30).", "You've reached the most characters (30).") : T("ما اتحفظتش. جرّب تاني.", "Didn't save. Try again."); return; }
+    closeEditor(); loadPeople();
+  });
+  $("ed-delete").addEventListener("click", async () => {
+    if (!editing || !confirm(T(`تمسح ${editing.name}؟`, `Delete ${editing.name}?`))) return;
+    const { error } = await db.from("characters").delete().eq("id", editing.id);
+    if (error) { $("ed-err").textContent = T("ما اتمسحتش. جرّب تاني.", "Didn't delete. Try again."); return; }
+    closeEditor(); loadPeople();
+  });
+
   // ---- Topics ----
   const TOPICS = [["", "اختارلي", "Surprise me"], ["science", "علوم", "Science"], ["technology", "تكنولوجيا", "Technology"], ["films and series", "أفلام ومسلسلات", "Films and series"],
     ["football", "كورة", "Football"], ["history", "تاريخ", "History"], ["travel", "سفر", "Travel"], ["a job interview role-play: you are the interviewer", "مقابلة شغل", "Job interview"],
@@ -499,12 +631,15 @@
     document.body.style.overflow = live ? "hidden" : "";
     $("call").dataset.state = state || "listening";
     const t = TOPICS.find((x) => x[0] === topic);
-    $("call-lang").textContent = T(tg()[3], tg()[4]);
-    $("call-topic").textContent = t ? T(t[1], t[2]) : topic;
+    $("call").dataset.who = who ? "char" : "mared";
+    $("call-avatar").textContent = who ? initial(who.name) : "";
+    $("t-bubble-name").textContent = who ? who.name : T("مارد", "Mared");
+    $("call-lang").textContent = who ? who.name : T(tg()[3], tg()[4]);
+    $("call-topic").textContent = who ? T(tg()[3], tg()[4]) : t ? T(t[1], t[2]) : topic;
   }
 
-  $("orb").addEventListener("click", () => { if (!live) start(); });
-  $("t-start").addEventListener("click", () => { if (!live) start(); });
+  $("orb").addEventListener("click", () => { if (!live) { who = null; start(); } });
+  $("t-start").addEventListener("click", () => { if (!live) { who = null; start(); } });
   $("hangup").addEventListener("click", () => end(T("خلصنا.", "Done.")));
 
   async function start() {
@@ -642,15 +777,15 @@
     busy = true; status(T("بفكّر…", "Thinking…")); orb("thinking");
     try {
       const t = await (await call("/functions/v1/practice", {
-        mode: "talk", topic, course: "", lesson: "Talk", goal: "free conversation", notes: notes().join("\n").slice(-4000), learner: "",
+        mode: "talk", topic: who ? "" : topic, course: "", lesson: who ? who.name : "Talk", character: who ? who.id : "", fixes: fixes(), goal: "free conversation", notes: notes().join("\n").slice(-4000), learner: "",
         event: ev, heard, line, expect, history: history.slice(-4000), review: "", audio, dialect: dialect(), learn: tg()[0],
         day: new Date().toLocaleDateString("en-CA"), level: (levels[tg()[0]] || {}).level || "", aim: (levels[tg()[0]] || {}).aim || "",
       })).json();
       if (!live || my !== gen) return;
       if (ev === "answer") history += "Learner: " + heard + "\n";
-      history += "Mared: " + t.say + (t.line ? " [line: " + t.line + "]" : "") + "\n";
+      history += (who ? who.name : "Mared") + ": " + t.say + (t.line ? " [line: " + t.line + "]" : "") + "\n";
       if (t.note) store.set("mared-talk-notes", [...notes(), t.note].slice(-40));
-      if (t.topic) topic = t.topic;
+      if (t.topic && !who) topic = t.topic;
       $("say").textContent = t.say; $("bubble").hidden = !t.say; $("line").textContent = t.line || ""; $("gloss").textContent = t.gloss || "";
       let up = "";
       if (t.level) { // Mared judged a new level: kept by the server already
@@ -665,7 +800,8 @@
       orb("speaking"); status("");
       busy = false; // from here they may talk over Mared
       spokenNow = t.say + " " + (t.line || ""); cutNow = false;
-      const first = voice(t.say, dialect() === "en" ? "en" : "ar"), second = t.line ? voice(t.line, tg()[1]) : null; // the second is made while the first plays
+      // A character speaks the language learned in its own voice; Mared explains in theirs, then says the line.
+      const first = who ? voice(t.say, tg()[1], who.voice) : voice(t.say, dialect() === "en" ? "en" : "ar"), second = t.line ? voice(t.line, tg()[1], who?.voice) : null; // the second is made while the first plays
       await play(first);
       if (live && !cutNow && my === gen) await play(second);
       if (!live || my !== gen) return;
@@ -682,7 +818,8 @@
         else turn("stuck", "", null);
       }, 2000);
     } catch (e) {
-      if (e.status === 402) end(T("اللي متاحلك خلص. اشترك من yamared.com/start ونكمّل.", "You've used what you had. Subscribe at yamared.com/start and we'll carry on."));
+      if (e.status === 404 && who) { end(T(`${who.name} مش موجود دلوقتي.`, `${who.name} isn't there any more.`)); loadPeople(); }
+      else if (e.status === 402) end(T("اللي متاحلك خلص. اشترك من yamared.com/start ونكمّل.", "You've used what you had. Subscribe at yamared.com/start and we'll carry on."));
       else if (e.status === 401) { end(); await db.auth.signOut(); }
       else end(T("حصلت مشكلة في النت. دوس «ابدأ» نجرّب تاني.", "Something went wrong with the connection. Tap Start to try again."));
       return;
@@ -818,7 +955,7 @@
   });
 
   paint();
-  db.auth.getSession().then(({ data }) => { session = data.session; $("s-in").hidden = !!session; $("s-talk").hidden = !session; if (session) { progress(); nextCard(); } });
+  db.auth.getSession().then(({ data }) => { session = data.session; $("s-in").hidden = !!session; $("s-talk").hidden = !session; if (session) { progress(); nextCard(); loadPeople(); } });
 })();
 </script>
 </body>
