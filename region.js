@@ -46,5 +46,5 @@
   const style = document.createElement('style');
   style.textContent = 'html.not-eg .eg-only, html.eg .non-eg { display: none !important; }';
   document.head.append(style);
-  window.MARED = { cur, egypt: cur === 'egp', price, amountHtml };
+  window.MARED = { cur, egypt: cur === 'egp', price, amountHtml, prices: PRICES };
 })();

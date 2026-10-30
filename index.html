@@ -188,7 +188,7 @@
   .models span { display: inline-flex; align-items: center; gap: .5rem; background: var(--navy); border-radius: 999px; padding: .4rem .95rem .4rem .45rem; font-size: .9rem; direction: ltr; }
   /* AI logos: a white disc so black marks (OpenAI, ElevenLabs) show on navy. */
   img.logo { width: 26px; height: 26px; padding: 4px; border-radius: 50%; background: #fff; flex: none; }
-  .models span:not(:has(img)) { padding-inline-start: .95rem; }
+  img.logo.fill { padding: 0; }  /* a full-bleed app tile (Higgsfield), cut to the same circle */
   .more { text-align: center; margin: 3rem 0 0; }
   .more a { font-size: 1.05rem; text-underline-offset: 6px; }
 
@@ -295,6 +295,10 @@
   .receipt dd { margin: 0; text-decoration: line-through; color: var(--muted); }
   .receipt .total { border: 0; font-weight: 600; font-size: 1.15rem; } .receipt .total dd { color: var(--ink); }
   .total-local { margin: .25rem 0 0; color: var(--muted); font-size: .9rem; text-align: end; }
+  .with { display: flex; justify-content: space-between; align-items: center; gap: 1rem; background: var(--navy); color: var(--ivory); border-radius: 14px; padding: .9rem 1.1rem; margin-top: 1.1rem; font-weight: 600; font-size: 1.1rem; }
+  .with small { color: var(--ivory-muted); font-weight: 500; }
+  .with .amount { font-size: 1.5rem; } .with .amount small { color: var(--ivory-muted); }
+  .save { margin: .6rem 0 0; text-align: end; font-weight: 600; }
   .bill-note { color: var(--muted); font-size: .82rem; margin: 2rem 0 0; }
 
   /* Plans */
@@ -523,7 +527,7 @@
       <div class="tile s3">
         <h3 data-i="b7T">كل الذكاء الاصطناعي في اشتراك واحد</h3>
         <p data-i="b7">صور وفيديو وصوت وكتابة وشرح. مارد بيبعت كل طلب للموديل الأقوى فيه، بدل 5 اشتراكات.</p>
-        <div class="vis models" translate="no"><span><img class="logo" src="media/logos/claude.svg" alt="">Claude</span><span><img class="logo" src="media/logos/openai.svg" alt="">ChatGPT</span><span><img class="logo" src="media/logos/googlegemini.svg" alt="">Gemini</span><span><img class="logo" src="media/logos/elevenlabs.svg" alt="">ElevenLabs</span><span>Higgsfield</span></div>
+        <div class="vis models" translate="no"><span><img class="logo" src="media/logos/claude.svg" alt="">Claude</span><span><img class="logo" src="media/logos/openai.svg" alt="">ChatGPT</span><span><img class="logo" src="media/logos/googlegemini.svg" alt="">Gemini</span><span><img class="logo" src="media/logos/elevenlabs.svg" alt="">ElevenLabs</span><span><img class="logo fill" src="media/logos/higgsfield.png" alt="">Higgsfield</span></div>
       </div>
     </div>
     <p class="more"><a href="#all" data-i="moreL">شوف كل اللي مارد بيعمله</a></p>
@@ -645,11 +649,13 @@
           <div class="line"><dt><img class="logo" src="media/logos/openai.svg" alt=""><span translate="no">ChatGPT Plus</span></dt><dd class="ltr">$19.99</dd></div>
           <div class="line"><dt><img class="logo" src="media/logos/claude.svg" alt=""><span translate="no">Claude Pro</span></dt><dd class="ltr">$20.00</dd></div>
           <div class="line"><dt><img class="logo" src="media/logos/googlegemini.svg" alt=""><span translate="no">Google AI Pro</span> <small translate="no">Gemini</small></dt><dd class="ltr">$19.99</dd></div>
-          <div class="line"><dt><span translate="no">Higgsfield</span> <small data-i="from">أقل باقة</small></dt><dd class="ltr">$15.00</dd></div>
+          <div class="line"><dt><img class="logo fill" src="media/logos/higgsfield.png" alt=""><span translate="no">Higgsfield</span> <small data-i="from">أقل باقة</small></dt><dd class="ltr">$15.00</dd></div>
           <div class="line"><dt><img class="logo" src="media/logos/elevenlabs.svg" alt=""><span translate="no">ElevenLabs Starter</span></dt><dd class="ltr">$6.00</dd></div>
           <div class="line total"><dt data-i="total">المجموع</dt><dd class="ltr">$80.98</dd></div>
         </dl>
         <p class="total-local" id="total-local"></p>
+        <div class="with"><span><span data-i="withT">مع مارد</span> <small translate="no"><span class="ar-only">بلس</span><span class="en-only">Plus</span></small></span><span class="amount" id="with-price"></span></div>
+        <p class="save" id="save"></p>
       </figure>
     </div>
     <p class="bill-note" data-i="billNote">الأسعار هي أقل باقة مدفوعة شهرية لكل خدمة زي ما هي معلنة في أكتوبر 2026. مارد بيديك موديلاتهم جوّه رصيدك الشهري، مش اشتراكاتهم نفسها.</p>
@@ -827,7 +833,7 @@
     billSub: 'Mared uses models from <span translate="no">Claude</span>, <span translate="no">ChatGPT</span>, <span translate="no">Gemini</span>, <span translate="no">Higgsfield</span> and <span translate="no">ElevenLabs</span>. One subscription instead of five.',
     md1T: "Let Mared choose", md1: "It sends each request to the model that's strongest at it: explaining, writing, images, video or voice.",
     md2T: "Or choose yourself", md2: 'Want <span translate="no">Claude</span> specifically? Pick it and talk to it directly.',
-    rcT: "Without Mared, every month", from: "lowest plan", total: "Total",
+    rcT: "Without Mared, every month", from: "lowest plan", total: "Total", withT: "With Mared",
     billNote: "Prices are each service's lowest monthly paid plan as listed in October 2026. Mared gives you their models within your monthly credits, not their subscriptions.",
     plansT: "Start free. Pay when you love it.",
     plansSub: "Every plan starts with a free trial: 3 questions, one “do it for me” task and a full lesson, without paying anything. Cancel anytime.",
@@ -1132,6 +1138,13 @@
     document.querySelectorAll("[data-price]").forEach((el) => { el.innerHTML = MARED.amountHtml(el.dataset.price, isEn()); });
     const local = { egp: T("يعني حوالي 4,390 جنيه في الشهر", "About EGP 4,390 a month"), sar: T("يعني حوالي 304 ريال في الشهر", "About SAR 304 a month") }[MARED.cur];
     $("total-local").textContent = local || ""; $("total-local").hidden = !local;
+    // The same month with Mared Plus, and what that saves against the receipt's total (the totals above, per currency).
+    const without = { usd: 80.98, egp: 4390, sar: 304 }[MARED.cur], plus = MARED.prices.plus[MARED.cur];
+    const saved = (without - plus).toLocaleString("en", { maximumFractionDigits: MARED.cur === "egp" ? 0 : 2, minimumFractionDigits: MARED.cur === "egp" ? 0 : 2 });
+    const unit = MARED.cur === "usd" ? (s) => `$${s}` : isEn() ? (s) => `${MARED.cur.toUpperCase()} ${s}` : (s) => `${s} ${{ egp: "جنيه", sar: "ريال" }[MARED.cur]}`;
+    $("with-price").innerHTML = MARED.amountHtml("plus", isEn());
+    const pct = Math.round((1 - plus / without) * 100);
+    $("save").innerHTML = T(`بتوفّر <bdi>${unit(saved)}</bdi> كل شهر (<bdi dir="ltr">${pct}%</bdi>)`, `You save ${unit(saved)} every month (${pct}%)`);
   }
 
   const ar = {}, arLabel = {}, arAlt = {};
