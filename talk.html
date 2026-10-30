@@ -760,15 +760,17 @@
   const TOPICS = [["", "اختارلي", "Surprise me"], ["science", "علوم", "Science"], ["technology", "تكنولوجيا", "Technology"], ["films and series", "أفلام ومسلسلات", "Films and series"],
     ["football", "كورة", "Football"], ["history", "تاريخ", "History"], ["travel", "سفر", "Travel"], ["a job interview role-play: you are the interviewer", "مقابلة شغل", "Job interview"],
     ["everyday slang and idioms people really use", "كلام الشارع", "Everyday slang"]];
-  let topic = "";
+  // picked: the chip; topic: what this call is about now (Mared names it as it goes). Each call starts from the chip, so
+  // «اختارلي» is a fresh surprise every time (Farah, 30 Oct 2026: two in a row were both about octopuses).
+  let picked = "", topic = "";
   function chips() {
     const box = $("chips"); box.innerHTML = "";
     $("learn").disabled = live; // a call keeps its language
     if (live) return;
     for (const [value, ar, en] of TOPICS) {
       const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = T(ar, en);
-      b.setAttribute("aria-pressed", String(topic === value));
-      b.addEventListener("click", () => { topic = value; chips(); });
+      b.setAttribute("aria-pressed", String(picked === value));
+      b.addEventListener("click", () => { picked = value; chips(); });
       box.appendChild(b);
     }
   }
@@ -831,7 +833,7 @@
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, channelCount: 1 } });
     } catch (e) { status(T("محتاج إذن الميكروفون عشان نتكلم.", "I need the microphone to talk.")); return; }
-    live = true; history = ""; line = ""; expect = "none"; stucks = 0; prev = ""; muted = false; callAt = 0; dialAt = Date.now();
+    live = true; topic = picked; history = ""; line = ""; expect = "none"; stucks = 0; prev = ""; muted = false; callAt = 0; dialAt = Date.now();
     $("call").dataset.muted = "false"; chips(); orb("thinking"); paint(); $("after").textContent = "";
     clearInterval(clockTimer); clockTimer = setInterval(clock, 500);
     ring(true);
@@ -1003,7 +1005,7 @@
       if (!t) throw Object.assign(new Error("no turn"), { status: 502 });
       if (!live || my !== gen) return;
       sayNow(t.say); // an older server sends no early words
-      if (t.line && repeats(t.line, t.say)) { t.line = ""; t.gloss = ""; }
+      if (t.line && t.expect !== "repeat" && repeats(t.line, t.say)) { t.line = ""; t.gloss = ""; } // a line to say back always stays
       prev = t.prev || "";
       if (ev === "answer") history += "Learner: " + heard + "\n";
       history += (who ? who.name : "Mared") + ": " + t.say + (t.line ? " [line: " + t.line + "]" : "") + "\n";
