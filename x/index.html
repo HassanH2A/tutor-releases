@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مارد · شرح اتبعتلك</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="شرح مرسوم بصوت مارد. دوس شغّل واتفرّج.">
+<meta property="og:title" content="مارد شرحلي ده، اتفرّج">
+<meta property="og:description" content="شرح مرسوم على الشاشة بصوت مارد، صاحبك اللي فاهم في الكمبيوتر.">
+<meta property="og:image" content="https://yamared.com/icon.png">
+<meta name="theme-color" content="#f7f3ea">
+<link rel="icon" href="../icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  /* An explanation someone sent (Hassan, 4 Nov 2026: every board a link). The saved page plays in a sandboxed frame:
+     its script runs, but never as yamared.com. */
+  :root { --bg: #f7f3ea; --ink: #0a0f1e; --muted: #566074; --gold: #9a6a17; --board: #111214; }
+  html, body { margin: 0; height: 100%; background: var(--board); }
+  body { display: flex; flex-direction: column; font-family: "Readex Pro", "Segoe UI", system-ui, sans-serif; }
+  header { display: flex; align-items: center; gap: 12px; padding: 10px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px));
+           background: var(--bg); color: var(--ink); }
+  header img { width: 36px; height: 36px; }
+  header p { margin: 0; flex: 1; min-width: 0; font-size: .95rem; line-height: 1.4; }
+  header small { display: block; color: var(--muted); font-size: .8rem; }
+  header a { flex: none; background: var(--ink); color: var(--bg); text-decoration: none; border-radius: 999px; padding: 9px 18px; font-weight: 600; font-size: .9rem; }
+  iframe { flex: 1; width: 100%; border: 0; background: var(--board); }
+  @media (max-width: 520px) { header small { display: none; } header a { padding: 8px 14px; } }
+  #note { margin: auto; padding: 24px 16px; color: #d8d6cf; text-align: center; font-size: 1.05rem; }
+</style>
+</head>
+<body>
+<header>
+  <img src="../icon.png" alt="">
+  <p id="who">شرح اتبعتلك من مارد<small>صاحبك اللي فاهم في الكمبيوتر، بيشرح بصوته على شاشتك</small></p>
+  <a id="try" href="https://yamared.com/?from=share">جرّب مارد ببلاش</a>
+</header>
+<div id="note">بيحمّل الشرح…</div>
+<script>
+  const id = location.search.slice(1).split('&')[0];
+  const note = document.getElementById('note');
+  const en = !/^ar/i.test(navigator.language || '');
+  if (en) {
+    document.documentElement.lang = 'en'; document.documentElement.dir = 'ltr';
+    document.getElementById('who').innerHTML = 'An explanation sent to you from Mared<small>The friend who knows computers, explaining with its voice on your screen</small>';
+    document.getElementById('try').textContent = 'Try Mared free';
+    note.textContent = 'Loading the explanation…';
+  }
+  const missing = () => { note.textContent = en ? "This explanation isn't here any more." : 'الشرح ده مش موجود.'; };
+  if (!/^[A-Za-z0-9]{8,16}$/.test(id)) missing();
+  else fetch(`https://btyuidhqihwxnynivbgz.supabase.co/storage/v1/object/public/shared/${id}.html`)
+    .then(r => r.ok ? r.text() : Promise.reject())
+    .then(html => {
+      const f = document.createElement('iframe');
+      f.setAttribute('sandbox', 'allow-scripts'); // no allow-same-origin: it can't read or change this page
+      f.setAttribute('allow', 'autoplay');
+      f.title = document.title;
+      f.srcdoc = html;
+      note.replaceWith(f);
+    })
+    .catch(missing);
+</script>
+</body>
+</html>
