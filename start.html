@@ -271,7 +271,7 @@
       </div>
       <div class="field">
         <label for="sender" data-i="senderL">حوّلت من رقم أو حساب إيه؟</label>
-        <p class="hint" data-i="senderH">رقم المحفظة، أو اسم إنستاباي بتاعك.</p>
+        <p class="hint" data-i="senderH">رقم المحفظة. لو حوّلت بإنستاباي: اسمك كامل زي ما هو في البنك.</p>
         <input id="sender" name="sender" type="text" maxlength="80" autocomplete="off" spellcheck="false" dir="auto" required>
       </div>
       <div class="field">
@@ -327,7 +327,7 @@
     payT: "Pay with InstaPay or a wallet", payP: "Send the amount, tell us where you sent it from, and we'll turn on your plan as soon as we confirm it.",
     planL: "Plan", mini: "Mini", plus: "Plus", max: "Max", monthsL: "How long", m1: "1 month", m3: "3 months", m12: "1 year", total: "Amount",
     methodL: "How will you send it?", noWallets: "Wallet payments open very soon. Until then, you can pay by card.", copy: "Copy",
-    senderL: "Which number or account did you send it from?", senderH: "Your wallet number, or your InstaPay name.", refL: "Transaction number (if there is one)",
+    senderL: "Which number or account did you send it from?", senderH: "Your wallet number. If you used InstaPay: your full name as it is at your bank.", refL: "Transaction number (if there is one)",
     payB: "I've sent it, confirm my plan"
   };
   const METHODS = { instapay: ["إنستاباي", "InstaPay"], vodafone: ["فودافون كاش", "Vodafone Cash"], etisalat: ["اتصالات كاش", "Etisalat Cash"], orange: ["أورنج كاش", "Orange Cash"] };
@@ -593,8 +593,9 @@
     const err = $("pay-err"), btn = e.submitter, sender = $("sender").value.trim();
     if (sender.length < 3) { $("sender").setAttribute("aria-invalid", "true"); err.textContent = T("اكتب الرقم أو الاسم اللي حوّلت منه.", "Enter the number or name you sent it from."); $("sender").focus(); return; }
     $("sender").removeAttribute("aria-invalid"); err.textContent = ""; btn.disabled = true;
-    const { error } = await db.rpc("report_manual_payment", {
-      p_method: document.querySelector('input[name="method"]:checked').value,
+    const method = document.querySelector('input[name="method"]:checked').value;
+    const { data: id, error } = await db.rpc("report_manual_payment", {
+      p_method: method,
       p_plan: document.querySelector('input[name="plan"]:checked').value,
       p_months: Number(document.querySelector('input[name="months"]:checked').value),
       p_sender: sender, p_reference: $("reference").value.trim() || null
@@ -603,9 +604,25 @@
     if (error) { err.textContent = /pending/.test(error.message) ? T("عندك تحويلات لسه بنراجعها. استنى لما نأكّدها.", "You have transfers we're still checking. Wait until we confirm them.") : T("ما اتبعتش. جرّب تاني.", "That didn't send. Try again."); return; }
     $("pay-form").hidden = true;
     $("pay-done").hidden = false;
-    $("pay-done").textContent = T("تمام! هنراجع التحويل ونفعّل اشتراكك في أقرب وقت. هتلاقيه شغّال في مارد على طول.", "Done! We'll check the transfer and turn on your plan soon. You'll see it in Mared right away.");
+    if (method === "instapay") {
+      $("pay-done").textContent = T("تمام! بنأكّد التحويل دلوقتي، عادةً في دقيقة. سيب الصفحة دي مفتوحة.", "Done! We're confirming your transfer now, usually within a minute. Keep this page open.");
+      watchPaid(id);
+    } else {
+      $("pay-done").textContent = T("تمام! هنراجع التحويل ونفعّل اشتراكك في أقرب وقت. هتلاقيه شغّال في مارد على طول.", "Done! We'll check the transfer and turn on your plan soon. You'll see it in Mared right away.");
+    }
     loadMine();
   });
+  // InstaPay confirms itself from the bank's text (migration 036); look every 10 s for 3 minutes.
+  function watchPaid(id, tries = 18) {
+    setTimeout(async () => {
+      const { data } = await db.from("manual_payments").select("status").eq("id", id).maybeSingle();
+      if (data?.status === "approved") {
+        $("pay-done").textContent = T("وصل التحويل! اشتراكك شغّال دلوقتي في مارد.", "Transfer received! Your plan is on in Mared now.");
+        loadMine();
+      } else if (tries > 1) watchPaid(id, tries - 1);
+      else $("pay-done").textContent = T("لسه ما وصلناش التحويل. أول ما يوصل هنفعّل اشتراكك، وهتلاقيه شغّال في مارد.", "Your transfer hasn't reached us yet. We'll turn on your plan as soon as it does, and you'll see it in Mared.");
+    }, 10000);
+  }
   async function loadMine() {
     const { data } = await db.from("manual_payments").select("id, method, plan, months, amount_egp, status, created_at").order("created_at", { ascending: false }).limit(5);
     $("mine").replaceChildren(...(data || []).map((p) => {
