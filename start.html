@@ -109,16 +109,58 @@
   .steps li::before { content: counter(s); color: var(--action); font-weight: 600; }
   .steps b { color: var(--ink); font-weight: 500; }
 
-  /* Wallet payment */
-  .amount { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin: 1.5rem 0; padding: 1.1rem 1.25rem; border-radius: 16px; background: var(--raised);
-            font-variant-numeric: tabular-nums; }
-  .amount b { font-size: 1.8rem; font-weight: 600; color: var(--action); }
-  .send { margin: 0 0 1.5rem; padding: 1.1rem 1.25rem; border-radius: 16px; background: var(--field); box-shadow: inset 0 0 0 1px var(--line); }
-  .send p { margin: 0 0 0.6rem; color: var(--muted); }
-  .send .to { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
-  .send .to strong { font-size: 1.35rem; font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-  .copy { flex: none; min-height: 40px; padding: 0 1rem; border: 0; border-radius: 999px; background: var(--raised); color: var(--action); font: inherit; font-weight: 600; cursor: pointer; }
-  .mine { margin: 2rem 0 0; padding: 0; list-style: none; }
+  /* Wallet payment: three numbered steps on a thin rail; what to send, and where, in one dark card */
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .pay-steps { margin: 0; padding: 0; list-style: none; counter-reset: p; }
+  .pay-steps > li { position: relative; counter-increment: p; padding-block-end: 2.25rem; padding-inline-start: 3rem; }
+  .pay-steps > li::before { content: counter(p); position: absolute; inset-inline-start: 0; top: 0; display: grid; place-items: center; width: 2rem; height: 2rem;
+                            border-radius: 50%; background: var(--action); color: var(--bg); font-size: 0.95rem; font-weight: 600; }
+  .pay-steps > li:not(:last-child)::after { content: ""; position: absolute; inset-inline-start: calc(1rem - 1px); top: 2.6rem; bottom: 0.6rem; width: 2px; border-radius: 2px; background: var(--line); }
+  .step-t { margin: 0.05rem 0 1rem; font-size: 1.2rem; font-weight: 600; line-height: 1.5; }
+  .seg input, .plans input, .methods input { position: absolute; opacity: 0; pointer-events: none; }
+  .seg label:has(input:focus-visible), .plan:has(input:focus-visible), .methods label:has(input:focus-visible) { outline: 2px solid var(--action-hover); outline-offset: 2px; }
+  .seg { display: flex; gap: 0.25rem; margin: 0 0 0.8rem; padding: 0.25rem; border: 0; border-radius: 999px; background: var(--raised); }
+  .seg label { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 42px; margin: 0; border-radius: 999px; font-size: 0.95rem; font-weight: 400;
+               cursor: pointer; transition: background-color 0.2s, box-shadow 0.2s; }
+  .seg label:has(input:checked) { background: var(--field); box-shadow: 0 1px 3px rgb(10 15 30 / 0.14); font-weight: 600; }
+  .plans { display: grid; gap: 0.6rem; margin: 0; padding: 0; border: 0; }
+  .plan { display: grid; grid-template-columns: 1.25rem minmax(0, 1fr) auto; align-items: center; gap: 0.15rem 0.85rem; margin: 0; padding: 1rem 1.15rem; border-radius: 16px;
+          background: var(--field); box-shadow: inset 0 0 0 1px var(--line); cursor: pointer; transition: box-shadow 0.2s; }
+  .plan::before { content: ""; grid-row: span 2; width: 1.25rem; height: 1.25rem; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--dim); transition: box-shadow 0.2s; }
+  .plan:has(input:checked) { box-shadow: inset 0 0 0 2px var(--action); }
+  .plan:has(input:checked)::before { box-shadow: inset 0 0 0 6px var(--action); }
+  .pn { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-weight: 600; }
+  .pp { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .ps { grid-column: 2 / -1; color: var(--muted); font-size: 0.88rem; }
+  .ps:empty { display: none; }
+  .best { padding: 0.05rem 0.55rem; border-radius: 999px; background: rgb(154 106 23 / 0.14); color: var(--gold); font-size: 0.78rem; font-weight: 500; }
+  .methods { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; margin: 0 0 0.9rem; padding: 0; border: 0; }
+  .methods label { display: flex; align-items: center; justify-content: center; min-height: 50px; margin: 0; padding: 0 0.75rem; border-radius: 14px; background: var(--field);
+                   box-shadow: inset 0 0 0 1px var(--line); font-weight: 500; text-align: center; cursor: pointer; transition: box-shadow 0.2s; }
+  .methods label:has(input:checked) { box-shadow: inset 0 0 0 2px var(--action); }
+  .plan:hover:not(:has(input:checked)), .methods label:hover:not(:has(input:checked)) { box-shadow: inset 0 0 0 1px var(--dim); }
+  .seg label, .plan, .methods label, .copy, .cta { touch-action: manipulation; }
+  .send { padding: 1.25rem; border-radius: 18px; background: var(--action); color: var(--bg); }
+  .send-l { margin: 0; color: rgb(247 243 234 / 0.75); font-size: 0.95rem; }
+  .send .big { display: block; margin: 0.1rem 0 1rem; font-size: 2.2rem; font-weight: 600; line-height: 1.25; font-variant-numeric: tabular-nums; }
+  .to-row { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding-block: 0.6rem; padding-inline: 0.95rem 0.5rem; border-radius: 12px;
+            background: rgb(247 243 234 / 0.1); }
+  .to-row + .to-row { margin-top: 0.5rem; }
+  .to-row strong { direction: ltr; unicode-bidi: isolate; font-size: 1.15rem; font-weight: 500; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .copy { flex: none; min-height: 40px; padding: 0 1rem; border: 0; border-radius: 999px; background: var(--bg); color: var(--action); font: inherit; font-weight: 600; cursor: pointer; }
+  .send-h { margin: 0.9rem 0 0; color: rgb(247 243 234 / 0.75); font-size: 0.88rem; }
+  #sender { margin-bottom: 1rem; }
+  .wait { padding: 2.25rem 1.5rem; border-radius: 20px; background: var(--raised); text-align: center; }
+  .wait h2 { margin: 1rem 0 0.4rem; font-size: 1.35rem; font-weight: 600; }
+  .wait p { margin: 0; color: var(--muted); text-wrap: pretty; }
+  .ring { display: inline-grid; place-items: center; width: 3.25rem; height: 3.25rem; border: 3px solid var(--line); border-top-color: var(--action); border-radius: 50%;
+          animation: spin 0.9s linear infinite; }
+  .ring.ok { border: 0; background: #1e7a3a; color: #fff; font-size: 1.6rem; font-weight: 600; animation: none; }
+  .ring.late { border-top-color: var(--line); animation: none; }
+  @keyframes spin { to { transform: rotate(1turn); } }
+  @media (prefers-reduced-motion: reduce) { .ring { animation-duration: 3s; } }
+  .mine-t { margin: 2.5rem 0 0; font-size: 1rem; font-weight: 600; }
+  .mine { margin: 0.5rem 0 0; padding: 0; list-style: none; }
   .mine li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.75rem 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.95rem; }
   .st-pending { color: var(--action); } .st-approved { color: #1e7a3a; } .st-rejected { color: var(--bad); }
 
@@ -245,43 +287,51 @@
 
   <!-- Wallet payment -->
   <section id="s-pay" hidden>
-    <h1 data-i="payT">ادفع بإنستاباي أو محفظة</h1>
-    <p class="sub" data-i="payP">حوّل المبلغ، وقولّنا حوّلت منين، وهنفعّل اشتراكك أول ما نتأكد.</p>
+    <h1 data-i="payT">ادفع من موبايلك</h1>
+    <p class="sub" data-i="payP">٣ خطوات بس. أول ما التحويل يوصلنا، اشتراكك بيشتغل لوحده.</p>
     <form id="pay-form" novalidate>
-      <fieldset class="field chips" aria-labelledby="plan-l">
-        <legend class="label" id="plan-l" data-i="planL">الباقة</legend>
-        <label><input type="radio" name="plan" value="mini"><span translate="no" data-i="mini">ميني</span></label>
-        <label><input type="radio" name="plan" value="plus" checked><span translate="no" data-i="plus">بلس</span></label>
-        <label><input type="radio" name="plan" value="max"><span translate="no" data-i="max">ماكس</span></label>
-      </fieldset>
-      <fieldset class="field chips" aria-labelledby="months-l">
-        <legend class="label" id="months-l" data-i="monthsL">المدة</legend>
-        <label><input type="radio" name="months" value="1" checked><span data-i="m1">شهر</span></label>
-        <label><input type="radio" name="months" value="3"><span data-i="m3">3 شهور</span></label>
-        <label><input type="radio" name="months" value="12"><span data-i="m12">سنة</span></label>
-      </fieldset>
-      <div class="amount"><span data-i="total">المبلغ</span><b id="amount" class="ltr"></b></div>
-      <fieldset class="field chips" id="methods" aria-labelledby="method-l">
-        <legend class="label" id="method-l" data-i="methodL">هتحوّل بإيه؟</legend>
-      </fieldset>
-      <p class="flash" id="no-wallets" hidden data-i="noWallets">الدفع بالمحافظ هيتفتح قريب جدًا. لحد ما يتفتح، تقدر تدفع بالكارت.</p>
-      <div class="send" id="send" hidden>
-        <p id="send-text"></p>
-        <div class="to"><strong id="send-to" class="ltr"></strong><button class="copy" id="send-copy" type="button" data-i="copy">انسخ</button></div>
-      </div>
-      <div class="field">
-        <label for="sender" data-i="senderL">حوّلت من رقم أو حساب إيه؟</label>
-        <p class="hint" data-i="senderH">رقم المحفظة. لو حوّلت بإنستاباي: اسمك كامل زي ما هو في البنك.</p>
-        <input id="sender" name="sender" type="text" maxlength="80" autocomplete="off" spellcheck="false" dir="auto" required>
-      </div>
-      <div class="field">
-        <label for="reference" data-i="refL">رقم العملية (لو موجود)</label>
-        <input id="reference" name="reference" type="text" maxlength="80" autocomplete="off" spellcheck="false" dir="ltr">
-      </div>
-      <button class="cta" type="submit" data-i="payB">حوّلت، أكّدوا اشتراكي</button>
-      <p class="err" id="pay-err" role="alert"></p>
+      <ol class="pay-steps">
+        <li>
+          <h2 class="step-t" data-i="s1T">اختار باقتك</h2>
+          <fieldset class="seg">
+            <legend class="vh" data-i="monthsL">المدة</legend>
+            <label><input type="radio" name="months" value="1" checked><span data-i="m1">شهر</span></label>
+            <label><input type="radio" name="months" value="3"><span data-i="m3">3 شهور</span></label>
+            <label><input type="radio" name="months" value="12"><span data-i="m12">سنة</span></label>
+          </fieldset>
+          <fieldset class="plans">
+            <legend class="vh" data-i="planL">الباقة</legend>
+            <label class="plan"><input type="radio" name="plan" value="mini"><span class="pn"><span translate="no" data-i="mini">ميني</span></span><span class="pp"></span><span class="ps"></span></label>
+            <label class="plan"><input type="radio" name="plan" value="plus" checked><span class="pn"><span translate="no" data-i="plus">بلس</span><span class="best" data-i="best">الأنسب</span></span><span class="pp"></span><span class="ps"></span></label>
+            <label class="plan"><input type="radio" name="plan" value="max"><span class="pn"><span translate="no" data-i="max">ماكس</span></span><span class="pp"></span><span class="ps"></span></label>
+          </fieldset>
+        </li>
+        <li>
+          <h2 class="step-t" data-i="s2T">حوّل المبلغ</h2>
+          <fieldset class="methods" id="methods"><legend class="vh" data-i="methodL">هتحوّل بإيه؟</legend></fieldset>
+          <p class="flash" id="no-wallets" hidden data-i="noWallets">الدفع بالمحافظ هيتفتح قريب جدًا. لحد ما يتفتح، تقدر تدفع بالكارت.</p>
+          <div class="send" id="send-box" hidden>
+            <p class="send-l" id="send-text"></p>
+            <b class="big" id="send-amount"></b>
+            <div id="send-to"></div>
+            <p class="send-h" id="send-h"></p>
+          </div>
+        </li>
+        <li>
+          <h2 class="step-t" data-i="s3T">قولّنا حوّلت منين</h2>
+          <label for="sender" id="sender-l"></label>
+          <input id="sender" name="sender" type="text" maxlength="80" autocomplete="off" spellcheck="false" required>
+          <button class="cta" type="submit" data-i="payB">حوّلت، فعّلوا اشتراكي</button>
+          <p class="err" id="pay-err" role="alert"></p>
+        </li>
+      </ol>
     </form>
-    <p class="flash" id="pay-done" hidden role="status"></p>
+    <div class="wait" id="pay-done" hidden role="status" aria-live="polite">
+      <span class="ring" id="wait-ring" aria-hidden="true"></span>
+      <h2 id="wait-t"></h2>
+      <p id="wait-p"></p>
+    </div>
+    <h2 class="mine-t" id="mine-t" hidden data-i="mineT">تحويلاتك</h2>
     <ul class="mine" id="mine"></ul>
   </section>
   <p class="owner" data-i="owner">مارد منتج من <bdi dir="ltr" translate="no">Felicity Capital Limited Liability Company</bdi>، وكل الحقوق محفوظة لها. <span class="ltr">© 2026</span></p>
@@ -324,11 +374,11 @@
     st1: "Open the file you downloaded.",
     st2: 'If you see “<span translate="no" class="ltr">Windows protected your PC</span>”, click <b translate="no">More info</b>, then <b translate="no">Run anyway</b>.',
     toPay: "Want to pay with InstaPay or a wallet?",
-    payT: "Pay with InstaPay or a wallet", payP: "Send the amount, tell us where you sent it from, and we'll turn on your plan as soon as we confirm it.",
-    planL: "Plan", mini: "Mini", plus: "Plus", max: "Max", monthsL: "How long", m1: "1 month", m3: "3 months", m12: "1 year", total: "Amount",
-    methodL: "How will you send it?", noWallets: "Wallet payments open very soon. Until then, you can pay by card.", copy: "Copy",
-    senderL: "Which number or account did you send it from?", senderH: "Your wallet number. If you used InstaPay: your full name as it is at your bank.", refL: "Transaction number (if there is one)",
-    payB: "I've sent it, confirm my plan"
+    payT: "Pay from your phone", payP: "Just 3 steps. As soon as your transfer reaches us, your plan turns on by itself.",
+    planL: "Plan", mini: "Mini", plus: "Plus", max: "Max", best: "Recommended", monthsL: "How long", m1: "1 month", m3: "3 months", m12: "1 year",
+    s1T: "Pick your plan", s2T: "Send the amount", s3T: "Tell us where you sent it from",
+    methodL: "How will you send it?", noWallets: "Wallet payments open very soon. Until then, you can pay by card.",
+    payB: "I've sent it, turn on my plan", mineT: "Your transfers"
   };
   const METHODS = { instapay: ["إنستاباي", "InstaPay"], vodafone: ["فودافون كاش", "Vodafone Cash"], etisalat: ["اتصالات كاش", "Etisalat Cash"], orange: ["أورنج كاش", "Orange Cash"] };
   const STATUS = { pending: ["بنراجعه", "Checking"], approved: ["اتفعّل", "Active"], rejected: ["ما وصلش", "Not received"] };
@@ -548,79 +598,125 @@
   }
 
   // Wallet payment
+  // Opened once on load and again when sign-in lands, often both at once: one shared fetch, and the methods are built
+  // only if they aren't there yet (they used to be added twice).
+  let detailsFetch;
   async function openPay() {
     show("s-pay");
-    if (!details) {
-      const { data } = await db.rpc("payment_details");
-      details = data || { wallets: {}, packs: {} };
-      const box = $("methods");
-      Object.entries(METHODS).forEach(([k]) => {
-        if (!details.wallets?.[k]) return;
-        const l = document.createElement("label");
-        l.innerHTML = `<input type="radio" name="method" value="${k}"><span></span>`;
-        l.querySelector("input").addEventListener("change", paintPay);
-        box.append(l);
-      });
-      const chosen = document.querySelector(`input[name="plan"][value="${PLAN}"]`);
-      if (chosen) chosen.checked = true;
-      const first = box.querySelector("input");
-      if (first) first.checked = true;
-      $("no-wallets").hidden = !!first;
-      $("pay-form").querySelectorAll('input[name="plan"], input[name="months"]').forEach((i) => i.addEventListener("change", paintPay));
-    }
+    details ??= await (detailsFetch ??= db.rpc("payment_details").then(({ data }) => data || { wallets: {}, packs: {} }));
+    if (!$("methods").querySelector("input")) buildPay();
     paintPay();
     loadMine();
   }
-  function paintPay() {
-    const plan = document.querySelector('input[name="plan"]:checked')?.value, months = document.querySelector('input[name="months"]:checked')?.value;
-    const amount = details?.packs?.[plan]?.[months];
-    $("amount").textContent = amount ? T(`${amount.toLocaleString("en")} جنيه`, `EGP ${amount.toLocaleString("en")}`) : "";
-    $("methods").querySelectorAll("label").forEach((l) => { l.querySelector("span").textContent = T(...METHODS[l.querySelector("input").value]); });
-    const method = document.querySelector('input[name="method"]:checked')?.value;
-    $("send").hidden = !method;
-    if (method) {
-      $("send-text").textContent = T(`حوّل ${amount?.toLocaleString("en")} جنيه بـ${METHODS[method][0]} على:`, `Send EGP ${amount?.toLocaleString("en")} by ${METHODS[method][1]} to:`);
-      $("send-to").textContent = details.wallets[method];
-    }
-    $("pay-form").querySelector('button[type="submit"]').disabled = !method;
+  function buildPay() {
+    const box = $("methods");
+    Object.keys(METHODS).filter((k) => details.wallets?.[k]).forEach((k, i) => {
+      const l = document.createElement("label");
+      l.innerHTML = `<input type="radio" name="method" value="${k}"${i ? "" : " checked"}><span translate="no"></span>`;
+      box.append(l);
+    });
+    const chosen = document.querySelector(`input[name="plan"][value="${PLAN}"]`);
+    if (chosen) chosen.checked = true;
+    $("no-wallets").hidden = !!box.querySelector("input");
+    $("pay-form").addEventListener("change", (e) => { if (e.target.name !== "sender") paintPay(); });
   }
-  $("send-copy").addEventListener("click", () => {
-    const b = $("send-copy");
-    navigator.clipboard?.writeText($("send-to").textContent).then(() => { b.textContent = T("اتنسخ ✓", "Copied ✓"); }, () => {});
-  });
+  const num = (n) => new Intl.NumberFormat("en").format(n);
+  const egp = (n) => T(`${num(n)} جنيه`, `EGP ${num(n)}`);
+  const picked = (name) => document.querySelector(`input[name="${name}"]:checked`)?.value;
+  function paintPay() {
+    const packs = details?.packs || {}, plan = picked("plan"), months = Number(picked("months")), method = picked("method");
+    // Each plan's price for the chosen length; for 3 months or a year, what that is a month and the saving.
+    document.querySelectorAll(".plan").forEach((l) => {
+      const p = l.querySelector("input").value, total = packs[p]?.[months], monthly = packs[p]?.[1];
+      l.querySelector(".pp").textContent = total ? egp(total) : "";
+      const save = months > 1 && total && monthly ? Math.round((1 - total / (monthly * months)) * 100) : 0;
+      l.querySelector(".ps").textContent = months > 1 && total
+        ? T(`يعني ${num(Math.round(total / months))} جنيه في الشهر`, `${num(Math.round(total / months))} EGP a month`) + (save > 0 ? T(` · وفّرت00a0${save}%`, ` · save00a0${save}%`) : "")
+        : "";
+    });
+    $("methods").querySelectorAll("label").forEach((l) => { l.querySelector("span").textContent = T(...METHODS[l.querySelector("input").value]); });
+    const amount = packs[plan]?.[months];
+    $("send-box").hidden = !method || !amount;
+    if (method && amount) {
+      $("send-text").textContent = T(`حوّل بالظبط بـ${METHODS[method][0]}`, `Send exactly, by ${METHODS[method][1]}`);
+      $("send-amount").textContent = egp(amount);
+      // "address / number": each on its own line with its own Copy.
+      $("send-to").replaceChildren(...details.wallets[method].split("/").map((s) => s.trim()).filter(Boolean).map((to) => {
+        const row = document.createElement("div");
+        row.className = "to-row";
+        row.innerHTML = `<strong translate="no"></strong><button class="copy" type="button"></button>`;
+        const b = row.lastChild;
+        row.firstChild.textContent = to;
+        b.textContent = T("انسخ", "Copy");
+        b.setAttribute("aria-label", T(`انسخ ${to}`, `Copy ${to}`));
+        b.addEventListener("click", () => navigator.clipboard?.writeText(to).then(() => {
+          b.textContent = T("اتنسخ ✓", "Copied ✓");
+          setTimeout(() => { b.textContent = T("انسخ", "Copy"); }, 2000);
+        }, () => {}));
+        return row;
+      }));
+      $("send-h").textContent = method === "instapay"
+        ? T("ابعت على العنوان أو على الرقم، الاتنين بيوصلوا لنفس الحساب.", "Send to the address or the number; both reach the same account.")
+        : T("من أي محفظة: فودافون كاش أو اتصالات كاش أو أورنج كاش.", "From any wallet: Vodafone Cash, Etisalat Cash or Orange Cash.");
+    }
+    // Step 3 asks for what the bank's or Vodafone's text will show: the bank name for InstaPay, the number for a wallet.
+    const ip = method === "instapay", s = $("sender");
+    $("sender-l").textContent = ip ? T("اسمك كامل زي ما هو في البنك", "Your full name, as it is at your bank") : T("رقم المحفظة اللي حوّلت منها", "The wallet number you sent from");
+    s.placeholder = ip ? T("مثلًا: أحمد محمد علي…", "e.g. Ahmed Mohamed Ali…") : "01xxxxxxxxx…";
+    s.inputMode = ip ? "text" : "tel";
+    s.dir = ip ? "auto" : "ltr";
+    s.autocomplete = ip ? "name" : "tel-national";
+  }
   $("pay-form").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const err = $("pay-err"), btn = e.submitter, sender = $("sender").value.trim();
-    if (sender.length < 3) { $("sender").setAttribute("aria-invalid", "true"); err.textContent = T("اكتب الرقم أو الاسم اللي حوّلت منه.", "Enter the number or name you sent it from."); $("sender").focus(); return; }
-    $("sender").removeAttribute("aria-invalid"); err.textContent = ""; btn.disabled = true;
-    const method = document.querySelector('input[name="method"]:checked').value;
+    const err = $("pay-err"), btn = e.submitter, sender = $("sender").value.trim(), method = picked("method");
+    if (!method) { err.textContent = T("اختار هتحوّل بإيه في الخطوة ٢.", "Pick how you'll send it in step 2."); $("methods").querySelector("input")?.focus(); return; }
+    if (sender.length < 3) {
+      $("sender").setAttribute("aria-invalid", "true");
+      err.textContent = method === "instapay" ? T("اكتب اسمك زي ما هو في البنك، عشان نعرف التحويل بتاعك.", "Type your name as it is at your bank, so we can tell your transfer apart.")
+        : T("اكتب رقم المحفظة اللي حوّلت منها، عشان نعرف التحويل بتاعك.", "Type the wallet number you sent from, so we can tell your transfer apart.");
+      $("sender").focus();
+      return;
+    }
+    $("sender").removeAttribute("aria-invalid"); err.textContent = ""; btn.disabled = true; btn.textContent = T("بيتبعت…", "Sending…");
     const { data: id, error } = await db.rpc("report_manual_payment", {
-      p_method: method,
-      p_plan: document.querySelector('input[name="plan"]:checked').value,
-      p_months: Number(document.querySelector('input[name="months"]:checked').value),
-      p_sender: sender, p_reference: $("reference").value.trim() || null
+      p_method: method, p_plan: picked("plan"), p_months: Number(picked("months")), p_sender: sender, p_reference: null
     });
-    btn.disabled = false;
-    if (error) { err.textContent = /pending/.test(error.message) ? T("عندك تحويلات لسه بنراجعها. استنى لما نأكّدها.", "You have transfers we're still checking. Wait until we confirm them.") : T("ما اتبعتش. جرّب تاني.", "That didn't send. Try again."); return; }
+    btn.disabled = false; btn.innerHTML = T(ar.payB, en.payB);
+    if (error) {
+      err.textContent = /pending/.test(error.message) ? T("عندك ٣ تحويلات لسه مستنيين. استنى لما يتأكدوا، أو كلّمنا على contact@yamared.com.", "You have 3 transfers still waiting. Wait until they're confirmed, or email contact@yamared.com.")
+        : T("ما اتبعتش. اتأكد إن النت شغّال وجرّب تاني.", "That didn't send. Check your connection and try again.");
+      return;
+    }
     $("pay-form").hidden = true;
-    $("pay-done").hidden = false;
-    $("pay-done").textContent = T("تمام! بنأكّد التحويل دلوقتي، عادةً في دقيقة. سيب الصفحة دي مفتوحة.", "Done! We're confirming your transfer now, usually within a minute. Keep this page open.");
+    waitState("wait");
     watchPaid(id);
     loadMine();
   });
-  // Transfers confirm themselves from the bank's or Vodafone Cash's text (migrations 036, 037); look every 10 s for 3 minutes.
+  function waitState(kind) {
+    const [t, p] = {
+      wait: [T("بنستنى التحويل يوصل…", "Waiting for your transfer…"), T("عادةً بياخد دقيقة. سيب الصفحة دي مفتوحة.", "It usually takes a minute. Keep this page open.")],
+      ok: [T("اشتراكك شغّال!", "Your plan is on!"), T("ارجع لمارد، هتلاقيه جاهز.", "Go back to Mared; it's ready.")],
+      late: [T("لسه ما وصلش", "Not here yet"), T("أول ما يوصل هنفعّل اشتراكك لوحده، وهتلاقيه في مارد. مش محتاج تعمل حاجة تانية.", "As soon as it arrives your plan turns on by itself, and you'll see it in Mared. Nothing else to do.")],
+    }[kind];
+    $("pay-done").hidden = false;
+    $("wait-t").textContent = t;
+    $("wait-p").textContent = p;
+    $("wait-ring").className = kind === "wait" ? "ring" : `ring ${kind}`;
+    $("wait-ring").textContent = kind === "ok" ? "✓" : "";
+  }
+  // Transfers confirm themselves from the bank's or Vodafone Cash's text (migrations 036-040); look every 10 s for 3 minutes.
   function watchPaid(id, tries = 18) {
     setTimeout(async () => {
       const { data } = await db.from("manual_payments").select("status").eq("id", id).maybeSingle();
-      if (data?.status === "approved") {
-        $("pay-done").textContent = T("وصل التحويل! اشتراكك شغّال دلوقتي في مارد.", "Transfer received! Your plan is on in Mared now.");
-        loadMine();
-      } else if (tries > 1) watchPaid(id, tries - 1);
-      else $("pay-done").textContent = T("لسه ما وصلناش التحويل. أول ما يوصل هنفعّل اشتراكك، وهتلاقيه شغّال في مارد.", "Your transfer hasn't reached us yet. We'll turn on your plan as soon as it does, and you'll see it in Mared.");
+      if (data?.status === "approved") { waitState("ok"); loadMine(); }
+      else if (tries > 1) watchPaid(id, tries - 1);
+      else waitState("late");
     }, 10000);
   }
   async function loadMine() {
     const { data } = await db.from("manual_payments").select("id, method, plan, months, amount_egp, status, created_at").order("created_at", { ascending: false }).limit(5);
+    $("mine-t").hidden = !data?.length;
     $("mine").replaceChildren(...(data || []).map((p) => {
       const li = document.createElement("li");
       li.innerHTML = `<span></span><span class="st-${p.status}"></span>`;
