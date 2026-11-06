@@ -159,6 +159,14 @@
   .ring.late { border-top-color: var(--line); animation: none; }
   @keyframes spin { to { transform: rotate(1turn); } }
   @media (prefers-reduced-motion: reduce) { .ring { animation-duration: 3s; } }
+  .ring.partial { border-top-color: var(--gold); }
+  .wait-acts { display: grid; gap: 0.6rem; margin-top: 1.25rem; }
+  .wait-acts:empty { display: none; }
+  .wait-acts .ghost { background: var(--field); box-shadow: inset 0 0 0 1px var(--line); }
+  .wait-acts .ghost:hover { box-shadow: inset 0 0 0 1px var(--dim); }
+  .again { margin-top: 1rem; min-height: 44px; padding: 0 0.5rem; border: 0; background: none; color: var(--muted); font: inherit; font-size: 0.95rem;
+           text-decoration: underline; text-underline-offset: 0.25em; cursor: pointer; }
+  .again:hover { color: var(--ink); }
   .mine-t { margin: 2.5rem 0 0; font-size: 1rem; font-weight: 600; }
   .mine { margin: 0.5rem 0 0; padding: 0; list-style: none; }
   .mine li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.75rem 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.95rem; }
@@ -330,6 +338,8 @@
       <span class="ring" id="wait-ring" aria-hidden="true"></span>
       <h2 id="wait-t"></h2>
       <p id="wait-p"></p>
+      <div class="wait-acts" id="wait-acts"></div>
+      <button class="again" id="pay-again" type="button" data-i="again">ادفع تحويل جديد</button>
     </div>
     <h2 class="mine-t" id="mine-t" hidden data-i="mineT">تحويلاتك</h2>
     <ul class="mine" id="mine"></ul>
@@ -378,7 +388,7 @@
     planL: "Plan", mini: "Mini", plus: "Plus", max: "Max", best: "Recommended", monthsL: "How long", m1: "1 month", m3: "3 months", m12: "1 year",
     s1T: "Pick your plan", s2T: "Send the amount", s3T: "Tell us where you sent it from",
     methodL: "How will you send it?", noWallets: "Wallet payments open very soon. Until then, you can pay by card.",
-    payB: "I've sent it, turn on my plan", mineT: "Your transfers"
+    payB: "I've sent it, turn on my plan", mineT: "Your transfers", again: "Start a new payment"
   };
   const METHODS = { instapay: ["إنستاباي", "InstaPay"], vodafone: ["فودافون كاش", "Vodafone Cash"], etisalat: ["اتصالات كاش", "Etisalat Cash"], orange: ["أورنج كاش", "Orange Cash"] };
   const STATUS = { pending: ["بنراجعه", "Checking"], approved: ["اتفعّل", "Active"], rejected: ["ما وصلش", "Not received"] };
@@ -607,7 +617,14 @@
     if (!$("methods").querySelector("input")) buildPay();
     paintPay();
     loadMine();
+    // Back on the page with a transfer still waiting from today: show that, not an empty form.
+    const { data: last } = await db.from("manual_payments").select("id, created_at").eq("status", "pending").order("created_at", { ascending: false }).limit(1).maybeSingle();
+    if (last && Date.now() - new Date(last.created_at) < 864e5 && watching !== last.id) {
+      $("pay-form").hidden = true;
+      watchPaid(last.id);
+    }
   }
+  $("pay-again").addEventListener("click", () => { watching = null; $("pay-done").hidden = true; $("pay-form").hidden = false; $("pay-form").scrollIntoView({ block: "start" }); });
   function buildPay() {
     const box = $("methods");
     Object.keys(METHODS).filter((k) => details.wallets?.[k]).forEach((k, i) => {
@@ -693,26 +710,56 @@
     watchPaid(id);
     loadMine();
   });
-  function waitState(kind) {
+  const MONTHS = { 1: ["شهر", "1 month"], 3: ["3 شهور", "3 months"], 12: ["سنة", "1 year"] };
+  const packName = (plan, months) => months == 1 ? T(...PRICES[plan]) : `${T(...PRICES[plan])} ${T("لمدة", "for")} ${T(...MONTHS[months])}`;
+  // m: the learner's payment row, for "partial" (some money arrived, not the whole price; migration 041).
+  function waitState(kind, m) {
+    const rest = m ? m.amount_egp - Number(m.received) : 0;
     const [t, p] = {
       wait: [T("بنستنى التحويل يوصل…", "Waiting for your transfer…"), T("عادةً بياخد دقيقة. سيب الصفحة دي مفتوحة.", "It usually takes a minute. Keep this page open.")],
       ok: [T("اشتراكك شغّال!", "Your plan is on!"), T("ارجع لمارد، هتلاقيه جاهز.", "Go back to Mared; it's ready.")],
       late: [T("لسه ما وصلش", "Not here yet"), T("أول ما يوصل هنفعّل اشتراكك لوحده، وهتلاقيه في مارد. مش محتاج تعمل حاجة تانية.", "As soon as it arrives your plan turns on by itself, and you'll see it in Mared. Nothing else to do.")],
+      partial: m && [T(`وصلنا ${egp(Number(m.received))} من ${egp(m.amount_egp)}`, `${egp(Number(m.received))} of ${egp(m.amount_egp)} arrived`),
+        T(`حوّل ${egp(rest)} كمان على نفس الرقم، و${packName(m.plan, m.months)} هيشتغل لوحده أول ما يوصلوا.`, `Send ${egp(rest)} more to the same number, and ${packName(m.plan, m.months)} turns on by itself when it arrives.`)],
     }[kind];
     $("pay-done").hidden = false;
     $("wait-t").textContent = t;
     $("wait-p").textContent = p;
     $("wait-ring").className = kind === "wait" ? "ring" : `ring ${kind}`;
     $("wait-ring").textContent = kind === "ok" ? "✓" : "";
+    $("pay-again").hidden = kind === "ok" || kind === "partial";
+    // Partial: the pack the money already sent pays for exactly, one tap away (the server checks it again).
+    const fits = [];
+    if (kind === "partial") Object.entries(details?.packs || {}).forEach(([plan, by]) => Object.entries(by).forEach(([months, price]) => {
+      if (price === Number(m.received)) fits.push([plan, Number(months)]);
+    }));
+    $("wait-acts").replaceChildren(...fits.map(([plan, months]) => {
+      const b = document.createElement("button");
+      b.className = "ghost";
+      b.type = "button";
+      b.textContent = T(`أو فعّل ${packName(plan, months)} بالـ${egp(Number(m.received))} دول`, `Or take ${packName(plan, months)} for the ${egp(Number(m.received))}`);
+      b.addEventListener("click", async () => {
+        b.disabled = true;
+        const { data } = await db.rpc("switch_manual_payment", { p_id: m.id, p_plan: plan, p_months: months });
+        if (data === "approved") { watching = null; waitState("ok"); loadMine(); } else b.disabled = false;
+      });
+      return b;
+    }));
   }
-  // Transfers confirm themselves from the bank's or Vodafone Cash's text (migrations 036-040); look every 10 s for 3 minutes.
-  function watchPaid(id, tries = 18) {
+  // Transfers confirm themselves from the bank's or Vodafone Cash's text (migrations 036-041): every 10 s for 3 minutes,
+  // then every 30 s for half an hour, so the rest of a partial payment is still seen.
+  let watching = null;
+  function watchPaid(id, n = 0) {
+    watching = id;
+    if (n === 0) waitState("wait");
     setTimeout(async () => {
-      const { data } = await db.from("manual_payments").select("status").eq("id", id).maybeSingle();
-      if (data?.status === "approved") { waitState("ok"); loadMine(); }
-      else if (tries > 1) watchPaid(id, tries - 1);
-      else waitState("late");
-    }, 10000);
+      if (watching !== id) return;
+      const { data: m } = await db.from("manual_payments").select("id, status, received, amount_egp, plan, months").eq("id", id).maybeSingle();
+      if (m?.status === "approved") { watching = null; waitState("ok"); loadMine(); return; }
+      if (m?.status === "pending" && Number(m.received) > 0) waitState("partial", m);
+      else if (n === 17) waitState("late");
+      if (n < 77 && m?.status === "pending") watchPaid(id, n + 1);
+    }, n === 0 ? 300 : n < 18 ? 10000 : 30000);
   }
   async function loadMine() {
     const { data } = await db.from("manual_payments").select("id, method, plan, months, amount_egp, status, created_at").order("created_at", { ascending: false }).limit(5);
