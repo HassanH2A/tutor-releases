@@ -631,7 +631,7 @@
       l.querySelector(".pp").textContent = total ? egp(total) : "";
       const save = months > 1 && total && monthly ? Math.round((1 - total / (monthly * months)) * 100) : 0;
       l.querySelector(".ps").textContent = months > 1 && total
-        ? T(`يعني ${num(Math.round(total / months))} جنيه في الشهر`, `${num(Math.round(total / months))} EGP a month`) + (save > 0 ? T(` · وفّرت00a0${save}%`, ` · save00a0${save}%`) : "")
+        ? T(`يعني ${num(Math.round(total / months))} جنيه في الشهر`, `${num(Math.round(total / months))} EGP a month`) + (save > 0 ? T(` · وفّرت ${save}%`, ` · save ${save}%`) : "")
         : "";
     });
     $("methods").querySelectorAll("label").forEach((l) => { l.querySelector("span").textContent = T(...METHODS[l.querySelector("input").value]); });
