@@ -604,15 +604,11 @@
     if (error) { err.textContent = /pending/.test(error.message) ? T("عندك تحويلات لسه بنراجعها. استنى لما نأكّدها.", "You have transfers we're still checking. Wait until we confirm them.") : T("ما اتبعتش. جرّب تاني.", "That didn't send. Try again."); return; }
     $("pay-form").hidden = true;
     $("pay-done").hidden = false;
-    if (method === "instapay") {
-      $("pay-done").textContent = T("تمام! بنأكّد التحويل دلوقتي، عادةً في دقيقة. سيب الصفحة دي مفتوحة.", "Done! We're confirming your transfer now, usually within a minute. Keep this page open.");
-      watchPaid(id);
-    } else {
-      $("pay-done").textContent = T("تمام! هنراجع التحويل ونفعّل اشتراكك في أقرب وقت. هتلاقيه شغّال في مارد على طول.", "Done! We'll check the transfer and turn on your plan soon. You'll see it in Mared right away.");
-    }
+    $("pay-done").textContent = T("تمام! بنأكّد التحويل دلوقتي، عادةً في دقيقة. سيب الصفحة دي مفتوحة.", "Done! We're confirming your transfer now, usually within a minute. Keep this page open.");
+    watchPaid(id);
     loadMine();
   });
-  // InstaPay confirms itself from the bank's text (migration 036); look every 10 s for 3 minutes.
+  // Transfers confirm themselves from the bank's or Vodafone Cash's text (migrations 036, 037); look every 10 s for 3 minutes.
   function watchPaid(id, tries = 18) {
     setTimeout(async () => {
       const { data } = await db.from("manual_payments").select("status").eq("id", id).maybeSingle();
