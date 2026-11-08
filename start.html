@@ -107,6 +107,20 @@
   .steps { display: grid; gap: 0.8rem; margin: 2rem 0 0; padding: 0; list-style: none; counter-reset: s; color: var(--muted); }
   .steps li { display: grid; grid-template-columns: 1.6rem minmax(0, 1fr); gap: 0.5rem; counter-increment: s; }
   .steps li::before { content: counter(s); color: var(--action); font-weight: 600; }
+  /* Step 2's pictures: the two faces of Windows' "protected your PC" box, the control to press ringed in gold. */
+  .shield { display: flex; gap: 14px; flex-wrap: wrap; margin: 0.6rem 0 0; }
+  .shield > div { flex: 1 1 220px; min-width: 0; }
+  .shield .win { background: #fff; border: 1px solid #d9d9d9; border-radius: 8px; overflow: hidden; direction: ltr; text-align: left; font-family: "Segoe UI", system-ui, sans-serif; color: #1b1b1b; box-shadow: 0 2px 10px rgba(0,0,0,.08); }
+  .shield .bar { height: 20px; background: #0067c0; }
+  .shield .body { padding: 12px 14px 14px; }
+  .shield h4 { margin: 0 0 6px; font-size: 15px; font-weight: 600; }
+  .shield p { margin: 0 0 8px; font-size: 11px; line-height: 1.45; color: #555; }
+  .shield .link { display: inline-block; font-size: 11px; color: #0067c0; text-decoration: underline; }
+  .shield .btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+  .shield .btn { padding: 5px 14px; border: 1px solid #c9c9c9; border-radius: 3px; background: #f3f3f3; font-size: 11px; }
+  .shield .hot { outline: 3px solid #F2B544; outline-offset: 3px; border-radius: 3px; }
+  .shield figcaption { margin-top: 6px; font-size: 0.85rem; color: var(--muted); }
+  #open-app { margin-top: 0.5rem; }
   .steps b { color: var(--ink); font-weight: 500; }
 
   /* Wallet payment: three numbered steps on a thin rail; what to send, and where, in one dark card */
@@ -287,8 +301,12 @@
     <button class="cta ph-only" id="send" type="button"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg><span data-i="sendB">ابعت اللينك لنفسك</span></button>
     <ol class="steps pc-only">
       <li><span data-i="st1">افتح الملف اللي نزل.</span></li>
-      <li><span data-i="st2">لو ظهر «<span translate="no" class="ltr">Windows protected your PC</span>»: دوس <b translate="no">More info</b> وبعدين <b translate="no">Run anyway</b>.</span></li>
-      <li><span id="st3"></span></li>
+      <li><div><span data-i="st2">لو ظهر «<span translate="no" class="ltr">Windows protected your PC</span>»: دوس <b translate="no">More info</b> وبعدين <b translate="no">Run anyway</b>.</span>
+        <figure class="shield">
+          <div><div class="win" aria-hidden="true"><div class="bar"></div><div class="body"><h4>Windows protected your PC</h4><p>Microsoft Defender SmartScreen prevented an unrecognized app from starting. Running this app might put your PC at risk.</p><span class="link hot">More info</span><div class="btns"><span class="btn">Don't run</span></div></div></div><figcaption data-i="shA">١. دوس <b translate="no">More info</b></figcaption></div>
+          <div><div class="win" aria-hidden="true"><div class="bar"></div><div class="body"><h4>Windows protected your PC</h4><p>Microsoft Defender SmartScreen prevented an unrecognized app from starting.</p><p>App: Mared-Setup.exe<br>Publisher: Unknown publisher</p><div class="btns"><span class="btn hot">Run anyway</span><span class="btn">Don't run</span></div></div></div><figcaption data-i="shB">٢. دوس <b translate="no">Run anyway</b></figcaption></div>
+        </figure></div></li>
+      <li><div><span id="st3"></span><br><button class="ghost" id="open-app" type="button"></button><p class="note" id="open-note" hidden></p></div></li>
     </ol>
     <p class="note eg-only"><a href="#pay" data-i="toPay">عايز تدفع بإنستاباي أو محفظة؟</a></p>
   </section>
@@ -371,6 +389,7 @@
     agree: 'By signing up you agree to the <a href="terms.html">terms</a> and the <a href="privacy.html">privacy policy</a>.',
     codeL: "Type the code from the email", codeB: "Sign in", owner: 'Mared is a product of <span translate="no">Felicity Capital Limited Liability Company</span>, which owns all rights to it. © 2026',
     haveCode: "I already have a code",
+    shA: "1. Click <b translate=\"no\">More info</b>", shB: "2. Click <b translate=\"no\">Run anyway</b>",
     google: "Continue with Google", or: "or with email", emailL: "Your email", emailB: "Email me a sign-in code", again: "A different email?",
     aboutT: "Two quick things", aboutP: "So we can help you if you ever need it.", phoneL: "Your mobile number",
     heardL: "How did you find Mared?", hFriend: "A friend or family", hGoogle: "Google search", hAd: "An ad", hOther: "Something else", hOtherL: "Where?",
@@ -435,7 +454,22 @@
     $("dl-sub").textContent = T("لو التنزيل ما بدأش لوحده، دوس على الزرار.", "If the download didn't start by itself, click the button.");
     $("dl-psub").textContent = T(`مارد بيشتغل على كمبيوتر Windows. افتح yamared.com من الكمبيوتر، نزّله، وادخل بنفس الإيميل: ${email}. تجربتك المجانية مستنياك.`,
       `Mared runs on a Windows computer. Open yamared.com on your computer, download it, and sign in with the same email: ${email}. Your free trial is waiting.`);
-    $("st3").textContent = T(`افتح مارد وادخل بنفس الإيميل: ${email}`, `Open Mared and sign in with the same email: ${email}`);
+    $("st3").textContent = T(`لما مارد يفتح، دوس هنا وهو يدخّلك بنفس الإيميل (${email}):`, `When Mared opens, press here and it signs you in with the same email (${email}):`);
+    $("open-app").textContent = T("افتح مارد وادخل", "Open Mared, signed in");
+    $("open-note").textContent = T(`لسه ما فتحش؟ خلّص تسطيب الملف اللي نزل الأول، وبعدين دوس تاني. أو ادخل جوه مارد بالإيميل ده: ${email}`, `Didn't open? Finish installing the downloaded file first, then press again. Or sign in inside Mared with this email: ${email}`);
+    // The sign-in handed to the app: a one-time token from the handoff function, carried by a mared: link Windows gives to Mared.
+    $("open-app").onclick = async () => {
+      const { data: { session: s } } = await db.auth.getSession();
+      if (!s) { show("s-account"); return; }
+      $("open-app").disabled = true;
+      try {
+        const r = await fetch(`${SUPABASE_URL}/functions/v1/handoff`, { method: "POST", headers: { Authorization: `Bearer ${s.access_token}`, apikey: SUPABASE_KEY } });
+        const { t } = await r.json();
+        if (!t) throw new Error("no token");
+        location.href = `mared://signin?t=${encodeURIComponent(t)}`; // nothing happens until Mared is installed: the note below then says so
+        setTimeout(() => { $("open-note").hidden = false; $("open-app").disabled = false; }, 2500);
+      } catch { $("open-note").hidden = false; $("open-app").disabled = false; }
+    };
     const [pa, pe] = PRICES[PLAN];
     $("card-p").textContent = T(`مش هتدفع حاجة النهارده. لما التجربة تخلص (أو بعد 14 يوم)، بيبدأ مارد ${pa} بـ ${MARED.price(PLAN, false)} في الشهر على نفس الكارت. تلغي في أي وقت.`,
       `Nothing is charged today. When your trial is used up (or after 14 days), Mared ${pe} starts at ${MARED.price(PLAN, true)} a month on the same card. Cancel anytime.`);
