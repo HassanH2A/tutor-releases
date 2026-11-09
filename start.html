@@ -164,6 +164,9 @@
   .copy { flex: none; min-height: 40px; padding: 0 1rem; border: 0; border-radius: 999px; background: var(--bg); color: var(--action); font: inherit; font-weight: 600; cursor: pointer; }
   .send-h { margin: 0.9rem 0 0; color: rgb(247 243 234 / 0.75); font-size: 0.88rem; }
   #sender { margin-bottom: 1rem; }
+  .confirm { padding: 1.5rem; border-radius: 20px; background: var(--raised); }
+  .confirm-line { margin: 0 0 1.25rem; font-size: 1.15rem; font-weight: 500; line-height: 1.8; overflow-wrap: anywhere; }
+  .confirm .again { display: block; margin-inline: auto; }
   .wait { padding: 2.25rem 1.5rem; border-radius: 20px; background: var(--raised); text-align: center; }
   .wait h2 { margin: 1rem 0 0.4rem; font-size: 1.35rem; font-weight: 600; }
   .wait p { margin: 0; color: var(--muted); text-wrap: pretty; }
@@ -352,6 +355,13 @@
         </li>
       </ol>
     </form>
+    <div class="confirm" id="pay-confirm" hidden>
+      <h2 class="step-t" data-i="cT">أكّد التحويل</h2>
+      <p class="confirm-line" id="confirm-line"></p>
+      <button class="cta" id="confirm-yes" type="button" data-i="cYes">أكّد</button>
+      <button class="again" id="confirm-back" type="button" data-i="cBack">رجوع، عايز أعدّل حاجة</button>
+      <p class="err" id="confirm-err" role="alert"></p>
+    </div>
     <div class="wait" id="pay-done" hidden role="status" aria-live="polite">
       <span class="ring" id="wait-ring" aria-hidden="true"></span>
       <h2 id="wait-t"></h2>
@@ -407,7 +417,8 @@
     planL: "Plan", mini: "Mini", plus: "Plus", max: "Max", best: "Recommended", monthsL: "How long", m1: "1 month", m3: "3 months", m12: "1 year",
     s1T: "Pick your plan", s2T: "Send the amount", s3T: "Tell us where you sent it from",
     methodL: "How will you send it?", noWallets: "Wallet payments open very soon. Until then, you can pay by card.",
-    payB: "I've sent it, turn on my plan", mineT: "Your transfers", again: "Start a new payment"
+    payB: "I've sent it, turn on my plan", mineT: "Your transfers", again: "Start a new payment",
+    cT: "Confirm your transfer", cYes: "Confirm", cBack: "Back, I want to change something"
   };
   const METHODS = { instapay: ["إنستاباي", "InstaPay"], vodafone: ["فودافون كاش", "Vodafone Cash"], etisalat: ["اتصالات كاش", "Etisalat Cash"], orange: ["أورنج كاش", "Orange Cash"] };
   const STATUS = { pending: ["بنراجعه", "Checking"], approved: ["اتفعّل", "Active"], rejected: ["ما وصلش", "Not received"] };
@@ -729,21 +740,48 @@
       $("sender").focus();
       return;
     }
-    $("sender").removeAttribute("aria-invalid"); err.textContent = ""; btn.disabled = true; btn.textContent = T("بيتبعت…", "Sending…");
+    $("sender").removeAttribute("aria-invalid"); err.textContent = "";
+    // Hassan, 9 Nov 2026: say back what they sent, where, and let them confirm it.
+    const amount = details.packs[picked("plan")][picked("months")], to = details.wallets[method].split("/")[0].trim();
+    claim = { method, plan: picked("plan"), months: Number(picked("months")), sender };
+    $("confirm-line").textContent = T(`أنا حوّلت ${egp(amount)} بـ${METHODS[method][0]} على ${to}، من ${sender}.`,
+      `I sent ${egp(amount)} by ${METHODS[method][1]} to ${to}, from ${sender}.`);
+    $("confirm-err").textContent = "";
+    $("pay-form").hidden = true;
+    $("pay-confirm").hidden = false;
+    $("confirm-yes").focus();
+  });
+  let claim = null;
+  $("confirm-back").addEventListener("click", () => { $("pay-confirm").hidden = true; $("pay-form").hidden = false; });
+  // Confirmed: a few seconds for the bank's text; still nothing, the plan starts on trust and Mared comes forward while the
+  // check goes on (042: 3 hours, then it stops if no money came).
+  $("confirm-yes").addEventListener("click", async () => {
+    const b = $("confirm-yes"), err = $("confirm-err");
+    b.disabled = true; b.textContent = T("بنتأكد…", "Checking…");
     const { data: id, error } = await db.rpc("report_manual_payment", {
-      p_method: method, p_plan: picked("plan"), p_months: Number(picked("months")), p_sender: sender, p_reference: null
+      p_method: claim.method, p_plan: claim.plan, p_months: claim.months, p_sender: claim.sender, p_reference: null
     });
-    btn.disabled = false; btn.innerHTML = T(ar.payB, en.payB);
     if (error) {
+      b.disabled = false; b.innerHTML = T(ar.cYes, en.cYes);
       err.textContent = /pending/.test(error.message) ? T("عندك ٣ تحويلات لسه مستنيين. استنى لما يتأكدوا، أو كلّمنا على contact@yamared.com.", "You have 3 transfers still waiting. Wait until they're confirmed, or email contact@yamared.com.")
         : T("ما اتبعتش. اتأكد إن النت شغّال وجرّب تاني.", "That didn't send. Check your connection and try again.");
       return;
     }
-    $("pay-form").hidden = true;
-    waitState("wait");
-    watchPaid(id);
+    let paid = false;
+    for (let i = 0; i < 4 && !paid; i++) {
+      await new Promise((r) => setTimeout(r, 1500));
+      paid = (await db.from("manual_payments").select("status").eq("id", id).maybeSingle()).data?.status === "approved";
+    }
+    const { data: trust } = paid ? { data: "approved" } : await db.rpc("start_provisional", { p_id: id });
+    $("pay-confirm").hidden = true;
+    b.disabled = false; b.innerHTML = T(ar.cYes, en.cYes);
     loadMine();
+    if (trust === "approved") { waitState("ok"); openMared(); return; }
+    if (trust === "provisional") { trusted = true; waitState("trusted"); openMared(); }
+    watchPaid(id);
   });
+  let trusted = false;
+  const openMared = () => { location.href = "mared://open"; }; // the running Mared comes forward; its plan page sees the plan
   const MONTHS = { 1: ["شهر", "1 month"], 3: ["3 شهور", "3 months"], 12: ["سنة", "1 year"] };
   const packName = (plan, months) => months == 1 ? T(...PRICES[plan]) : `${T(...PRICES[plan])} ${T("لمدة", "for")} ${T(...MONTHS[months])}`;
   // m: the learner's payment row, for "partial" (some money arrived, not the whole price; migration 041).
@@ -752,6 +790,7 @@
     const [t, p] = {
       wait: [T("بنستنى التحويل يوصل…", "Waiting for your transfer…"), T("عادةً بياخد دقيقة. سيب الصفحة دي مفتوحة.", "It usually takes a minute. Keep this page open.")],
       ok: [T("اشتراكك شغّال!", "Your plan is on!"), T("ارجع لمارد، هتلاقيه جاهز.", "Go back to Mared; it's ready.")],
+      trusted: [T("اشتراكك شغّال!", "Your plan is on!"), T("رجّعناك لمارد وتقدر تبدأ دلوقتي. بنكمّل نتأكد من التحويل في الخلفية؛ لو ما وصلناش خلال ٣ ساعات، الاشتراك هيقف.", "We've taken you back to Mared; start now. We keep checking the transfer in the background; if it doesn't reach us within 3 hours, the plan stops.")],
       late: [T("لسه ما وصلش", "Not here yet"), T("أول ما يوصل هنفعّل اشتراكك لوحده، وهتلاقيه في مارد. مش محتاج تعمل حاجة تانية.", "As soon as it arrives your plan turns on by itself, and you'll see it in Mared. Nothing else to do.")],
       partial: m && [T(`وصلنا ${egp(Number(m.received))} من ${egp(m.amount_egp)}`, `${egp(Number(m.received))} of ${egp(m.amount_egp)} arrived`),
         T(`حوّل ${egp(rest)} كمان على نفس الرقم، و${packName(m.plan, m.months)} هيشتغل لوحده أول ما يوصلوا.`, `Send ${egp(rest)} more to the same number, and ${packName(m.plan, m.months)} turns on by itself when it arrives.`)],
@@ -759,14 +798,21 @@
     $("pay-done").hidden = false;
     $("wait-t").textContent = t;
     $("wait-p").textContent = p;
-    $("wait-ring").className = kind === "wait" ? "ring" : `ring ${kind}`;
-    $("wait-ring").textContent = kind === "ok" ? "✓" : "";
-    $("pay-again").hidden = kind === "ok" || kind === "partial";
+    $("wait-ring").className = kind === "wait" ? "ring" : kind === "trusted" ? "ring ok" : `ring ${kind}`;
+    $("wait-ring").textContent = kind === "ok" || kind === "trusted" ? "✓" : "";
+    $("pay-again").hidden = kind === "ok" || kind === "partial" || kind === "trusted";
     // Partial: the pack the money already sent pays for exactly, one tap away (the server checks it again).
     const fits = [];
     if (kind === "partial") Object.entries(details?.packs || {}).forEach(([plan, by]) => Object.entries(by).forEach(([months, price]) => {
       if (price === Number(m.received)) fits.push([plan, Number(months)]);
     }));
+    if (kind === "ok" || kind === "trusted") {
+      const a = document.createElement("a");
+      a.className = "cta";
+      a.href = "mared://open";
+      a.textContent = T("افتح مارد", "Open Mared");
+      return $("wait-acts").replaceChildren(a);
+    }
     $("wait-acts").replaceChildren(...fits.map(([plan, months]) => {
       const b = document.createElement("button");
       b.className = "ghost";
@@ -785,13 +831,13 @@
   let watching = null;
   function watchPaid(id, n = 0) {
     watching = id;
-    if (n === 0) waitState("wait");
+    if (n === 0 && !trusted) waitState("wait");
     setTimeout(async () => {
       if (watching !== id) return;
       const { data: m } = await db.from("manual_payments").select("id, status, received, amount_egp, plan, months").eq("id", id).maybeSingle();
       if (m?.status === "approved") { watching = null; waitState("ok"); loadMine(); return; }
       if (m?.status === "pending" && Number(m.received) > 0) waitState("partial", m);
-      else if (n === 17) waitState("late");
+      else if (n === 17 && !trusted) waitState("late");
       if (n < 77 && m?.status === "pending") watchPaid(id, n + 1);
     }, n === 0 ? 300 : n < 18 ? 10000 : 30000);
   }
