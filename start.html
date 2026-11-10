@@ -469,7 +469,8 @@
     $("open-app").textContent = T("افتح مارد وادخل", "Open Mared, signed in");
     $("open-note").textContent = T(`لسه ما فتحش؟ خلّص تسطيب الملف اللي نزل الأول، وبعدين دوس تاني. أو ادخل جوه مارد بالإيميل ده: ${email}`, `Didn't open? Finish installing the downloaded file first, then press again. Or sign in inside Mared with this email: ${email}`);
     // The sign-in handed to the app: a one-time token from the handoff function, carried by a mared: link Windows gives to Mared.
-    $("open-app").onclick = async () => {
+    $("open-app").onclick = handToMared;
+    async function handToMared() {
       const { data: { session: s } } = await db.auth.getSession();
       if (!s) { show("s-account"); return; }
       $("open-app").disabled = true;
@@ -480,7 +481,7 @@
         location.href = `mared://signin?t=${encodeURIComponent(t)}`; // nothing happens until Mared is installed: the note below then says so
         setTimeout(() => { $("open-note").hidden = false; $("open-app").disabled = false; }, 2500);
       } catch { $("open-note").hidden = false; $("open-app").disabled = false; }
-    };
+    }
     const [pa, pe] = PRICES[PLAN];
     $("card-p").textContent = T(`مش هتدفع حاجة النهارده. لما التجربة تخلص (أو بعد 14 يوم)، بيبدأ مارد ${pa} بـ ${MARED.price(PLAN, false)} في الشهر على نفس الكارت. تلغي في أي وقت.`,
       `Nothing is charged today. When your trial is used up (or after 14 days), Mared ${pe} starts at ${MARED.price(PLAN, true)} a month on the same card. Cancel anytime.`);
@@ -492,6 +493,7 @@
     const q = new URLSearchParams();
     if (params.get("plan")) q.set("plan", PLAN);
     if (location.hash === "#pay" || params.get("next") === "pay") q.set("next", "pay");
+    if (location.hash === "#open" || params.get("next") === "open") q.set("next", "open");
     return HERE + (q.toString() ? "?" + q : "");
   };
 
@@ -500,6 +502,8 @@
     if (session && FROM_LINK) $("about-flash").textContent = T("✓ تم تأكيد إيميلك.", "✓ Your email is confirmed.");
     if (!session) { show("s-account"); if (pending()) showSent(pending()); return; }
     forget();
+    // Mared itself opened this page on its first launch (10 Nov 2026): the sign-in goes straight back to it, no typing.
+    if (location.hash === "#open" || params.get("next") === "open") { show("s-download"); return handToMared(); }
     if (location.hash === "#pay" || params.get("next") === "pay") return openPay();
     const { data: profile } = await db.from("profiles").select("phone").eq("user_id", session.user.id).maybeSingle();
     if (!profile?.phone) return show("s-about");
